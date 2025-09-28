@@ -1,24 +1,36 @@
 // pages/api/docs.js
 
 import swaggerUi from 'swagger-ui-express';
-// PASTIKAN PATH INI BENAR (Naik 2 tingkat ke root):
 import swaggerSpec from '../../swagger'; 
 
 const handler = (req, res) => {
-  // Gunakan swagger-ui-express untuk melayani UI utama
+  // Ambil URL dasar (protokol + host) dari request (misal: https://rafzhost-api.vercel.app)
+  const host = req.headers.host;
+  const protocol = req.headers['x-forwarded-proto'] || 'http';
+  const baseUrl = `${protocol}://${host}`;
+  
+  // Tentukan path lengkap ke aset Swagger yang akan di-serve oleh swaggerUi.serve
+  const assetPath = `${baseUrl}/api/docs`; 
+
   swaggerUi.setup(swaggerSpec, { 
     explorer: true,
-    // Menetapkan judul situs membantu menstabilkan jalur aset Swagger UI di Next.js.
     customSiteTitle: "Rafzhost API Documentation", 
-    // INI ADALAH CUSTOM CSS UNTUK FIX WORD WRAP DI RESPONSE BODY SWAGGER
+    
+    // 🚀 INI ADALAH FIX UNTUK ERROR 404 PADA ASSET
+    // Paksa Swagger memuat asetnya dari jalur API kita sendiri
+    customCssUrl: [
+      `${assetPath}/swagger-ui.css`, 
+      `${assetPath}/swagger-ui-standalone-preset.css` 
+    ],
+    customJsUrl: `${assetPath}/swagger-ui-bundle.js`, 
+
     customCss: `
-      /* Target elemen yang menampilkan response body JSON */
       .response-col_body pre, 
       .response-body pre, 
       .opblock-body pre {
-        white-space: pre-wrap !important; /* Memungkinkan pemecahan baris */
-        word-break: break-all !important; /* Memaksa pemecahan string panjang */
-        overflow-x: hidden !important;   /* Menghilangkan horizontal scrollbar */
+        white-space: pre-wrap !important; 
+        word-break: break-all !important; 
+        overflow-x: hidden !important;   
       }
     `
   })(req, res);
@@ -27,17 +39,14 @@ const handler = (req, res) => {
 // Wrapper untuk Next.js API Route
 export default (req, res) => {
   if (!res.swaggerSetup) {
-    // Fungsi serve ini yang melayani file statis Swagger (CSS/JS)
     res.swaggerSetup = swaggerUi.serve;
   }
   
-  // Jika URL-nya adalah /api/docs, tampilkan UI (HTML utama)
   if (req.url === '/api/docs') {
-    // Kami mengirim status 200 secara eksplisit sebelum handler dipanggil
     res.status(200);
     return handler(req, res);
   }
   
-  // Selain itu, layani aset statis (seperti CSS, JS) dari Swagger
+  // Ini yang melayani aset statis Swagger (CSS/JS)
   return res.swaggerSetup(req, res);
 };
