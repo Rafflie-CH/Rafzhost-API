@@ -4,32 +4,28 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from '../../swagger'; 
 
 const handler = (req, res) => {
-  // Ambil URL dasar (protokol + host)
-  const host = req.headers.host;
-  const protocol = req.headers['x-forwarded-proto'] || 'http';
+  // HAPUS VARIABEL host, protocol, dan baseUrl.
+  // KITA AKAN GUNAKAN JALUR RELATIF SAJA.
   
-  // 💥 PERBAIKAN KRITIS: URL dasar untuk aset HARUS berakhir dengan /api/docs/ (dengan slash di akhir)
-  // Karena aset statis akan dicari di /api/docs/swagger-ui.css
-  const assetPath = `${protocol}://${host}/api/docs`; 
+  // Tentukan path relatif ke aset Swagger yang akan di-serve oleh swaggerUi.serve
+  // Vercel akan secara otomatis mengisi protokol dan host.
+  const assetPath = '/api/docs'; 
 
   swaggerUi.setup(swaggerSpec, { 
     explorer: true,
     customSiteTitle: "Rafzhost API Documentation", 
     
-    // Perbaikan: Hapus baseUrl. Kita harus memastikan customCssUrl memiliki slash di akhir.
-    // Kita hapus baseUrl karena sering menimbulkan duplikasi path di Next.js.
-    
-    // 💥 FIX FINAL UNTUK ERROR 404 PADA ASSET:
-    // Kita menargetkan folder aset statis langsung relatif ke /api/docs
+    // 💥 FIX TERAKHIR: GUNAKAN JALUR RELATIF PENDEK
     customCssUrl: [
-      `${assetPath}/swagger-ui.css`, // PENTING: Gunakan path lengkap
+      `${assetPath}/swagger-ui.css`, 
       `${assetPath}/swagger-ui-standalone-preset.css` 
     ],
     customJsUrl: [
       `${assetPath}/swagger-ui-bundle.js`,
       `${assetPath}/swagger-ui-standalone-preset.js`,
-      `${assetPath}/swagger-ui-init.js` // Tambahkan init.js yang juga 404 di screenshot
+      `${assetPath}/swagger-ui-init.js` // Pastikan init.js juga ada
     ],
+    // Hapus opsi 'url' atau 'deepLinking' jika ada, untuk menghindari konflik.
 
     customCss: `
       .response-col_body pre, 
