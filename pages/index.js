@@ -1,33 +1,22 @@
-export default function Home() {
-  return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-8">
-      <h1 className="text-3xl font-bold mb-4">🚀 Rafzhost API</h1>
-      <p className="text-gray-700 mb-8">
-        Selamat datang! Gunakan menu di bawah untuk test endpoint API.
-      </p>
-
-      <div className="grid gap-4 w-full max-w-md">
-        <a
-          href="/api/downloader/tiktok?link=https://vt.tiktok.com/xxxx"
-          className="p-4 bg-white rounded-xl shadow hover:bg-gray-50"
-        >
-          🎬 Test TikTok Downloader
-        </a>
-
-        <a
-          href="/api/search/google?q=rafzhost"
-          className="p-4 bg-white rounded-xl shadow hover:bg-gray-50"
-        >
-          🔎 Test Google Search
-        </a>
-
-        <a
-          href="/api/ai/chatgpt?prompt=Hello"
-          className="p-4 bg-white rounded-xl shadow hover:bg-gray-50"
-        >
-          🤖 Test ChatGPT
-        </a>
-      </div>
-    </div>
-  );
-    }
+export default async function handler(req, res) {
+  res.setHeader("Content-Type", "text/html");
+  res.end(`
+    <html>
+      <head>
+        <title>Rafzhost API</title>
+      </head>
+      <body style="font-family: sans-serif; padding: 20px;">
+        <h1>🚀 Rafzhost API</h1>
+        <p>Server is running on Vercel.</p>
+        <h3>Available endpoints:</h3>
+        <ul>
+          <li><a href="/api/downloader/tiktok?url=https://vt.tiktok.com/...">TikTok Downloader</a></li>
+          <li><a href="/api/downloader/instagram?url=https://www.instagram.com/p/...">Instagram Downloader</a></li>
+          <li><a href="/api/downloader/youtube?url=https://youtu.be/...">YouTube Downloader</a></li>
+          <li><a href="/api/search/pinterest?query=cat">Pinterest Search</a></li>
+          <li><a href="/api/tools/shortlink?url=https://google.com">Shortlink Generator</a></li>
+        </ul>
+      </body>
+    </html>
+  `);
+}
