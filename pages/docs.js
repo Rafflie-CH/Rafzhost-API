@@ -13,11 +13,14 @@ export default function ApiDoc({ swagger }) {
   );
 }
 
-export async function getServerSideProps() {
+// 💥 PERBAIKAN KRITIS: Menggunakan require() SINKRON untuk menghindari TypeError Vercel
+export function getServerSideProps() {
     
-  const { generateApi } = await import('next-swagger-doc');
+  // Gunakan require langsung di sini (bukan await import)
+  const { generateApi } = require('next-swagger-doc');
 
-  const swagger = await generateApi({
+  // Panggil generateApi secara sinkron
+  const swagger = generateApi({
     definition: {
       openapi: '3.0.0',
       info: {
@@ -32,13 +35,10 @@ export async function getServerSideProps() {
       ],
     },
     
-    // Konfigurasi Path Scanner
-    apiFolder: 'pages/api', // Root tempat Next.js mencari API Route
-    
-    // 💥 FIX KRITIS: Hanya pindai pages/api
+    // Path Scanner yang sudah kita sepakati (hanya pages/api)
+    apiFolder: 'pages/api', 
     files: [
         'pages/api/**/*.js', 
-        // Hapus pemindaian 'src/**/*.js' untuk menghindari konflik runtime.
     ],
   });
 
