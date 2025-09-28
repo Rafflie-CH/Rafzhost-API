@@ -1,26 +1,79 @@
 import { useState } from "react";
 
-// Komponen ApiCard yang baru dengan fitur collapsible
+// --- FUNGSI UTILITY BARU ---
+// Fungsi untuk membuat cURL Command
+const generateCurlCommand = (url, method = 'GET') => {
+    return `curl -X ${method} '${url}'`;
+};
+
+// Fungsi untuk membuat Request URL
+const generateRequestUrl = (id, params) => {
+    // Meniru environment Next.js Vercel: asumsi domain https://rafzhost-api.vercel.app/
+    const baseUrl = "https://rafzhost-api.vercel.app"; 
+    return `${baseUrl}/api/${id}?${params}`;
+};
+// --- AKHIR FUNGSI UTILITY ---
+
 function ApiCard({ id, title, fields }) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState("");
-  const [isOpen, setIsOpen] = useState(false); // State untuk membuka/menutup card
+  const [headers, setHeaders] = useState("");
+  const [requestUrl, setRequestUrl] = useState(""); // State baru untuk Request URL
+  const [curlCommand, setCurlCommand] = useState(""); // State baru untuk cURL
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('Code'); 
 
   async function onSubmit(e) {
     e.preventDefault();
     setLoading(true);
     setResult("Loading...");
+    setHeaders("");
+    setActiveTab('Code');
+
     const form = new FormData(e.target);
     const params = new URLSearchParams(form).toString();
+    
+    // Set Request URL dan cURL command sebelum fetch
+    const generatedUrl = generateRequestUrl(id, params);
+    setRequestUrl(generatedUrl);
+    setCurlCommand(generateCurlCommand(generatedUrl));
+
     try {
       const res = await fetch(`/api/${id}?${params}`);
+      
+      // 1. Ambil Response Body (JSON)
       const json = await res.json();
       setResult(JSON.stringify(json, null, 2));
+
+      // 2. Ambil Response Headers
+      let headerText = '';
+      for (const [key, value] of res.headers.entries()) {
+        headerText += `${key}: ${value}\n`;
+      }
+      setHeaders(headerText);
+      
     } catch (err) {
       setResult("Error: " + err.message);
+      setHeaders("");
     }
     setLoading(false);
   }
+
+  const renderTabContent = () => {
+    if (loading) return "Loading...";
+
+    if (activeTab === 'Code') {
+      return result;
+    } else if (activeTab === 'Details') {
+      return headers || "Headers tidak tersedia atau request belum dieksekusi.";
+    }
+    return "";
+  };
+  
+  const getTabStyle = (tabName) => ({
+      ...styles.tabButton,
+      backgroundColor: activeTab === tabName ? styles.button.background : '#2a2a44',
+  });
 
   return (
     <div style={styles.card}>
@@ -32,6 +85,7 @@ function ApiCard({ id, title, fields }) {
 
       {isOpen && ( // Konten hanya render jika card terbuka
         <div>
+          {/* BAGIAN PARAMETERS */}
           <div style={styles.section}>
             <h3>Parameters</h3>
             <form id={`${id}-form`} onSubmit={onSubmit}>
@@ -45,9 +99,40 @@ function ApiCard({ id, title, fields }) {
             </form>
           </div>
 
-          <div style={styles.section}>
-            <h3>Responses</h3>
-            <pre style={styles.pre}>{loading ? "Loading..." : result}</pre>
+          {/* BAGIAN RESPONS LENGKAP */}
+          <div style={styles.responseContainer}>
+            
+            {/* 1. cURL Command */}
+            {curlCommand && (
+                <div style={styles.codeBlock}>
+                    <p style={styles.codeLabel}>cURL</p>
+                    <pre style={styles.curlPre}>{curlCommand}</pre>
+                </div>
+            )}
+            
+            {/* 2. Request URL */}
+            {requestUrl && (
+                <div style={styles.codeBlock}>
+                    <p style={styles.codeLabel}>Request URL</p>
+                    <pre style={styles.curlPre}>{requestUrl}</pre>
+                </div>
+            )}
+
+            {/* 3. Response Body (Tabs) */}
+            <h3>Server Response</h3>
+            
+            <div style={styles.tabs}>
+                <button style={getTabStyle('Code')} onClick={() => setActiveTab('Code')}>
+                    Response Body (Code)
+                </button>
+                <button style={getTabStyle('Details')} onClick={() => setActiveTab('Details')}>
+                    Response Headers (Details)
+                </button>
+            </div>
+            
+            <pre style={styles.pre}>
+                {renderTabContent()}
+            </pre>
           </div>
         </div>
       )}
@@ -70,15 +155,15 @@ const styles = {
   },
   grid: {
     display: "grid",
-    gridTemplateColumns: "1fr", // Tetap 1 kolom untuk mobile-first
-    gap: 16, // Jarak antar card
+    gridTemplateColumns: "1fr",
+    gap: 16,
     maxWidth: 900,
     margin: "0 auto"
   },
   card: {
     background: "#1a1a2e",
     borderRadius: 8,
-    overflow: 'hidden', // Penting untuk border-radius dan collapsible
+    overflow: 'hidden',
     border: '1px solid #2a2a44'
   },
   cardHeader: {
@@ -88,7 +173,7 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     cursor: 'pointer',
-    borderBottom: '1px solid #3a3a5e' // Garis pemisah
+    borderBottom: '1px solid #3a3a5e'
   },
   apiPath: {
     fontSize: '0.8rem',
@@ -104,6 +189,44 @@ const styles = {
     padding: 18,
     borderBottom: '1px solid #2a2a44'
   },
+  responseContainer: {
+    padding: "18px 18px 0 18px",
+  },
+  codeBlock: {
+    marginBottom: 10,
+    marginTop: 10
+  },
+  codeLabel: {
+    margin: '0 0 5px 0',
+    fontSize: '0.9rem',
+    color: '#a0a0a0'
+  },
+  curlPre: {
+    background: "#05050a",
+    padding: 10,
+    borderRadius: 4,
+    color: "#e6e6e6",
+    fontSize: '0.8rem',
+    overflowX: 'auto', // Scroll horizontal untuk URL/cURL yang sangat panjang
+    whiteSpace: 'pre',
+    wordBreak: 'normal'
+  },
+  tabs: {
+    display: 'flex',
+    marginBottom: 8,
+    marginTop: 10,
+    borderBottom: '1px solid #3a3a5e',
+    paddingBottom: 5,
+  },
+  tabButton: {
+    padding: '6px 12px',
+    borderRadius: 4,
+    border: 'none',
+    cursor: 'pointer',
+    color: '#fff',
+    marginRight: 8,
+    fontSize: '0.8rem'
+  },
   input: {
     width: "100%",
     padding: 10,
@@ -112,7 +235,7 @@ const styles = {
     marginBottom: 6,
     background: "#0f0f1a",
     color: "#e6e6e6",
-    boxSizing: 'border-box' // Penting agar padding tidak melebarkan input
+    boxSizing: 'border-box'
   },
   button: {
     background: "#7c3aed",
@@ -125,17 +248,18 @@ const styles = {
     marginTop: 10,
     fontSize: '0.9rem'
   },
-  pre: {
+  pre: { // Response Body (Code)
     background: "#05050a",
     padding: 12,
     borderRadius: 4,
     color: "#7eff7e",
     marginTop: 8,
+    marginBottom: 18,
     minHeight: 60,
-    whiteSpace: 'pre-wrap',
-    wordBreak: 'break-all',
+    whiteSpace: 'pre-wrap', // FIX WORD WRAP
+    wordBreak: 'break-all',  // FIX WORD WRAP
     overflow: 'auto',
-    fontSize: '0.85rem' // Sedikit lebih kecil agar mirip code block
+    fontSize: '0.85rem'
   }
 };
 
