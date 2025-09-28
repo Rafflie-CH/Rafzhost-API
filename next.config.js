@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Fungsi untuk mengelola pengalihan URL
+  // Gunakan fungsi redirects Next.js
   async redirects() {
     return [
       {
@@ -8,14 +8,11 @@ const nextConfig = {
         source: '/',
         // Destination: Rute ke Swagger UI Anda
         destination: '/api/docs',
-        // Permanent: 301 (dikenal SEO) atau 308
-        permanent: true,
+        // Permanent: 308 (digunakan untuk pengalihan permanen)
+        permanent: true, 
       },
-      // Anda bisa menambahkan redirect lain di sini jika diperlukan
     ]
   },
-  
-  // (Jika Anda memiliki konfigurasi Next.js lainnya, letakkan di sini)
 }
 
 module.exports = nextConfig
