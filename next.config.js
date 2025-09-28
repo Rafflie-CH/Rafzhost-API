@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Konfigurasi redirect
   async redirects() {
     return [
       {
@@ -10,7 +9,6 @@ const nextConfig = {
       },
     ]
   },
-  // Pastikan ekstensi file API Routes Anda terbaca
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'], 
 }
 
