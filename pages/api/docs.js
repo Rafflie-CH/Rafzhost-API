@@ -1,22 +1,24 @@
-// Import library dan konfigurasi
+// pages/api/docs.js
+
 import swaggerUi from 'swagger-ui-express';
-// PASTIKAN PATH INI BENAR:
+// PASTIKAN PATH INI BENAR (Naik 2 tingkat ke root):
 import swaggerSpec from '../../swagger'; 
 
 const handler = (req, res) => {
   // Gunakan swagger-ui-express untuk melayani UI utama
   swaggerUi.setup(swaggerSpec, { 
     explorer: true,
-    // PENTING: Menetapkan judul situs membantu menstabilkan jalur aset di lingkungan Next.js.
-    customSiteTitle: "Rafzhost API Docs", 
-    // Custom CSS untuk fix word wrap (sudah terpasang)
+    // Menetapkan judul situs membantu menstabilkan jalur aset Swagger UI di Next.js.
+    customSiteTitle: "Rafzhost API Documentation", 
+    // INI ADALAH CUSTOM CSS UNTUK FIX WORD WRAP DI RESPONSE BODY SWAGGER
     customCss: `
+      /* Target elemen yang menampilkan response body JSON */
       .response-col_body pre, 
       .response-body pre, 
       .opblock-body pre {
-        white-space: pre-wrap !important; 
-        word-break: break-all !important; 
-        overflow-x: hidden !important;   
+        white-space: pre-wrap !important; /* Memungkinkan pemecahan baris */
+        word-break: break-all !important; /* Memaksa pemecahan string panjang */
+        overflow-x: hidden !important;   /* Menghilangkan horizontal scrollbar */
       }
     `
   })(req, res);
@@ -36,6 +38,6 @@ export default (req, res) => {
     return handler(req, res);
   }
   
-  // Jika bukan /api/docs, anggap itu adalah request untuk aset statis (CSS/JS)
+  // Selain itu, layani aset statis (seperti CSS, JS) dari Swagger
   return res.swaggerSetup(req, res);
 };
