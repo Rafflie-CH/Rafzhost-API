@@ -9,6 +9,7 @@ const nextConfig = {
       },
     ]
   },
+  // Tambahkan pageExtensions agar Next.js memproses file JSDoc dengan benar
   pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'], 
 }
 
