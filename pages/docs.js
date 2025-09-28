@@ -1,29 +1,16 @@
 // pages/docs.js
 
-import dynamic from 'next/dynamic';
-// Import CSS Swagger dari library React-nya
-import 'swagger-ui-react/swagger-ui.css'; 
+// ... (dynamic import dan komponen ApiDoc tetap sama)
+// ...
 
-// Render komponen SwaggerUI hanya di sisi klien (browser)
-const SwaggerUI = dynamic(() => import('swagger-ui-react'), { ssr: false });
-
-export default function ApiDoc({ swagger }) {
-  return (
-    <div style={{ padding: '20px' }}>
-      {/* Menerima spesifikasi dari getServerSideProps */}
-      <SwaggerUI spec={swagger} />
-    </div>
-  );
-}
-
-// Mengambil spesifikasi API saat request masuk (bukan saat build)
+// Mengambil spesifikasi API saat request masuk
 export async function getServerSideProps() {
     
-  // Import next-swagger-doc di sini untuk menghindari error build Vercel
   const { generateApi } = await import('next-swagger-doc');
 
   const swagger = await generateApi({
     definition: {
+      // ... (Definisi Swagger tetap sama)
       openapi: '3.0.0',
       info: {
         title: 'Rafzhost API Documentation',
@@ -36,8 +23,17 @@ export async function getServerSideProps() {
         },
       ],
     },
-    // Menunjuk ke folder API Anda untuk membaca JSDoc
+    
+    // 💥 FIX KRITIS: KONFIGURASI PATH SCANNER
+    // Path folder API utama (root untuk endpoint)
     apiFolder: 'pages/api', 
+    
+    // File/Folder yang harus dipindai untuk JSDoc
+    // Kita menunjuk ke semua folder di dalam pages/api/
+    files: [
+        'pages/api/**/*.js',  // Memindai semua file JS di dalam pages/api/
+        'src/downloader/**/*.js' // Tambahkan file logic Anda di src/
+    ],
   });
 
   return {
