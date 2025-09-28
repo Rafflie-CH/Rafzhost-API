@@ -1,16 +1,24 @@
 // pages/docs.js
 
-// ... (dynamic import dan komponen ApiDoc tetap sama)
-// ...
+import dynamic from 'next/dynamic';
+import 'swagger-ui-react/swagger-ui.css'; 
 
-// Mengambil spesifikasi API saat request masuk
+const SwaggerUI = dynamic(() => import('swagger-ui-react'), { ssr: false });
+
+export default function ApiDoc({ swagger }) {
+  return (
+    <div style={{ padding: '20px' }}>
+      <SwaggerUI spec={swagger} />
+    </div>
+  );
+}
+
 export async function getServerSideProps() {
     
   const { generateApi } = await import('next-swagger-doc');
 
   const swagger = await generateApi({
     definition: {
-      // ... (Definisi Swagger tetap sama)
       openapi: '3.0.0',
       info: {
         title: 'Rafzhost API Documentation',
@@ -24,15 +32,11 @@ export async function getServerSideProps() {
       ],
     },
     
-    // 💥 FIX KRITIS: KONFIGURASI PATH SCANNER
-    // Path folder API utama (root untuk endpoint)
+    // Konfigurasi Path Scanner
     apiFolder: 'pages/api', 
-    
-    // File/Folder yang harus dipindai untuk JSDoc
-    // Kita menunjuk ke semua folder di dalam pages/api/
     files: [
-        'pages/api/**/*.js',  // Memindai semua file JS di dalam pages/api/
-        'src/downloader/**/*.js' // Tambahkan file logic Anda di src/
+        'pages/api/**/*.js',
+        'src/downloader/**/*.js' // Memindai file logic Anda
     ],
   });
 
