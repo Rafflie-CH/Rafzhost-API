@@ -50,7 +50,18 @@ const styles = {
   card: { background: "#1a1a2e", padding: 18, borderRadius: 12 },
   input: { width: "100%", padding: 10, borderRadius: 8, border: "none", marginBottom: 6 },
   button: { background: "#7c3aed", color: "#fff", padding: "8px 14px", borderRadius: 8, border: "none", cursor: "pointer" },
-  pre: { background: "#05050a", padding: 12, borderRadius: 8, color: "#7eff7e", marginTop: 8, minHeight: 60 }
+  // 🚀 PERBAIKAN DI BAGIAN INI UNTUK WORD WRAP
+  pre: { 
+    background: "#05050a", 
+    padding: 12, 
+    borderRadius: 8, 
+    color: "#7eff7e", 
+    marginTop: 8, 
+    minHeight: 60,
+    whiteSpace: 'pre-wrap',  // Memungkinkan pemecahan baris
+    wordBreak: 'break-all',   // Memecah string panjang (seperti URL)
+    overflow: 'auto'          // Opsional: Untuk scroll jika konten sangat besar
+  }
 };
 
 export default function Home() {
