@@ -15,6 +15,7 @@ export default function ApiDoc({ swagger }) {
 
 export async function getServerSideProps() {
     
+  // Pastikan import ini aman
   const { generateApi } = await import('next-swagger-doc');
 
   const swagger = await generateApi({
@@ -32,11 +33,14 @@ export async function getServerSideProps() {
       ],
     },
     
-    // Konfigurasi Path Scanner
+    // 💥 PATH SCANNER (PALING AMAN):
+    // Gunakan folder 'pages/api' sebagai root API.
     apiFolder: 'pages/api', 
+    
+    // Secara eksplisit panggil semua file API/JSDoc Anda.
     files: [
-        'pages/api/**/*.js',
-        'src/downloader/**/*.js' // Memindai file logic Anda
+        'pages/api/**/*.js', 
+        'src/**/*.js' // Pindai SEMUA file logic di src, jika logic Anda ada di sana
     ],
   });
 
