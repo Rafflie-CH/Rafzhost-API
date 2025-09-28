@@ -1,4 +1,7 @@
-import { ttdl } from "../../../src/downloader/ttdl.js";
+// pages/api/downloader/tiktok.js
+
+// 💥 PERUBAHAN KRITIS: Menggunakan require() untuk stabilitas build Next.js
+const { ttdl } = require("../../../src/downloader/ttdl.js");
 
 /**
  * @swagger
@@ -66,14 +69,12 @@ export default async function handler(req, res) {
       return res.status(400).json({ status: false, message: "Masukkan parameter ?url=" });
     }
 
-    // Panggil fungsi ttdl Anda
     const result = await ttdl(url);
     
     // Asumsi ttdl mengembalikan object yang valid jika status: true
     res.status(200).json(result);
     
   } catch (err) {
-    // Tangani error jika ttdl gagal
     console.error("TikTok Downloader Error:", err);
     res.status(500).json({ status: false, message: err.message || "Terjadi error saat memproses permintaan." });
   }
