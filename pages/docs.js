@@ -1,12 +1,11 @@
 // pages/docs.js
-import { GetStaticProps } from 'next';
 import dynamic from 'next/dynamic';
 import 'swagger-ui-react/swagger-ui.css';
 
+// Import komponen secara dinamis (hanya di client/browser)
 const SwaggerUI = dynamic(() => import('swagger-ui-react'), { ssr: false });
 
 export default function ApiDoc({ swagger }) {
-  // Komponen Next.js yang merender Swagger UI React
   return (
     <div style={{ padding: '20px' }}>
       <SwaggerUI spec={swagger} />
@@ -14,14 +13,33 @@ export default function ApiDoc({ swagger }) {
   );
 }
 
-export const getStaticProps = async () => {
-  // Next.js akan memanggil API Route kita untuk mendapatkan spesifikasi Swagger
-  const res = await fetch('http://localhost:3000/api/doc-spec'); 
-  const swagger = await res.json();
+// Gunakan getServerSideProps untuk mengatasi masalah build Vercel
+// Ini memastikan spesifikasi API diambil saat request, BUKAN saat build.
+export async function getServerSideProps() {
+    
+  // Kita TIDAK lagi fetch dari http://localhost, kita langsung gunakan next-swagger-doc
+  const { generateApi } = await import('next-swagger-doc');
+
+  const swagger = await generateApi({
+    definition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'Rafzhost API Documentation',
+        version: '1.0.0',
+        description: 'Dokumentasi REST API untuk Downloader dan Tools.',
+      },
+      servers: [
+        {
+          url: '/api',
+        },
+      ],
+    },
+    apiFolder: 'pages/api', // Path ke folder API Anda
+  });
 
   return {
     props: {
       swagger,
     },
   };
-};
+}
