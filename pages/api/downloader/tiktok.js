@@ -1,6 +1,6 @@
 // pages/api/downloader/tiktok.js
 
-// 💥 PERUBAHAN KRITIS: Menggunakan require() untuk stabilitas build Next.js
+// 💥 PERBAIKAN: Menggunakan require() untuk stabilitas build
 const { ttdl } = require("../../../src/downloader/ttdl.js");
 
 /**
@@ -71,7 +71,6 @@ export default async function handler(req, res) {
 
     const result = await ttdl(url);
     
-    // Asumsi ttdl mengembalikan object yang valid jika status: true
     res.status(200).json(result);
     
   } catch (err) {
