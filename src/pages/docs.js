@@ -1,97 +1,108 @@
 import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
-
-const SwaggerUI = dynamic(() => import("swagger-ui-react"), { ssr: false });
+import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
 
 export default function DocsPage() {
-  const [theme, setTheme] = useState("light");
-  const [customColor, setCustomColor] = useState("#6a0dad");
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const [theme, setTheme] = useState("system");
+  const [customColor, setCustomColor] = useState("#ff9800");
+  const [loading, setLoading] = useState(true);
 
-  // Deteksi tema sistem (HP / PC)
+  // Load preferensi dari localStorage
   useEffect(() => {
-    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      setTheme("dark");
-    } else {
-      setTheme("light");
-    }
+    const savedTheme = localStorage.getItem("theme");
+    const savedColor = localStorage.getItem("customColor");
+
+    if (savedTheme) setTheme(savedTheme);
+    if (savedColor) setCustomColor(savedColor);
   }, []);
 
-  // Update class body untuk tema
+  // Atur tema sesuai pilihan user
   useEffect(() => {
-    document.body.classList.remove("theme-light", "theme-dark", "theme-custom");
-    document.body.classList.add(`theme-${theme}`);
+    const root = document.documentElement;
+
+    if (theme === "system") {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+      root.setAttribute("data-theme", prefersDark.matches ? "dark" : "light");
+
+      const handler = (e) => {
+        root.setAttribute("data-theme", e.matches ? "dark" : "light");
+      };
+      prefersDark.addEventListener("change", handler);
+
+      return () => prefersDark.removeEventListener("change", handler);
+    }
 
     if (theme === "custom") {
-      document.body.style.setProperty("--custom-bg", customColor);
-      document.body.style.setProperty("--custom-text", "#ffffff");
-      document.body.style.setProperty("--custom-accent", customColor);
+      root.setAttribute("data-theme", "custom");
+      root.style.setProperty("--custom-accent", customColor);
+      root.style.setProperty("--custom-bg", "#121212");
+      root.style.setProperty("--custom-text", "#f1f1f1");
+      root.style.setProperty("--custom-card", "#1e1e1e");
+    } else {
+      root.setAttribute("data-theme", theme);
     }
+
+    // Simpan ke localStorage
+    localStorage.setItem("theme", theme);
+    if (theme === "custom") localStorage.setItem("customColor", customColor);
   }, [theme, customColor]);
 
+  // Simulasi loading animasi
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div style={{ padding: "10px", minHeight: "100vh" }}>
-      {/* Header */}
-      <h1 style={{ textAlign: "center" }}>📘 Rafzhost API</h1>
-      <p style={{ textAlign: "center" }}>
-        Dokumentasi API Rafzhost dengan Swagger UI
-      </p>
+    <div style={{ minHeight: "100vh" }}>
+      {/* Loading bar */}
+      {loading && <div className="loading-bar"></div>}
 
-      {/* Theme Switcher */}
-      <div style={{ display: "flex", gap: "15px", alignItems: "center", justifyContent: "center", flexWrap: "wrap", marginBottom: "15px" }}>
-        <label>
-          <span style={{ marginRight: "5px" }}>🌗 Tema:</span>
-          <select
-            value={theme}
-            onChange={(e) => setTheme(e.target.value)}
-            style={{ padding: "4px" }}
-          >
-            <option value="light">Terang ☀️</option>
-            <option value="dark">Gelap 🌙</option>
-            <option value="custom">Custom 🎨</option>
-          </select>
-        </label>
+      {/* Panel kontrol tema */}
+      <div style={{ padding: "1rem", textAlign: "center" }}>
+        <h2 style={{ marginBottom: "0.5rem" }}>⚙️ Pilih Tema</h2>
+        <select
+          value={theme}
+          onChange={(e) => setTheme(e.target.value)}
+          style={{
+            padding: "0.5rem",
+            borderRadius: "8px",
+            marginRight: "0.5rem",
+          }}
+        >
+          <option value="system">Ikuti Sistem 🌐</option>
+          <option value="light">Terang 🌞</option>
+          <option value="dark">Gelap 🌙</option>
+          <option value="custom">Custom 🎨</option>
+        </select>
 
-        {/* Custom Theme Picker */}
+        {/* Color Picker hanya muncul jika custom */}
         {theme === "custom" && (
-          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-            <label htmlFor="colorPicker">🎨 Pilih warna tema:</label>
+          <label style={{ marginLeft: "1rem" }}>
+            Pilih warna utama:
             <input
-              id="colorPicker"
               type="color"
               value={customColor}
               onChange={(e) => setCustomColor(e.target.value)}
-              style={{ cursor: "pointer", width: "40px", height: "30px" }}
-            />
-            <button
-              onClick={() => setCustomColor("#6a0dad")}
               style={{
-                background: "#eee",
-                border: "1px solid #aaa",
-                borderRadius: "6px",
-                padding: "4px 8px",
+                marginLeft: "0.5rem",
                 cursor: "pointer",
+                border: "none",
+                width: "40px",
+                height: "30px",
+                background: "transparent",
               }}
-            >
-              Reset 🎯
-            </button>
-          </div>
+            />
+          </label>
         )}
-
-        {/* Animasi Hemat */}
-        <label>
-          <input
-            type="checkbox"
-            checked={reduceMotion}
-            onChange={(e) => setReduceMotion(e.target.checked)}
-          />
-          <span style={{ marginLeft: "5px" }}>⚡ Hemat Animasi</span>
-        </label>
       </div>
 
       {/* Swagger UI */}
-      <SwaggerUI url="/swagger.json" docExpansion="none" />
+      {!loading && (
+        <div style={{ animation: "fadeIn 0.5s ease-in-out" }}>
+          <SwaggerUI url="/swagger.json" />
+        </div>
+      )}
     </div>
   );
 }
