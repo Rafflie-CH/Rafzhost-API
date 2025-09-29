@@ -1,57 +1,46 @@
+// pages/docs.js
+import { useEffect, useRef } from "react";
 import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
-import swaggerJSDoc from "swagger-jsdoc";
+import ThemeSwitcher from "../src/components/ThemeSwitcher";
 import Link from "next/link";
-import ThemeSwitcher from "../components/ThemeSwitcher";
-import SkeletonLoader from "../components/SkeletonLoader";
 
-export default function DocsPage({ spec }) {
+export default function DocsPage() {
+  const swaggerRef = useRef(null);
+
+  useEffect(() => {
+    // Optional: scroll to top on load
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
-    <div style={{ padding: 15 }}>
-      <ThemeSwitcher />
-      <div style={{ textAlign: "center", marginBottom: 20 }}>
+    <div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
+      <h1 style={{ marginBottom: "20px" }}>Rafzhost API Documentation</h1>
+
+      {/* Tombol ke POST page */}
+      <div style={{ marginBottom: "20px" }}>
         <Link href="/post">
-          <button style={{
-            padding: "10px 20px",
-            borderRadius: 8,
-            background: "#4f46e5",
-            color: "#fff",
-            border: "none",
-            cursor: "pointer",
-            fontWeight: "bold",
-            transition: "all 0.3s"
-          }}
-          onMouseOver={e => e.currentTarget.style.background = "#3730a3"}
-          onMouseOut={e => e.currentTarget.style.background = "#4f46e5"}>
-            Go to Post
+          <button className="animated">
+            Go to POST API Page
           </button>
         </Link>
       </div>
-      {!spec && <SkeletonLoader height={300} />}
-      {spec && <SwaggerUI spec={spec} />}
+
+      {/* Theme Switcher */}
+      <div style={{ marginBottom: "30px", border: "1px solid #ccc", padding: "15px", borderRadius: "8px" }}>
+        <h2 style={{ marginBottom: "10px" }}>Customize Theme</h2>
+        <ThemeSwitcher />
+      </div>
+
+      {/* Swagger UI */}
+      <div ref={swaggerRef}>
+        <SwaggerUI url="/api/swagger.json" docExpansion="none" deepLinking={true} />
+      </div>
+
+      {/* Footer */}
+      <footer style={{ marginTop: "40px", textAlign: "center", color: "var(--text-color)" }}>
+        <p>Rafzhost API &copy; {new Date().getFullYear()}</p>
+      </footer>
     </div>
   );
-}
-
-export async function getStaticProps() {
-  let swaggerSpec = swaggerJSDoc({
-    definition: {
-      openapi: "3.0.0",
-      info: { title: "Rafzhost API", version: "1.0.0", description: "Rafzhost API Docs" },
-    },
-    apis: ["./pages/api/**/*.js"]
-  });
-
-  // Filter hanya GET
-  const paths = {};
-  Object.keys(swaggerSpec.paths).forEach(path => {
-    const methods = Object.keys(swaggerSpec.paths[path]).filter(m => m.toLowerCase() === "get");
-    if (methods.length) {
-      paths[path] = {};
-      methods.forEach(m => paths[path][m] = swaggerSpec.paths[path][m]);
-    }
-  });
-  swaggerSpec.paths = paths;
-
-  return { props: { spec: swaggerSpec } };
 }
