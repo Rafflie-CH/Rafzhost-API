@@ -1,60 +1,38 @@
 import { useState, useEffect } from "react";
 
-const defaultThemes = {
-  light: { "--bg-color": "#ffffff", "--text-color": "#111827", "--primary-color": "#4f46e5" },
-  dark: { "--bg-color": "#111827", "--text-color": "#ffffff", "--primary-color": "#4f46e5" },
-};
-const paletteColors = ["#4f46e5", "#10b981", "#3b82f6", "#ef4444", "#f59e0b", "#8b5cf6"];
+// Palet warna bebas
+const palettes = [
+  { name:"Default", bg:"#ffffff", text:"#111827", primary:"#4f46e5" },
+  { name:"Dark", bg:"#1f2937", text:"#f9fafb", primary:"#6366f1" },
+  { name:"Mint", bg:"#f0fdf4", text:"#065f46", primary:"#10b981" },
+  { name:"Pink", bg:"#fff0f6", text:"#831843", primary:"#ec4899" },
+];
 
 export default function ThemeSwitcher() {
-  const [theme, setTheme] = useState("light");
-  const [customColor, setCustomColor] = useState(defaultThemes.light["--primary-color"]);
-  const [previewColor, setPreviewColor] = useState(customColor);
+  const [theme, setTheme] = useState(0);
 
   useEffect(() => {
-    const storedTheme = localStorage.getItem("rafzhost-theme");
-    const storedColor = localStorage.getItem("rafzhost-custom-color");
-    if (storedTheme) setTheme(storedTheme);
-    if (storedColor) setCustomColor(storedColor);
+    const saved = localStorage.getItem("rafzhost-theme");
+    if (saved) setTheme(Number(saved));
   }, []);
 
   useEffect(() => {
-    applyTheme(theme, theme === "custom" ? customColor : null);
-  }, [theme, customColor]);
-
-  const applyTheme = (t, color) => {
-    const themeVars = t === "custom"
-      ? { "--bg-color": "#f0f0f0", "--text-color": "#111", "--primary-color": color }
-      : defaultThemes[t];
-
-    Object.entries(themeVars).forEach(([varName, value]) => {
-      document.documentElement.style.setProperty(varName, value);
-    });
-
-    localStorage.setItem("rafzhost-theme", t);
-    if (t === "custom") localStorage.setItem("rafzhost-custom-color", color);
-  };
+    const t = palettes[theme];
+    document.documentElement.style.setProperty("--bg-color", t.bg);
+    document.documentElement.style.setProperty("--text-color", t.text);
+    document.documentElement.style.setProperty("--primary-color", t.primary);
+    localStorage.setItem("rafzhost-theme", theme);
+  }, [theme]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-      <div style={{ display: "flex", gap: "10px" }}>
-        {["light", "dark", "custom"].map((t) => (
-          <button key={t} onClick={() => setTheme(t)} style={{ padding: "8px 12px", borderRadius: "6px", border: theme===t?"2px solid #000":"1px solid #ccc", cursor:"pointer" }}>
-            {t.charAt(0).toUpperCase()+t.slice(1)}
-          </button>
-        ))}
-      </div>
-
-      {theme === "custom" && (
-        <div style={{ display: "flex", gap: "10px", marginTop: "5px" }}>
-          {paletteColors.map((c) => (
-            <div key={c} onClick={() => setCustomColor(c)} onMouseEnter={() => setPreviewColor(c)} onMouseLeave={() => setPreviewColor(customColor)}
-              style={{ width:"30px", height:"30px", borderRadius:"6px", cursor:"pointer", border: customColor===c?"2px solid #000":"1px solid #ccc", backgroundColor:c, transition:"transform 0.3s" }}
-            />
-          ))}
-          <button onClick={() => applyTheme("custom", previewColor)} style={{ padding:"8px 12px", borderRadius:"6px", border:"1px solid #ccc", cursor:"pointer" }}>Apply Preview</button>
-        </div>
-      )}
+    <div style={{ display:"flex", gap:"10px", flexWrap:"wrap" }}>
+      {palettes.map((p, idx) => (
+        <div key={idx} className="theme-preview"
+          style={{ backgroundColor:p.bg, border: theme===idx ? "2px solid var(--primary-color)" : "1px solid #ccc" }}
+          title={p.name}
+          onClick={()=>setTheme(idx)}
+        ></div>
+      ))}
     </div>
   );
 }
