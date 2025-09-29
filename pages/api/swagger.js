@@ -1,26 +1,22 @@
 import swaggerJSDoc from "swagger-jsdoc";
 
-export default function handler(req, res) {
-  const options = {
-    definition: {
-      openapi: "3.0.0",
-      info: {
-        title: "Rafzhost API",
-        version: "1.0.0",
-        description: "Rafzhost API Documentation",
-      },
-      servers: [
-        { url: process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000" },
-      ],
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "Rafzhost API",
+      version: "1.0.0",
+      description: "Dokumentasi API Rafzhost",
     },
-    apis: ["./pages/api/*.js"], // Semua endpoint
-  };
+  },
+  apis: ["./pages/api/*.js"], // Semua endpoint harus ada JSDoc
+};
 
+export default function handler(req, res) {
   try {
     const swaggerSpec = swaggerJSDoc(options);
     res.status(200).json(swaggerSpec);
   } catch (err) {
-    console.error("Swagger generation error:", err);
-    res.status(500).json({ error: "Failed to generate Swagger spec" });
+    res.status(500).json({ error: "Failed to generate Swagger spec", details: err.message });
   }
 }
