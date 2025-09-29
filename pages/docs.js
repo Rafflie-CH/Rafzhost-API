@@ -6,7 +6,7 @@ export default function DocsPage({ spec }) {
   return <SwaggerUI spec={spec} />;
 }
 
-// generate swagger spec dari config next-swagger-doc
+// Generate Swagger spec dari config next-swagger-doc.config.js
 export async function getStaticProps() {
   const spec = await getSwaggerSpec(); // otomatis ambil dari next-swagger-doc.config.js
   return { props: { spec } };
