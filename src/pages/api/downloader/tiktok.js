@@ -1,8 +1,8 @@
-import { ttdl } from "../../../downloader/ttdl.js";
+import ttdl from "../../../downloader/ttdl.js";
 
 /**
  * @swagger
- * /downloader/tiktok:
+ * /api/downloader/tiktok:
  *   get:
  *     tags:
  *       - Downloader
