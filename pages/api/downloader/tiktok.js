@@ -1,6 +1,3 @@
-// pages/api/downloader/tiktok.js
-
-// 💥 PERBAIKAN: Menggunakan require() untuk stabilitas build
 const { ttdl } = require("../../../src/downloader/ttdl.js");
 
 /**
