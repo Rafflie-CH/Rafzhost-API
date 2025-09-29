@@ -1,8 +1,8 @@
 // src/pages/docs.js
 
-const path = require('path');
 import dynamic from 'next/dynamic';
 import 'swagger-ui-react/swagger-ui.css'; 
+// Hapus: const path = require('path');
 
 const SwaggerUI = dynamic(() => import('swagger-ui-react'), { ssr: false });
 
@@ -16,11 +16,7 @@ export default function ApiDoc({ swagger }) {
 
 export function getServerSideProps() {
     
-  // Wajib menggunakan require()
   const { generateApi } = require('next-swagger-doc');
-
-  // Menentukan path absolut paling stabil di Vercel
-  const apiDirectory = path.join(process.cwd(), 'src', 'pages', 'api');
 
   const swagger = generateApi({
     definition: {
@@ -37,9 +33,10 @@ export function getServerSideProps() {
       ],
     },
     
-    // Menggunakan path absolut
-    apiFolder: apiDirectory, 
-    // Menggunakan glob scanner normal dari root Vercel:
+    // 💥 PERBAIKAN KRITIS: HAPUS apiFolder untuk menghilangkan konflik path
+    // apiFolder: apiDirectory, 
+    
+    // Gunakan glob pattern yang sudah benar (relatif terhadap root Vercel)
     files: [
         'src/pages/api/**/*.js', 
     ],
