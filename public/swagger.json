@@ -1,19 +1,27 @@
-{
-  "openapi": "3.0.0",
-  "info": {
-    "title": "Rafzhost API",
-    "version": "1.0.0"
-  },
-  "paths": {
-    "/api/hello": {
-      "get": {
-        "summary": "Coba endpoint",
-        "responses": {
-          "200": {
-            "description": "Berhasil"
+"/api/downloader/tiktok": {
+  "get": {
+    "summary": "Download video TikTok",
+    "description": "Endpoint untuk download video TikTok tanpa watermark (pakai ttdl dari siputzx).",
+    "parameters": [
+      {
+        "name": "url",
+        "in": "query",
+        "required": true,
+        "schema": { "type": "string" },
+        "description": "URL video TikTok"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Berhasil mendapatkan data video",
+        "content": {
+          "application/json": {
+            "schema": { "type": "object" }
           }
         }
-      }
+      },
+      "400": { "description": "URL tidak diberikan" },
+      "500": { "description": "Terjadi kesalahan server" }
     }
   }
 }
