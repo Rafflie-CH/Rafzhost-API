@@ -1,5 +1,37 @@
 import { tiktokDl } from "../../src/downloader/ttdl";
 
+/**
+ * @swagger
+ * /api/ttdl:
+ *   get:
+ *     summary: Download TikTok video/photo
+ *     parameters:
+ *       - in: query
+ *         name: url
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: TikTok URL
+ *     responses:
+ *       200:
+ *         description: JSON response with video/photo URLs
+ *   post:
+ *     summary: Download TikTok video/photo via POST
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               url:
+ *                 type: string
+ *                 description: TikTok URL
+ *     responses:
+ *       200:
+ *         description: JSON response with video/photo URLs
+ */
+
 export default async function handler(req, res) {
   const url = req.method === "GET" ? req.query.url : req.body?.url;
 
