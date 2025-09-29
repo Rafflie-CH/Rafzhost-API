@@ -1,7 +1,6 @@
 // src/pages/api/downloader/tiktok.js
 
-// Path final yang benar: Keluar dari folder 'downloader' (1), 'api' (2), dan 'pages' (3), 
-// lalu masuk ke folder 'downloader' yang sejajar dengan 'pages' di dalam 'src'.
+// Wajib menggunakan require() dan path yang dikoreksi (keluar tiga tingkat dari file ini)
 const { ttdl } = require("../../../downloader/ttdl.js"); 
 
 /**
