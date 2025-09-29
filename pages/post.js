@@ -8,20 +8,17 @@ export default function PostPage() {
     <div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
       <h1 style={{ marginBottom: "20px" }}>Rafzhost POST API</h1>
 
-      {/* Tombol balik ke Docs */}
       <div style={{ marginBottom: "20px" }}>
         <Link href="/docs">
           <button className="animated">Go to Docs</button>
         </Link>
       </div>
 
-      {/* Theme Switcher */}
       <div style={{ marginBottom: "30px", border: "1px solid #ccc", padding: "15px", borderRadius: "8px" }}>
         <h2 style={{ marginBottom: "10px" }}>Customize Theme</h2>
         <ThemeSwitcher />
       </div>
 
-      {/* Skeleton loader contoh */}
       <SkeletonLoader />
 
       <footer style={{ marginTop: "40px", textAlign: "center", color: "var(--text-color)" }}>
