@@ -1,36 +1,27 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
 import ThemeSwitcher from "../src/components/ThemeSwitcher";
-import SkeletonLoader from "../src/components/SkeletonLoader";
 import Link from "next/link";
 
 export default function DocsPage() {
-  const swaggerRef = useRef(null);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  useEffect(() => { window.scrollTo(0, 0); }, []);
 
   return (
-    <div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
-      <h1>Rafzhost API Documentation</h1>
+    <div style={{ padding:"20px", maxWidth:"1200px", margin:"0 auto" }}>
+      <h1>Rafzhost API Docs</h1>
       <Link href="/post">
-        <button style={{ marginBottom: "20px" }}>Go to POST API Page</button>
+        <button style={{ marginBottom:"20px" }}>Go to POST API Page</button>
       </Link>
 
-      <div style={{ marginBottom: "30px", border: "1px solid #ccc", padding: "15px", borderRadius: "8px" }}>
+      <div style={{ marginBottom:"30px", border:"1px solid #ccc", padding:"15px", borderRadius:"8px" }}>
         <h2>Customize Theme</h2>
         <ThemeSwitcher />
       </div>
 
-      <div ref={swaggerRef}>
-        <SwaggerUI url="/api/swagger" docExpansion="none" deepLinking={true} />
-      </div>
+      <SwaggerUI url="/api/swagger" docExpansion="none" deepLinking={true} />
 
-      <SkeletonLoader />
-
-      <footer style={{ marginTop: "40px", textAlign: "center" }}>
+      <footer style={{ marginTop:"40px", textAlign:"center" }}>
         <p>Rafzhost API &copy; {new Date().getFullYear()}</p>
       </footer>
     </div>
