@@ -1,4 +1,8 @@
-const { ttdl } = require("../../../src/downloader/ttdl.js");
+// src/pages/api/downloader/tiktok.js
+
+// Path yang dikoreksi: keluar dari 'downloader', keluar dari 'api', lalu masuk ke 'downloader'
+// (Dari src/pages/api/downloader/ ke src/downloader/ttdl.js)
+const { ttdl } = require("../../downloader/ttdl.js"); 
 
 /**
  * @swagger
