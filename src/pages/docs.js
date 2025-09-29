@@ -4,8 +4,8 @@ import "swagger-ui-react/swagger-ui.css";
 
 export default function ApiDocs() {
   const [theme, setTheme] = useState("light");
+  const [customColor, setCustomColor] = useState("#4cafef");
 
-  // inject CSS sesuai tema
   useEffect(() => {
     let style = document.getElementById("swagger-theme");
     if (!style) {
@@ -16,34 +16,41 @@ export default function ApiDocs() {
 
     if (theme === "dark") {
       style.innerHTML = `
-        body { background: #121212 !important; color: #fff !important; }
-        .swagger-ui .topbar { background: #1f1f1f !important; }
-        .swagger-ui .opblock { background: #1e1e1e !important; border-color: #333 !important; }
-        .swagger-ui .response-col_status { color: #90caf9 !important; }
-        .swagger-ui { filter: invert(0.92) hue-rotate(180deg); }
+        body { background: #000 !important; color: #eee !important; }
+        .swagger-ui .topbar { background: #111 !important; }
+        .swagger-ui .opblock { background: #111 !important; border-color: #333 !important; }
+        .swagger-ui .response-col_status { color: #66ccff !important; }
+        .swagger-ui { filter: invert(0.95) hue-rotate(180deg); }
         .swagger-ui img { filter: invert(1) hue-rotate(180deg); }
       `;
     } else if (theme === "custom") {
       style.innerHTML = `
-        body { background: #fef6e4 !important; color: #001858 !important; }
-        .swagger-ui .topbar { background: #f582ae !important; }
-        .swagger-ui .opblock { background: #f3d2c1 !important; border-color: #8bd3dd !important; }
-        .swagger-ui .response-col_status { color: #f582ae !important; }
+        body { background: #fff !important; color: #222 !important; }
+        .swagger-ui .topbar { background: ${customColor} !important; }
+        .swagger-ui .opblock { border-color: ${customColor} !important; }
+        .swagger-ui .response-col_status { color: ${customColor} !important; }
       `;
     } else {
-      style.innerHTML = ``; // reset → pakai bawaan swagger (light)
+      style.innerHTML = ``; // reset ke swagger bawaan
     }
-  }, [theme]);
+  }, [theme, customColor]);
 
   return (
     <div>
-      <div style={{ padding: "10px", textAlign: "right" }}>
-        <label style={{ marginRight: "10px" }}>Tema: </label>
+      <div style={{ padding: "10px", display: "flex", gap: "10px", alignItems: "center" }}>
+        <label>Tema:</label>
         <select value={theme} onChange={(e) => setTheme(e.target.value)}>
           <option value="light">🌞 Terang</option>
-          <option value="dark">🌙 Gelap</option>
+          <option value="dark">🌙 Gelap Pekat</option>
           <option value="custom">🎨 Custom</option>
         </select>
+        {theme === "custom" && (
+          <input
+            type="color"
+            value={customColor}
+            onChange={(e) => setCustomColor(e.target.value)}
+          />
+        )}
       </div>
       <SwaggerUI url="/swagger.json" />
     </div>
