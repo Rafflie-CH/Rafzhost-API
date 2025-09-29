@@ -1,11 +1,9 @@
-// src/components/ThemeSwitcher.js
 import { useState, useEffect } from "react";
 
 const defaultThemes = {
   light: { "--bg-color": "#ffffff", "--text-color": "#111827", "--primary-color": "#4f46e5" },
   dark: { "--bg-color": "#111827", "--text-color": "#ffffff", "--primary-color": "#4f46e5" },
 };
-
 const paletteColors = ["#4f46e5", "#10b981", "#3b82f6", "#ef4444", "#f59e0b", "#8b5cf6"];
 
 export default function ThemeSwitcher() {
@@ -16,7 +14,6 @@ export default function ThemeSwitcher() {
   useEffect(() => {
     const storedTheme = localStorage.getItem("rafzhost-theme");
     const storedColor = localStorage.getItem("rafzhost-custom-color");
-
     if (storedTheme) setTheme(storedTheme);
     if (storedColor) setCustomColor(storedColor);
   }, []);
@@ -40,55 +37,22 @@ export default function ThemeSwitcher() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-      {/* Theme Buttons */}
       <div style={{ display: "flex", gap: "10px" }}>
         {["light", "dark", "custom"].map((t) => (
-          <button
-            key={t}
-            onClick={() => setTheme(t)}
-            style={{
-              padding: "8px 12px",
-              borderRadius: "6px",
-              border: theme === t ? "2px solid #000" : "1px solid #ccc",
-              cursor: "pointer",
-            }}
-          >
-            {t.charAt(0).toUpperCase() + t.slice(1)}
+          <button key={t} onClick={() => setTheme(t)} style={{ padding: "8px 12px", borderRadius: "6px", border: theme===t?"2px solid #000":"1px solid #ccc", cursor:"pointer" }}>
+            {t.charAt(0).toUpperCase()+t.slice(1)}
           </button>
         ))}
       </div>
 
-      {/* Custom color palette */}
       {theme === "custom" && (
         <div style={{ display: "flex", gap: "10px", marginTop: "5px" }}>
           {paletteColors.map((c) => (
-            <div
-              key={c}
-              onClick={() => setCustomColor(c)}
-              onMouseEnter={() => setPreviewColor(c)}
-              onMouseLeave={() => setPreviewColor(customColor)}
-              style={{
-                width: "30px",
-                height: "30px",
-                borderRadius: "6px",
-                cursor: "pointer",
-                border: customColor === c ? "2px solid #000" : "1px solid #ccc",
-                backgroundColor: c,
-                transition: "transform 0.3s",
-              }}
+            <div key={c} onClick={() => setCustomColor(c)} onMouseEnter={() => setPreviewColor(c)} onMouseLeave={() => setPreviewColor(customColor)}
+              style={{ width:"30px", height:"30px", borderRadius:"6px", cursor:"pointer", border: customColor===c?"2px solid #000":"1px solid #ccc", backgroundColor:c, transition:"transform 0.3s" }}
             />
           ))}
-          <button
-            onClick={() => applyTheme("custom", previewColor)}
-            style={{
-              padding: "8px 12px",
-              borderRadius: "6px",
-              border: "1px solid #ccc",
-              cursor: "pointer",
-            }}
-          >
-            Apply Preview
-          </button>
+          <button onClick={() => applyTheme("custom", previewColor)} style={{ padding:"8px 12px", borderRadius:"6px", border:"1px solid #ccc", cursor:"pointer" }}>Apply Preview</button>
         </div>
       )}
     </div>
