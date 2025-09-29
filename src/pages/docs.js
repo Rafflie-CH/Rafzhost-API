@@ -19,7 +19,7 @@ export function getServerSideProps() {
   // Wajib menggunakan require()
   const { generateApi } = require('next-swagger-doc');
 
-  // Karena Next.js menggunakan src/, kita bisa mencoba path konvensional
+  // Menentukan path absolut paling stabil di Vercel
   const apiDirectory = path.join(process.cwd(), 'src', 'pages', 'api');
 
   const swagger = generateApi({
@@ -37,10 +37,9 @@ export function getServerSideProps() {
       ],
     },
     
-    // MENGGUNAKAN PATH ABSOLUT YANG SEBELUMNYA KITA COBA
-    // Ini adalah path yang paling andal:
+    // Menggunakan path absolut
     apiFolder: apiDirectory, 
-    // Files menggunakan glob normal yang dipindai dari root:
+    // Menggunakan glob scanner normal dari root Vercel:
     files: [
         'src/pages/api/**/*.js', 
     ],
