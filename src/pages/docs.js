@@ -2,7 +2,6 @@
 
 import dynamic from 'next/dynamic';
 import 'swagger-ui-react/swagger-ui.css'; 
-// Hapus: const path = require('path');
 
 const SwaggerUI = dynamic(() => import('swagger-ui-react'), { ssr: false });
 
@@ -33,12 +32,11 @@ export function getServerSideProps() {
       ],
     },
     
-    // 💥 PERBAIKAN KRITIS: HAPUS apiFolder untuk menghilangkan konflik path
-    // apiFolder: apiDirectory, 
+    // Hapus apiFolder
     
-    // Gunakan glob pattern yang sudah benar (relatif terhadap root Vercel)
+    // 💥 KOREKSI GLOB: Hapus 'src/' dari awal path (Ini adalah solusi terakhir)
     files: [
-        'src/pages/api/**/*.js', 
+        'pages/api/**/*.js', 
     ],
   });
 
