@@ -1,6 +1,5 @@
 // src/pages/docs.js
 
-// Wajib mengimpor modul path Node.js
 const path = require('path');
 import dynamic from 'next/dynamic';
 import 'swagger-ui-react/swagger-ui.css'; 
@@ -17,11 +16,10 @@ export default function ApiDoc({ swagger }) {
 
 export function getServerSideProps() {
     
-  // Wajib menggunakan require() untuk stabilitas
+  // Wajib menggunakan require()
   const { generateApi } = require('next-swagger-doc');
 
-  // 💥 PERBAIKAN ABSOLUT PATH: Solusi paling stabil untuk Vercel Error 500
-  // process.cwd() adalah root proyek Vercel, lalu kita tambahkan path relatif ke API Routes.
+  // Karena Next.js menggunakan src/, kita bisa mencoba path konvensional
   const apiDirectory = path.join(process.cwd(), 'src', 'pages', 'api');
 
   const swagger = generateApi({
@@ -39,9 +37,10 @@ export function getServerSideProps() {
       ],
     },
     
-    // MENGGUNAKAN PATH ABSOLUT yang dijamin dikenali oleh runtime Vercel
+    // MENGGUNAKAN PATH ABSOLUT YANG SEBELUMNYA KITA COBA
+    // Ini adalah path yang paling andal:
     apiFolder: apiDirectory, 
-    // Menggunakan glob scanner normal untuk mencari file JSDoc
+    // Files menggunakan glob normal yang dipindai dari root:
     files: [
         'src/pages/api/**/*.js', 
     ],
