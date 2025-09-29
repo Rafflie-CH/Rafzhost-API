@@ -1,7 +1,7 @@
 import axios from "axios";
 
 /**
- * TikTok Downloader (versi siputzx, disesuaikan)
+ * TikTok Downloader (versi siputzx → disesuaikan untuk Rafzhost)
  * @param {string} url - Link TikTok
  */
 export async function ttdl(url) {
@@ -9,9 +9,8 @@ export async function ttdl(url) {
 
   try {
     const { data } = await axios.get(
-      `https://www.tikwm.com/api/`, {
-        params: { url }
-      }
+      "https://www.tikwm.com/api/",
+      { params: { url } }
     );
 
     if (!data || !data.data) {
@@ -24,7 +23,7 @@ export async function ttdl(url) {
       result: {
         title: data.data.title,
         cover: data.data.cover,
-        play: data.data.play,   // video tanpa watermark
+        play: data.data.play,     // video tanpa watermark
         wmplay: data.data.wmplay, // video dengan watermark
         music: data.data.music
       }
