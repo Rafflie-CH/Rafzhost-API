@@ -32,7 +32,7 @@ export default function DocsPage({ spec }) {
 }
 
 export async function getStaticProps() {
-  const swaggerSpec = swaggerJSDoc({
+  let swaggerSpec = swaggerJSDoc({
     definition: {
       openapi: "3.0.0",
       info: {
@@ -43,6 +43,18 @@ export async function getStaticProps() {
     },
     apis: ["./pages/api/**/*.js"],
   });
+
+  // Filter hanya GET endpoints
+  const paths = {};
+  Object.keys(swaggerSpec.paths).forEach(path => {
+    const methods = Object.keys(swaggerSpec.paths[path])
+      .filter(m => m.toLowerCase() === "get"); // hanya GET
+    if (methods.length) {
+      paths[path] = {};
+      methods.forEach(m => (paths[path][m] = swaggerSpec.paths[path][m]));
+    }
+  });
+  swaggerSpec.paths = paths;
 
   return { props: { spec: swaggerSpec } };
 }
