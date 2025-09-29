@@ -1,4 +1,3 @@
-// pages/api/swagger.js
 import { getSwaggerSpec } from "next-swagger-doc";
 
 export default async function handler(req, res) {
@@ -7,11 +6,10 @@ export default async function handler(req, res) {
       title: "Rafzhost API",
       version: "1.0.0",
       description: "API documentation for Rafzhost",
-      apiFolder: "./pages/api", // semua endpoint di sini termasuk ttdl.js
+      apiFolder: "./pages/api",
       basePath: "/api",
       schemes: ["https"],
     });
-
     res.status(200).json(swaggerSpec);
   } catch (error) {
     console.error("Swagger generation error:", error);
