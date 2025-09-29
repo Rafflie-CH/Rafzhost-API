@@ -1,5 +1,6 @@
 // src/pages/docs.js
 
+// [1] Wajib: Menggunakan import dynamic untuk Client-Side Rendering
 import dynamic from 'next/dynamic';
 import 'swagger-ui-react/swagger-ui.css'; 
 
@@ -13,9 +14,10 @@ export default function ApiDoc({ swagger }) {
   );
 }
 
+// [2] Wajib: Menggunakan require() di dalam fungsi untuk stabilitas serverless
 export function getServerSideProps() {
     
-  // Menggunakan require() SINKRON untuk stabilitas Vercel
+  // Wajib menggunakan require() untuk menghindari TypeError di runtime Vercel
   const { generateApi } = require('next-swagger-doc');
 
   const swagger = generateApi({
@@ -33,8 +35,8 @@ export function getServerSideProps() {
       ],
     },
     
-    // Path scanner dari root Next.js:
-    apiFolder: 'src/pages/api', // Diperlukan path lengkap setelah migrasi ke /src
+    // Path Scanner: Harus menyertakan 'src/' di awal setelah migrasi
+    apiFolder: 'src/pages/api', 
     files: [
         'src/pages/api/**/*.js', 
     ],
