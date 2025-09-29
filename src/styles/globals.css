@@ -1,94 +1,105 @@
-/* RESET */
+/* Default Reset */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Animasi */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+html, body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  height: 100%;
+  width: 100%;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-@keyframes shimmer {
-  0% { background-position: -200px 0; }
-  100% { background-position: 200px 0; }
+/* Tema Terang (default) */
+[data-theme="light"] {
+  --bg: #ffffff;
+  --text: #111111;
+  --card: #f9f9f9;
+  --accent: #007bff;
 }
 
-/* Base body */
-body {
-  font-family: system-ui, sans-serif;
-  transition: background 0.3s, color 0.3s;
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-/* Mode Light */
-:root {
-  --bg-color: #ffffff;
-  --text-color: #1a1a1a;
-  --accent-color: #2563eb;
-  --card-bg: #f9f9f9;
-}
-
-/* Mode Dark */
+/* Tema Gelap */
 [data-theme="dark"] {
-  --bg-color: #0d1117;
-  --text-color: #e6edf3;
-  --accent-color: #3b82f6;
-  --card-bg: #161b22;
+  --bg: #0d0d0d;
+  --text: #f1f1f1;
+  --card: #1a1a1a;
+  --accent: #4da6ff;
 }
 
-/* Mode Custom */
+/* Tema Custom (diubah via JS) */
 [data-theme="custom"] {
-  --bg-color: var(--custom-bg, #20232a);
-  --text-color: var(--custom-text, #61dafb);
-  --accent-color: var(--custom-accent, #ff9800);
-  --card-bg: var(--custom-card, #282c34);
+  --bg: var(--custom-bg, #121212);
+  --text: var(--custom-text, #f1f1f1);
+  --card: var(--custom-card, #1e1e1e);
+  --accent: var(--custom-accent, #ff9800);
 }
 
-/* Terapkan Variabel */
+/* Aplikasikan variabel */
 body {
-  background: var(--bg-color);
-  color: var(--text-color);
+  background: var(--bg);
+  color: var(--text);
 }
 
-/* Swagger UI Styling */
-.swagger-ui .info,
-.swagger-ui .scheme-container,
+a {
+  color: var(--accent);
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  opacity: 0.8;
+}
+
+/* Swagger UI override biar sesuai tema */
+.swagger-ui {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+.swagger-ui .topbar {
+  background: var(--card) !important;
+  border-bottom: 2px solid var(--accent);
+}
+
+.swagger-ui .info, 
 .swagger-ui .opblock,
-.swagger-ui .model-container {
-  background: var(--card-bg) !important;
-  color: var(--text-color) !important;
-  border-radius: 10px;
-  border: 1px solid var(--accent-color);
-  transition: background 0.3s, color 0.3s, border 0.3s;
+.swagger-ui .scheme-container {
+  background: var(--card) !important;
+  color: var(--text) !important;
+  border-radius: 8px;
+  padding: 10px;
 }
 
-/* Tombol */
 .swagger-ui .btn {
-  background: var(--accent-color) !important;
+  background: var(--accent) !important;
+  border: none !important;
   color: #fff !important;
-  border-radius: 8px !important;
-  transition: transform 0.2s, background 0.3s;
-}
-.swagger-ui .btn:hover {
-  transform: scale(1.05);
-  filter: brightness(1.1);
+  transition: 0.3s ease;
 }
 
-/* Loading shimmer */
+.swagger-ui .btn:hover {
+  opacity: 0.9;
+}
+
+/* Loading bar */
 .loading-bar {
   width: 100%;
   height: 4px;
-  background: linear-gradient(
-    90deg,
-    rgba(255,255,255,0),
-    var(--accent-color),
-    rgba(255,255,255,0)
-  );
-  background-size: 200px 100%;
-  animation: shimmer 1.2s infinite;
+  background: var(--accent);
+  animation: loadingAnim 1.2s linear infinite;
+}
+
+@keyframes loadingAnim {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(0); }
+  100% { transform: translateX(100%); }
+}
+
+/* FadeIn animasi */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* Responsif */
@@ -97,6 +108,6 @@ body {
     font-size: 14px;
   }
   .swagger-ui .info {
-    padding: 10px;
+    text-align: center;
   }
 }
