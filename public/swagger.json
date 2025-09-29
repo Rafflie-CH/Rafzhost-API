@@ -1,27 +1,48 @@
-"/api/downloader/tiktok": {
-  "get": {
-    "summary": "Download video TikTok",
-    "description": "Endpoint untuk download video TikTok tanpa watermark (pakai ttdl dari siputzx).",
-    "parameters": [
-      {
-        "name": "url",
-        "in": "query",
-        "required": true,
-        "schema": { "type": "string" },
-        "description": "URL video TikTok"
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Rafzhost API",
+    "version": "1.0.0",
+    "description": "Dokumentasi API Rafzhost menggunakan Swagger UI"
+  },
+  "servers": [
+    {
+      "url": "https://{your-vercel-project}.vercel.app/api",
+      "description": "Server default Vercel",
+      "variables": {
+        "your-vercel-project": {
+          "default": "rafzhost-api"
+        }
       }
-    ],
-    "responses": {
-      "200": {
-        "description": "Berhasil mendapatkan data video",
-        "content": {
-          "application/json": {
-            "schema": { "type": "object" }
+    }
+  ],
+  "paths": {
+    "/downloader/tiktok": {
+      "get": {
+        "tags": ["Downloader"],
+        "summary": "Mendownload video TikTok tanpa watermark",
+        "description": "Endpoint ini mengambil URL video TikTok, memprosesnya, dan mengembalikan link download video tanpa watermark.",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "url",
+            "schema": { "type": "string" },
+            "required": true,
+            "description": "URL lengkap video TikTok yang ingin didownload"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Respon sukses dengan data video"
+          },
+          "400": {
+            "description": "Parameter url tidak ada"
+          },
+          "500": {
+            "description": "Error server internal"
           }
         }
-      },
-      "400": { "description": "URL tidak diberikan" },
-      "500": { "description": "Terjadi kesalahan server" }
+      }
     }
   }
 }
