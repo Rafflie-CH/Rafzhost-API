@@ -1,13 +1,37 @@
 import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
 import swaggerJSDoc from "swagger-jsdoc";
+import Link from "next/link";
 
 export default function DocsPage({ spec }) {
-  return <SwaggerUI spec={spec} />;
+  return (
+    <div>
+      <div style={{ marginBottom: 20, textAlign: "center" }}>
+        <Link href="/post">
+          <button
+            style={{
+              padding: "10px 20px",
+              borderRadius: "8px",
+              background: "#4f46e5",
+              color: "#fff",
+              border: "none",
+              cursor: "pointer",
+              fontWeight: "bold",
+              transition: "all 0.3s",
+            }}
+            onMouseOver={e => e.currentTarget.style.background = "#3730a3"}
+            onMouseOut={e => e.currentTarget.style.background = "#4f46e5"}
+          >
+            Go to Post
+          </button>
+        </Link>
+      </div>
+      <SwaggerUI spec={spec} />
+    </div>
+  );
 }
 
 export async function getStaticProps() {
-  // Generate Swagger spec dari komentar JSDoc di pages/api
   const swaggerSpec = swaggerJSDoc({
     definition: {
       openapi: "3.0.0",
@@ -17,7 +41,7 @@ export async function getStaticProps() {
         description: "API Documentation Rafzhost",
       },
     },
-    apis: ["./pages/api/**/*.js"], // semua endpoint API
+    apis: ["./pages/api/**/*.js"],
   });
 
   return { props: { spec: swaggerSpec } };
