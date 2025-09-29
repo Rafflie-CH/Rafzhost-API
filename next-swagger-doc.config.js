@@ -7,5 +7,5 @@ module.exports = {
       description: "API Documentation Rafzhost",
     },
   },
-  apis: ["./pages/api/**/*.js"], // semua endpoint di pages/api
+  apis: ["./pages/api/**/*.js"], // path ke semua API endpoints
 };
