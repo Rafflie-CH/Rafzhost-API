@@ -3,13 +3,13 @@ import { useEffect, useRef } from "react";
 import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
 import ThemeSwitcher from "../src/components/ThemeSwitcher";
+import SkeletonLoader from "../src/components/SkeletonLoader";
 import Link from "next/link";
 
 export default function DocsPage() {
   const swaggerRef = useRef(null);
 
   useEffect(() => {
-    // Optional: scroll to top on load
     window.scrollTo(0, 0);
   }, []);
 
@@ -37,7 +37,9 @@ export default function DocsPage() {
         <SwaggerUI url="/api/swagger.json" docExpansion="none" deepLinking={true} />
       </div>
 
-      {/* Footer */}
+      {/* Skeleton loader contoh */}
+      <SkeletonLoader />
+
       <footer style={{ marginTop: "40px", textAlign: "center", color: "var(--text-color)" }}>
         <p>Rafzhost API &copy; {new Date().getFullYear()}</p>
       </footer>
