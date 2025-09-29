@@ -7,7 +7,7 @@
   },
   "servers": [
     {
-      "url": "https://{your-vercel-project}.vercel.app/api",
+      "url": "https://api.rafzhost.xyz/api",
       "description": "Server default Vercel",
       "variables": {
         "your-vercel-project": {
