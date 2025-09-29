@@ -1,27 +1,24 @@
-import SwaggerUI from "swagger-ui-react";
+// src/pages/docs.js
+import dynamic from "next/dynamic";
 import "swagger-ui-react/swagger-ui.css";
 import { createSwaggerSpec } from "next-swagger-doc";
 
-export default function ApiDoc({ spec }) {
-  return <SwaggerUI spec={spec} />;
-}
+const SwaggerUI = dynamic(import("swagger-ui-react"), { ssr: false });
 
 export async function getStaticProps() {
   const spec = createSwaggerSpec({
-    definition: {
-      openapi: "3.0.0",
-      info: {
-        title: "Rafzhost API",
-        version: "1.0.0",
-        description: "Dokumentasi Swagger untuk Rafzhost API"
-      }
-    },
-    apiFolder: "src/pages/api"
+    title: "Rafzhost API",
+    version: "1.0.0",
+    apiFolder: "src/pages/api", // folder endpoint Next.js API kamu
   });
 
   return {
     props: {
-      spec
-    }
+      spec,
+    },
   };
+}
+
+export default function ApiDocs({ spec }) {
+  return <SwaggerUI spec={spec} />;
 }
