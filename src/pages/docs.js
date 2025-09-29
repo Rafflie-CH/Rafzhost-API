@@ -1,48 +1,27 @@
-// src/pages/docs.js
+import SwaggerUI from "swagger-ui-react";
+import "swagger-ui-react/swagger-ui.css";
+import { createSwaggerSpec } from "next-swagger-doc";
 
-import dynamic from 'next/dynamic';
-import 'swagger-ui-react/swagger-ui.css'; 
-
-const SwaggerUI = dynamic(() => import('swagger-ui-react'), { ssr: false });
-
-export default function ApiDoc({ swagger }) {
-  return (
-    <div style={{ padding: '20px' }}>
-      <SwaggerUI spec={swagger} />
-    </div>
-  );
+export default function ApiDoc({ spec }) {
+  return <SwaggerUI spec={spec} />;
 }
 
-export function getServerSideProps() {
-    
-  const { generateApi } = require('next-swagger-doc');
-
-  const swagger = generateApi({
+export async function getStaticProps() {
+  const spec = createSwaggerSpec({
     definition: {
-      openapi: '3.0.0',
+      openapi: "3.0.0",
       info: {
-        title: 'Rafzhost API Documentation',
-        version: '1.0.0',
-        description: 'Dokumentasi REST API untuk Downloader dan Tools.',
-      },
-      servers: [
-        {
-          url: '/api',
-        },
-      ],
+        title: "Rafzhost API",
+        version: "1.0.0",
+        description: "Dokumentasi Swagger untuk Rafzhost API"
+      }
     },
-    
-    // Hapus apiFolder
-    
-    // 💥 KOREKSI GLOB: Hapus 'src/' dari awal path (Ini adalah solusi terakhir)
-    files: [
-        'pages/api/**/*.js', 
-    ],
+    apiFolder: "src/pages/api"
   });
 
   return {
     props: {
-      swagger,
-    },
+      spec
+    }
   };
 }
