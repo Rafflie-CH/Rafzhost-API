@@ -1,10 +1,14 @@
-export default function SkeletonLoader({ count = 3, height = "20px", width = "100%", style = {} }) {
-  const skeletons = Array.from({ length: count });
+export default function SkeletonLoader({ width = "100%", height = "20px", style = {} }) {
   return (
-    <div style={{ display:"flex", flexDirection:"column", gap:"10px", ...style }}>
-      {skeletons.map((_,i) => (
-        <div key={i} className="skeleton" style={{ height, width, borderRadius:"6px" }}/>
-      ))}
-    </div>
+    <div
+      className="skeleton"
+      style={{
+        width,
+        height,
+        borderRadius: "6px",
+        margin: "6px 0",
+        ...style,
+      }}
+    />
   );
 }
