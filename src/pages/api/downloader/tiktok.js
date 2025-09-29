@@ -1,5 +1,3 @@
-// src/pages/api/downloader/tiktok.js
-
 import { ttdl } from "../../../downloader/ttdl.js";
 
 /**
