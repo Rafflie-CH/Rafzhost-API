@@ -15,7 +15,7 @@ export default function PostPage() {
         <ThemeSwitcher />
       </div>
 
-      {/* Tambahkan form atau info POST API di sini */}
+      {/* Form atau info POST API bisa ditambahkan di sini */}
 
       <footer style={{ marginTop: "40px", textAlign: "center" }}>
         <p>Rafzhost API &copy; {new Date().getFullYear()}</p>
