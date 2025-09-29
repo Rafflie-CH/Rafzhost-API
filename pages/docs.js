@@ -13,13 +13,10 @@ export default function ApiDoc({ swagger }) {
   );
 }
 
-// 💥 PERBAIKAN KRITIS: Menggunakan require() SINKRON untuk menghindari TypeError Vercel
 export function getServerSideProps() {
     
-  // Gunakan require langsung di sini (bukan await import)
   const { generateApi } = require('next-swagger-doc');
 
-  // Panggil generateApi secara sinkron
   const swagger = generateApi({
     definition: {
       openapi: '3.0.0',
@@ -35,7 +32,6 @@ export function getServerSideProps() {
       ],
     },
     
-    // Path Scanner yang sudah kita sepakati (hanya pages/api)
     apiFolder: 'pages/api', 
     files: [
         'pages/api/**/*.js', 
