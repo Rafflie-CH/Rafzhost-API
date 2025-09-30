@@ -6,7 +6,10 @@
     "description": "Dokumentasi API Rafzhost menggunakan Swagger UI"
   },
   "servers": [
-    { "url": "https://rafzhost-api.vercel.app/api", "description": "Server default Vercel" }
+    {
+      "url": "https://rafzhost-api.vercel.app/api",
+      "description": "Server default Vercel"
+    }
   ],
   "paths": {
     "/ttdl": {
