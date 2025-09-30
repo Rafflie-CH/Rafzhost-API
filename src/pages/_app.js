@@ -6,6 +6,7 @@ export default function MyApp({ Component, pageProps }) {
 
   useEffect(() => {
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+
     const applyTheme = (t) => {
       let value = t;
       if (t === "system") value = prefersDark.matches ? "dark" : "light";
@@ -20,5 +21,5 @@ export default function MyApp({ Component, pageProps }) {
     prefersDark.addEventListener("change", () => applyTheme(theme));
   }, [theme]);
 
-  return <Component {...pageProps} theme={theme} setTheme={setTheme} {...pageProps} />;
+  return <Component {...pageProps} theme={theme} setTheme={setTheme} />;
 }
