@@ -25,7 +25,7 @@ export default function DocsPage() {
         <SwaggerUI url="/swagger.json" />
       </div>
 
-      <footer className="mt-10 text-center text-sm text-gray-500 dark:text-gray-400">
+      <footer className="text-center text-sm mt-8 opacity-70">
         Rafzhost API © 2025
       </footer>
     </div>
