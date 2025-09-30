@@ -5,25 +5,19 @@ export default function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
+  // Biar gak error pas SSR
   useEffect(() => setMounted(true), []);
-
-  if (!mounted) return null; // biar aman dari hydration error
+  if (!mounted) return null;
 
   return (
-    <div className="flex items-center gap-2">
-      <label htmlFor="theme" className="text-sm font-medium">
-        Theme
-      </label>
-      <select
-        id="theme"
-        value={theme}
-        onChange={(e) => setTheme(e.target.value)}
-        className="p-2 rounded border bg-white dark:bg-gray-800 dark:text-white"
-      >
-        <option value="system">System</option>
-        <option value="light">Light</option>
-        <option value="dark">Dark</option>
-      </select>
-    </div>
+    <select
+      value={theme}
+      onChange={(e) => setTheme(e.target.value)}
+      className="border rounded p-2 bg-white dark:bg-gray-800 text-black dark:text-white"
+    >
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="system">System</option>
+    </select>
   );
 }
