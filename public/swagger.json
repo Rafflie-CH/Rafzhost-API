@@ -12,19 +12,19 @@
     "/ttdl": {
       "get": {
         "tags": ["Downloader"],
-        "summary": "Download TikTok video tanpa watermark",
+        "summary": "Download TikTok video/photo (TikWM)",
         "parameters": [
           {
             "in": "query",
             "name": "url",
             "schema": { "type": "string" },
             "required": true,
-            "description": "URL video TikTok"
+            "description": "URL TikTok"
           }
         ],
         "responses": {
           "200": { "description": "Berhasil" },
-          "400": { "description": "Parameter URL hilang" },
+          "400": { "description": "URL tidak ada atau kosong" },
           "500": { "description": "Error server" }
         }
       }
