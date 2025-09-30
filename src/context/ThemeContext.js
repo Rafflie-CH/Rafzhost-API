@@ -5,33 +5,21 @@ export const ThemeContext = createContext();
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState("system");
 
-  // apply theme ke <html>
-  const applyTheme = (mode) => {
-    if (mode === "system") {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
-      document.documentElement.setAttribute(
-        "data-theme",
-        prefersDark.matches ? "dark" : "light"
-      );
-    } else {
-      document.documentElement.setAttribute("data-theme", mode);
-    }
-  };
-
   useEffect(() => {
-    const saved = localStorage.getItem("theme") || "system";
-    setTheme(saved);
-    applyTheme(saved);
-  }, []);
-
-  const changeTheme = (mode) => {
-    setTheme(mode);
-    localStorage.setItem("theme", mode);
-    applyTheme(mode);
-  };
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+    } else if (theme === "light") {
+      document.documentElement.classList.add("light");
+      document.documentElement.classList.remove("dark");
+    } else {
+      // System → reset (ikut preferensi OS)
+      document.documentElement.classList.remove("light", "dark");
+    }
+  }, [theme]);
 
   return (
-    <ThemeContext.Provider value={{ theme, changeTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme }}>
       {children}
     </ThemeContext.Provider>
   );
