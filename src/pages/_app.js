@@ -1,22 +1,20 @@
-import "@/styles/globals.css";
-import { useEffect } from "react";
+import "../styles/globals.css";
+import { useEffect, useState } from "react";
 
 export default function MyApp({ Component, pageProps }) {
+  const [theme, setTheme] = useState("system");
+
   useEffect(() => {
-    // Sinkron dengan tema sistem
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
-    const setTheme = () => {
-      document.documentElement.setAttribute(
-        "data-theme",
-        prefersDark.matches ? "dark" : "light"
-      );
+    const applyTheme = (t) => {
+      let active = t==="system"? (prefersDark.matches?"dark":"light") : t;
+      document.documentElement.setAttribute("data-theme", active);
     };
+    applyTheme(theme);
+    const listener = () => applyTheme(theme);
+    prefersDark.addEventListener("change", listener);
+    return () => prefersDark.removeEventListener("change", listener);
+  }, [theme]);
 
-    setTheme();
-    prefersDark.addEventListener("change", setTheme);
-
-    return () => prefersDark.removeEventListener("change", setTheme);
-  }, []);
-
-  return <Component {...pageProps} />;
+  return <Component {...pageProps} theme={theme} setTheme={setTheme} />;
 }
