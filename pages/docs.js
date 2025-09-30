@@ -11,7 +11,7 @@ export default function DocsPage() {
     <div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
       <h1>Rafzhost API Docs</h1>
 
-      {/* Tombol navigasi ke POST */}
+      {/* Navigasi ke POST */}
       <Link href="/post">
         <button style={{ marginBottom: "20px" }}>Go to POST API Page</button>
       </Link>
@@ -23,13 +23,13 @@ export default function DocsPage() {
         padding: "15px",
         borderRadius: "8px"
       }}>
-        <h2>Customize Theme</h2>
+        <h2>Theme</h2>
         <ThemeSwitcher />
       </div>
 
-      {/* Swagger UI load static JSON */}
+      {/* Swagger UI */}
       <SwaggerUI
-        url="/swagger.json"  // <-- langsung ke public/swagger.json
+        url="/swagger.json"  // langsung ke public/swagger.json
         docExpansion="none"
         deepLinking={true}
       />
