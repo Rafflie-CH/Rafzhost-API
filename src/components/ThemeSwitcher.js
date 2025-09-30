@@ -1,23 +1,18 @@
-import { useEffect, useState } from "react";
-
 export default function ThemeSwitcher({ theme, setTheme }) {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  if (!mounted) return null;
-
+  const options = ["system", "light", "dark"];
   return (
-    <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
-      {["system","light","dark"].map((t) => (
+    <div style={{ marginBottom: "20px" }}>
+      {options.map((t) => (
         <button
           key={t}
-          style={{
-            padding: "6px 12px",
-            borderRadius: "6px",
-            border: theme===t?"2px solid var(--accent-color)":"1px solid #ccc",
-            background: "var(--bg-color)",
-            color: "var(--text-color)",
-          }}
           onClick={() => setTheme(t)}
+          style={{
+            marginRight: "10px",
+            background: theme === t ? "#4f46e5" : "#e5e7eb",
+            color: theme === t ? "#fff" : "#111",
+            padding: "5px 10px",
+            borderRadius: "5px",
+          }}
         >
           {t.charAt(0).toUpperCase() + t.slice(1)}
         </button>
