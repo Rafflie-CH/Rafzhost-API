@@ -1,6 +1,4 @@
-/* GLOBAL STYLES Rafzhost API */
-
-:root[data-theme="light"] {
+:root {
   --bg-color: #ffffff;
   --text-color: #111827;
   --primary-color: #4f46e5;
@@ -13,17 +11,22 @@
   --transition-speed: 0.3s;
 }
 
-:root[data-theme="dark"] {
+[data-theme="dark"] {
   --bg-color: #1f2937;
-  --text-color: #f9fafb;
-  --primary-color: #6366f1;
-  --primary-hover: #4338ca;
+  --text-color: #f3f4f6;
+  --primary-color: #818cf8;
+  --primary-hover: #6366f1;
   --secondary-color: #34d399;
   --secondary-hover: #059669;
-  --accent-color: #60a5fa;
-  --accent-hover: #2563eb;
-  --border-radius: 8px;
-  --transition-speed: 0.3s;
+}
+
+[data-theme="light"] {
+  --bg-color: #ffffff;
+  --text-color: #111827;
+  --primary-color: #4f46e5;
+  --primary-hover: #3730a3;
+  --secondary-color: #10b981;
+  --secondary-hover: #047857;
 }
 
 html, body {
@@ -36,7 +39,6 @@ html, body {
   scroll-behavior: smooth;
 }
 
-/* Buttons */
 button {
   cursor: pointer;
   border: none;
@@ -45,45 +47,17 @@ button {
   font-weight: bold;
   transition: all var(--transition-speed);
 }
-button:hover { transform: scale(1.05); }
 
-/* Links */
-a { color: var(--primary-color); text-decoration: none; transition: all var(--transition-speed); }
-a:hover { color: var(--primary-hover); }
-
-/* Inputs */
-input, select, textarea {
-  padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  outline: none;
-  transition: all var(--transition-speed);
-}
-input:focus, select:focus, textarea:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 5px rgba(79,70,229,0.5);
+button:hover {
+  transform: scale(1.05);
 }
 
 /* Swagger UI */
 .swagger-ui {
   background-color: var(--bg-color);
   color: var(--text-color);
-  font-family: 'Inter', sans-serif;
 }
-.swagger-ui .topbar { background-color: var(--primary-color); }
-.swagger-ui .opblock.opblock-get { border-left: 3px solid var(--secondary-color); }
 
-/* Skeleton loader */
-.skeleton {
-  background: linear-gradient(-90deg,#ececec 0%,#f5f5f5 50%,#ececec 100%);
-  background-size: 200% 100%;
-  border-radius: 6px;
-  animation: shine 1.5s infinite;
-}
-@keyframes shine { 0% { background-position:200% 0 } 100% { background-position:-200% 0 } }
-
-/* Responsive */
-@media (max-width: 768px) {
-  input, select, textarea, button { width: 100%; margin-bottom: 10px; }
-  .swagger-ui { font-size: 14px; }
+.swagger-ui .topbar {
+  background-color: var(--primary-color);
 }
