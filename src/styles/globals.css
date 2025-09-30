@@ -1,6 +1,4 @@
-/* =========================
-   GLOBAL STYLES Rafzhost API
-   ========================= */
+/* GLOBAL STYLES Rafzhost API */
 
 :root[data-theme="light"] {
   --bg-color: #ffffff;
@@ -38,10 +36,7 @@ html, body {
   scroll-behavior: smooth;
 }
 
-/* Buttons, inputs, links */
-a { color: var(--primary-color); text-decoration: none; transition: all var(--transition-speed); }
-a:hover { color: var(--primary-hover); }
-
+/* Buttons */
 button {
   cursor: pointer;
   border: none;
@@ -52,6 +47,11 @@ button {
 }
 button:hover { transform: scale(1.05); }
 
+/* Links */
+a { color: var(--primary-color); text-decoration: none; transition: all var(--transition-speed); }
+a:hover { color: var(--primary-hover); }
+
+/* Inputs */
 input, select, textarea {
   padding: 10px;
   border-radius: 6px;
