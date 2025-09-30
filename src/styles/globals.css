@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* supaya transisi halus */
 html {
   scroll-behavior: smooth;
 }
@@ -11,10 +10,11 @@ body {
   @apply transition-colors duration-300;
 }
 
-/* fallback biar jelas */
+/* Warna default */
 html.light body {
   @apply bg-white text-black;
 }
+
 html.dark body {
   @apply bg-gray-900 text-white;
 }
@@ -22,7 +22,7 @@ html.dark body {
 /* Swagger UI ikut gelap */
 html.dark .swagger-ui {
   background-color: #1f2937 !important; /* bg-gray-800 */
-  color: #f9fafb !important; /* text-gray-50 */
+  color: #f9fafb !important;
 }
 html.dark .swagger-ui .opblock-summary {
   background-color: #374151 !important;
