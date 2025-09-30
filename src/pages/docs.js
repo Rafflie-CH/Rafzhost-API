@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
-import ThemeSwitcher from "@/components/ThemeSwitcher";
 import Link from "next/link";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
 
 const SwaggerUI = dynamic(() => import("swagger-ui-react"), { ssr: false });
 import "swagger-ui-react/swagger-ui.css";
@@ -10,7 +10,7 @@ export default function DocsPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-6">
       <header className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">📖 API Docs</h1>
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-center">
           <ThemeSwitcher />
           <Link
             href="/post"
