@@ -1,8 +1,16 @@
+"use client"; // kalau pakai app dir, tapi di pages router tidak wajib
 import { useContext } from "react";
 import { ThemeContext } from "@/context/ThemeContext";
 
 export default function ThemeSwitcher() {
-  const { theme, setTheme } = useContext(ThemeContext);
+  const themeCtx = useContext(ThemeContext);
+
+  if (!themeCtx) {
+    // fallback biar gak error pas prerender
+    return null;
+  }
+
+  const { theme, setTheme } = themeCtx;
 
   return (
     <div className="flex gap-2">
