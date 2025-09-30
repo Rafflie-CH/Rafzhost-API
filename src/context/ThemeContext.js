@@ -2,41 +2,25 @@ import { createContext, useState, useEffect } from "react";
 
 export const ThemeContext = createContext();
 
-export const ThemeProvider = ({ children }) => {
+export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState("system");
 
-  // Cek localStorage saat load
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-      setTheme(savedTheme);
-    }
+    const savedTheme = localStorage.getItem("theme") || "system";
+    setTheme(savedTheme);
   }, []);
 
   useEffect(() => {
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+    const root = document.documentElement;
+    const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-    const applyTheme = () => {
-      let activeTheme = theme;
-
-      if (theme === "system") {
-        activeTheme = prefersDark.matches ? "dark" : "light";
-      }
-
-      document.documentElement.classList.remove("light", "dark");
-      document.documentElement.classList.add(activeTheme);
-
-      // Simpan pilihan user
-      localStorage.setItem("theme", theme);
-    };
-
-    applyTheme();
-
-    // Jika mode system, listen perubahan OS theme
-    if (theme === "system") {
-      prefersDark.addEventListener("change", applyTheme);
-      return () => prefersDark.removeEventListener("change", applyTheme);
+    if (theme === "dark" || (theme === "system" && systemDark)) {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
     }
+
+    localStorage.setItem("theme", theme);
   }, [theme]);
 
   return (
@@ -44,4 +28,4 @@ export const ThemeProvider = ({ children }) => {
       {children}
     </ThemeContext.Provider>
   );
-};
+}
