@@ -9,14 +9,14 @@ export default function DocsPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-6">
       <header className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">📖 API Docs</h1>
+        <h1 className="text-2xl font-bold">📖 Rafzhost API Docs</h1>
         <div className="flex gap-4">
           <ThemeSwitcher />
           <Link
             href="/post"
             className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
           >
-            Go to Post
+            Go to POST API Page
           </Link>
         </div>
       </header>
@@ -24,6 +24,10 @@ export default function DocsPage() {
       <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md">
         <SwaggerUI url="/swagger.json" />
       </div>
+
+      <footer className="mt-10 text-center text-sm text-gray-500 dark:text-gray-400">
+        Rafzhost API © 2025
+      </footer>
     </div>
   );
 }
