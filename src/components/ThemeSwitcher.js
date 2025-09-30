@@ -1,27 +1,24 @@
 "use client";
 
-import { useContext } from "react";
-import { ThemeContext } from "@/context/ThemeContext";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export default function ThemeSwitcher() {
-  const themeContext = useContext(ThemeContext);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  // Aman dari error saat SSR
-  if (!themeContext) {
-    return null;
-  }
-
-  const { theme, setTheme } = themeContext;
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
 
   return (
     <select
       value={theme}
       onChange={(e) => setTheme(e.target.value)}
-      className="px-3 py-2 rounded border bg-white dark:bg-gray-800 dark:text-white"
+      className="px-3 py-2 rounded-md border bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
     >
-      <option value="system">Ikuti Sistem</option>
-      <option value="light">Terang</option>
-      <option value="dark">Gelap</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+      <option value="system">System</option>
     </select>
   );
 }
