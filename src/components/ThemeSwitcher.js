@@ -1,47 +1,31 @@
 import { useContext } from "react";
 import { ThemeContext } from "@/context/ThemeContext";
 
-export default function ThemeSwitcher() {
-  const { theme, changeTheme } = useContext(ThemeContext);
+const ThemeSwitcher = () => {
+  const { theme, setTheme } = useContext(ThemeContext);
 
   return (
-    <div style={{ marginBottom: "20px" }}>
-      <h3>Theme</h3>
+    <div className="flex gap-2 my-4">
       <button
-        onClick={() => changeTheme("system")}
-        style={{
-          background: theme === "system" ? "#4f46e5" : "#e5e7eb",
-          color: theme === "system" ? "#fff" : "#111",
-          marginRight: "10px",
-          padding: "6px 12px",
-          borderRadius: "6px",
-        }}
+        onClick={() => setTheme("system")}
+        className={`px-3 py-1 rounded ${theme === "system" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
       >
         System
       </button>
       <button
-        onClick={() => changeTheme("light")}
-        style={{
-          background: theme === "light" ? "#4f46e5" : "#e5e7eb",
-          color: theme === "light" ? "#fff" : "#111",
-          marginRight: "10px",
-          padding: "6px 12px",
-          borderRadius: "6px",
-        }}
+        onClick={() => setTheme("light")}
+        className={`px-3 py-1 rounded ${theme === "light" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
       >
         Light
       </button>
       <button
-        onClick={() => changeTheme("dark")}
-        style={{
-          background: theme === "dark" ? "#4f46e5" : "#e5e7eb",
-          color: theme === "dark" ? "#fff" : "#111",
-          padding: "6px 12px",
-          borderRadius: "6px",
-        }}
+        onClick={() => setTheme("dark")}
+        className={`px-3 py-1 rounded ${theme === "dark" ? "bg-blue-500 text-white" : "bg-gray-200"}`}
       >
         Dark
       </button>
     </div>
   );
-}
+};
+
+export default ThemeSwitcher;
