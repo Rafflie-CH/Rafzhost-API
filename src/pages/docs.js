@@ -1,69 +1,29 @@
-import swaggerUi from "swagger-ui-express";
-import YAML from "yamljs";
-import path from "path";
-import { fileURLToPath } from "url";
+import dynamic from "next/dynamic";
+import ThemeSwitcher from "@/components/ThemeSwitcher";
+import Link from "next/link";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const SwaggerUI = dynamic(() => import("swagger-ui-react"), { ssr: false });
+import "swagger-ui-react/swagger-ui.css";
 
-// Load file swagger.yaml
-const swaggerDocument = YAML.load(path.join(__dirname, "swagger.yaml"));
+export default function DocsPage() {
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-6">
+      <header className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">📖 API Docs</h1>
+        <div className="flex gap-4">
+          <ThemeSwitcher />
+          <Link
+            href="/post"
+            className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+          >
+            Go to Post
+          </Link>
+        </div>
+      </header>
 
-export default function (app) {
-  app.use(
-    "/docs",
-    swaggerUi.serve,
-    swaggerUi.setup(swaggerDocument, {
-      customCss: `
-        body { background-color: #fff; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; }
-        #themeSwitcher {
-          padding: 5px 10px;
-          margin-left: 10px;
-          border-radius: 6px;
-          font-size: 14px;
-          border: 1px solid #ccc;
-        }
-      `,
-      customJs: `
-        window.onload = function() {
-          const topbar = document.querySelector('.topbar');
-          if (topbar && !document.getElementById('themeSwitcher')) {
-            const label = document.createElement('span');
-            label.innerText = "Theme:";
-            label.style.marginRight = "5px";
-
-            const select = document.createElement('select');
-            select.id = 'themeSwitcher';
-            select.innerHTML = \`
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-              <option value="classic">Classic</option>
-            \`;
-
-            select.addEventListener('change', (e) => {
-              if (e.target.value === "dark") {
-                document.body.style.background = "#121212";
-                document.body.style.color = "#fff";
-              } else if (e.target.value === "classic") {
-                document.body.style.background = "#f5f5f5";
-                document.body.style.color = "#000";
-              } else {
-                document.body.style.background = "#fff";
-                document.body.style.color = "#000";
-              }
-            });
-
-            const container = document.createElement('div');
-            container.style.display = "flex";
-            container.style.alignItems = "center";
-            container.appendChild(label);
-            container.appendChild(select);
-
-            topbar.appendChild(container);
-          }
-        }
-      `,
-    })
+      <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md">
+        <SwaggerUI url="/swagger.json" />
+      </div>
+    </div>
   );
 }
