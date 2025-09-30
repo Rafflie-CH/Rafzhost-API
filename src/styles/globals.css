@@ -1,35 +1,8 @@
-/* Default (Light) */
-:root {
-  --bg-color: #ffffff;
-  --text-color: #111827;
-  --primary-color: #4f46e5;
-  --primary-hover: #3730a3;
-  --border-radius: 8px;
-  --transition-speed: 0.3s;
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* Dark */
-[data-theme="dark"] {
-  --bg-color: #111827;
-  --text-color: #f9fafb;
-  --primary-color: #6366f1;
-  --primary-hover: #818cf8;
-}
-
-/* Apply */
+/* Tambahan opsional */
 html, body {
-  padding: 0;
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  min-height: 100%;
-  scroll-behavior: smooth;
-  transition: background-color var(--transition-speed),
-              color var(--transition-speed);
-}
-
-button {
-  cursor: pointer;
-  transition: all var(--transition-speed);
+  @apply bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-gray-100;
 }
