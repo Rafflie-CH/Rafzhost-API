@@ -2,36 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== Tambahan supaya dark mode jalan dengan smooth ===== */
+/* supaya transisi halus */
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  @apply bg-white text-black transition-colors duration-300;
+  @apply transition-colors duration-300;
 }
 
-.dark body {
+/* fallback biar jelas */
+html.light body {
+  @apply bg-white text-black;
+}
+html.dark body {
   @apply bg-gray-900 text-white;
 }
 
-/* Styling khusus untuk Swagger UI biar ikut dark mode */
-.dark .swagger-ui {
+/* Swagger UI ikut gelap */
+html.dark .swagger-ui {
   background-color: #1f2937 !important; /* bg-gray-800 */
   color: #f9fafb !important; /* text-gray-50 */
 }
-
-.dark .swagger-ui .opblock-summary {
-  background-color: #374151 !important; /* bg-gray-700 */
+html.dark .swagger-ui .opblock-summary {
+  background-color: #374151 !important;
 }
-
-.dark .swagger-ui .btn,
-.dark .swagger-ui .opblock-control-arrow {
-  background-color: #2563eb !important; /* blue-600 */
+html.dark .swagger-ui .btn,
+html.dark .swagger-ui .opblock-control-arrow {
+  background-color: #2563eb !important;
   color: white !important;
 }
-
-.dark .swagger-ui .model-box {
-  background-color: #111827 !important; /* gray-900 */
+html.dark .swagger-ui .model-box {
+  background-color: #111827 !important;
   color: #f9fafb !important;
 }
