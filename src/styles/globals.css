@@ -1,63 +1,15 @@
 :root {
-  --bg-color: #ffffff;
-  --text-color: #111827;
-  --primary-color: #4f46e5;
-  --primary-hover: #3730a3;
-  --secondary-color: #10b981;
-  --secondary-hover: #047857;
-  --accent-color: #3b82f6;
-  --accent-hover: #1e40af;
-  --border-radius: 8px;
-  --transition-speed: 0.3s;
+  --bg-color: #fff;
+  --text-color: #000;
 }
 
 [data-theme="dark"] {
-  --bg-color: #1f2937;
-  --text-color: #f3f4f6;
-  --primary-color: #818cf8;
-  --primary-hover: #6366f1;
-  --secondary-color: #34d399;
-  --secondary-hover: #059669;
+  --bg-color: #000;
+  --text-color: #fff;
 }
 
-[data-theme="light"] {
-  --bg-color: #ffffff;
-  --text-color: #111827;
-  --primary-color: #4f46e5;
-  --primary-hover: #3730a3;
-  --secondary-color: #10b981;
-  --secondary-hover: #047857;
-}
-
-html, body {
-  padding: 0;
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background-color: var(--bg-color);
+body {
+  background: var(--bg-color);
   color: var(--text-color);
-  min-height: 100%;
-  scroll-behavior: smooth;
-}
-
-button {
-  cursor: pointer;
-  border: none;
-  border-radius: var(--border-radius);
-  padding: 10px 20px;
-  font-weight: bold;
-  transition: all var(--transition-speed);
-}
-
-button:hover {
-  transform: scale(1.05);
-}
-
-/* Swagger UI */
-.swagger-ui {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-}
-
-.swagger-ui .topbar {
-  background-color: var(--primary-color);
+  transition: background 0.3s, color 0.3s;
 }
