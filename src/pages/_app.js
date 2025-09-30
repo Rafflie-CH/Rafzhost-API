@@ -1,4 +1,4 @@
-import "../styles/globals.css";
+import "@/styles/globals.css";
 import { useEffect, useState } from "react";
 
 export default function MyApp({ Component, pageProps }) {
@@ -8,17 +8,22 @@ export default function MyApp({ Component, pageProps }) {
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
 
     const applyTheme = (t) => {
-      let value = t;
-      if (t === "system") value = prefersDark.matches ? "dark" : "light";
-      document.documentElement.setAttribute("data-theme", value);
-      localStorage.setItem("theme", t);
+      if (t === "system") {
+        document.documentElement.setAttribute(
+          "data-theme",
+          prefersDark.matches ? "dark" : "light"
+        );
+      } else {
+        document.documentElement.setAttribute("data-theme", t);
+      }
     };
 
-    const saved = localStorage.getItem("theme") || "system";
-    setTheme(saved);
-    applyTheme(saved);
+    applyTheme(theme);
 
-    prefersDark.addEventListener("change", () => applyTheme(theme));
+    const listener = () => applyTheme(theme);
+    prefersDark.addEventListener("change", listener);
+
+    return () => prefersDark.removeEventListener("change", listener);
   }, [theme]);
 
   return <Component {...pageProps} theme={theme} setTheme={setTheme} />;
