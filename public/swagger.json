@@ -6,41 +6,20 @@
     "description": "Dokumentasi API Rafzhost menggunakan Swagger UI"
   },
   "servers": [
-    {
-      "url": "https://api.rafzhost.xyz/api",
-      "description": "Server default Vercel",
-      "variables": {
-        "your-vercel-project": {
-          "default": "rafzhost-api"
-        }
-      }
-    }
+    { "url": "https://rafzhost-api.vercel.app/api", "description": "Server default Vercel" }
   ],
   "paths": {
     "/downloader/tiktok": {
       "get": {
         "tags": ["Downloader"],
-        "summary": "Mendownload video TikTok tanpa watermark",
-        "description": "Endpoint ini mengambil URL video TikTok, memprosesnya, dan mengembalikan link download video tanpa watermark.",
+        "summary": "Download TikTok video tanpa watermark",
         "parameters": [
-          {
-            "in": "query",
-            "name": "url",
-            "schema": { "type": "string" },
-            "required": true,
-            "description": "URL lengkap video TikTok yang ingin didownload"
-          }
+          { "in": "query", "name": "url", "schema": { "type": "string" }, "required": true, "description": "URL video TikTok" }
         ],
         "responses": {
-          "200": {
-            "description": "Respon sukses dengan data video"
-          },
-          "400": {
-            "description": "Parameter url tidak ada"
-          },
-          "500": {
-            "description": "Error server internal"
-          }
+          "200": { "description": "Berhasil" },
+          "400": { "description": "Parameter URL hilang" },
+          "500": { "description": "Error server" }
         }
       }
     }
