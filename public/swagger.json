@@ -9,7 +9,7 @@
     { "url": "https://rafzhost-api.vercel.app/api", "description": "Server default Vercel" }
   ],
   "paths": {
-    "/downloader/ttdl": {
+    "/ttdl": {
       "get": {
         "tags": ["Downloader"],
         "summary": "Download TikTok video tanpa watermark",
