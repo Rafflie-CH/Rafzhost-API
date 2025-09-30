@@ -1,17 +1,29 @@
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export default function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null; // biar aman dari hydration error
 
   return (
-    <select
-      value={theme}
-      onChange={(e) => setTheme(e.target.value)}
-      className="px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-    >
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-      <option value="system">System</option>
-    </select>
+    <div className="flex items-center gap-2">
+      <label htmlFor="theme" className="text-sm font-medium">
+        Theme
+      </label>
+      <select
+        id="theme"
+        value={theme}
+        onChange={(e) => setTheme(e.target.value)}
+        className="p-2 rounded border bg-white dark:bg-gray-800 dark:text-white"
+      >
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+    </div>
   );
 }
