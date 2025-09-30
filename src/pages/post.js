@@ -23,6 +23,10 @@ export default function PostPage() {
           Di sini kamu bisa menambahkan konten khusus.
         </p>
       </main>
+
+      <footer className="text-center text-sm mt-8 opacity-70">
+        Rafzhost API © 2025
+      </footer>
     </div>
   );
 }
