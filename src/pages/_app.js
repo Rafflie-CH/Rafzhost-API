@@ -1,4 +1,4 @@
-import "@/styles/globals.css";
+import "../styles/globals.css";
 import { useEffect, useState } from "react";
 
 export default function MyApp({ Component, pageProps }) {
