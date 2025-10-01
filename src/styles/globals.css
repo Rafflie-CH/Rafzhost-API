@@ -10,17 +10,15 @@ body {
   @apply transition-colors duration-300;
 }
 
-/* Light mode default */
+/* Light / Dark via class on html */
 html.light body {
   @apply bg-white text-black;
 }
-
-/* Dark mode */
 html.dark body {
   @apply bg-gray-900 text-white;
 }
 
-/* Swagger UI dark mode tweaks */
+/* Swagger UI override agar ikut dark */
 html.dark .swagger-ui {
   background-color: #1f2937 !important;
   color: #f9fafb !important;
