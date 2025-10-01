@@ -8,10 +8,7 @@ export default function PostPage() {
         <h1 className="text-2xl font-bold">✍️ Post Page</h1>
         <div className="flex gap-4">
           <ThemeSwitcher />
-          <Link
-            href="/docs"
-            className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
-          >
+          <Link href="/docs" className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600">
             Go to Docs
           </Link>
         </div>
@@ -23,10 +20,6 @@ export default function PostPage() {
           Di sini kamu bisa menambahkan konten khusus.
         </p>
       </main>
-
-      <footer className="text-center text-sm mt-8 opacity-70">
-        Rafzhost API © 2025
-      </footer>
     </div>
   );
 }
