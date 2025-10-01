@@ -22,7 +22,11 @@ export default function DocsPage() {
       </header>
 
       <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md">
-        <SwaggerUI url="/swagger.json" />
+        <SwaggerUI
+          url="/swagger.json"
+          // bisa tambahkan props customCss / customOptions jika diperlukan
+          // contoh: customOptions={{ syntaxHighlight: { theme: "obsidian" } }}
+        />
       </div>
 
       <footer className="text-center text-sm mt-8 opacity-70">
