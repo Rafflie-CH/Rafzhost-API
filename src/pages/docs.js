@@ -11,7 +11,6 @@ export default function DocsPage() {
       <header className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">📖 API Docs</h1>
         <div className="flex gap-4">
-          {/* tombol toggle tema */}
           <ThemeSwitcher />
           <Link
             href="/post"
