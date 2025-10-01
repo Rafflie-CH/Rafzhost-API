@@ -9,29 +9,18 @@ export default function DocsPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-6">
       <header className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">📖 Rafzhost API Docs</h1>
+        <h1 className="text-2xl font-bold">📖 API Docs</h1>
         <div className="flex gap-4">
           <ThemeSwitcher />
-          <Link
-            href="/post"
-            className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
-          >
-            Go to POST API Page
+          <Link href="/post" className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600">
+            Go to Post
           </Link>
         </div>
       </header>
 
       <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md">
-        <SwaggerUI
-          url="/swagger.json"
-          // bisa tambahkan props customCss / customOptions jika diperlukan
-          // contoh: customOptions={{ syntaxHighlight: { theme: "obsidian" } }}
-        />
+        <SwaggerUI url="/swagger.json" />
       </div>
-
-      <footer className="text-center text-sm mt-8 opacity-70">
-        Rafzhost API © 2025
-      </footer>
     </div>
   );
 }
