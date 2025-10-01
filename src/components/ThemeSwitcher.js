@@ -1,16 +1,8 @@
+"use client";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 
 export default function ThemeSwitcher() {
-  const { theme, setTheme, systemTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  // pastikan komponen hanya render setelah mounted (fix hydration error)
-  useEffect(() => setMounted(true), []);
-  if (!mounted) return null;
-
-  // untuk debug (cek di console browser kalau toggle tidak jalan)
-  console.log("Current theme:", theme, "System:", systemTheme);
+  const { theme, setTheme } = useTheme();
 
   return (
     <select
