@@ -11,8 +11,12 @@ export default function DocsPage() {
       <header className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">📖 API Docs</h1>
         <div className="flex gap-4">
+          {/* tombol toggle tema */}
           <ThemeSwitcher />
-          <Link href="/post" className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600">
+          <Link
+            href="/post"
+            className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
+          >
             Go to Post
           </Link>
         </div>
