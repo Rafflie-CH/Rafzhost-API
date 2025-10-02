@@ -1,4 +1,4 @@
-import ttdl from "../../../downloader/ttdl.js";
+import { tiktokDl } from "../../../downloader/ttdl.js";
 
 /**
  * @swagger
@@ -25,15 +25,15 @@ import ttdl from "../../../downloader/ttdl.js";
  */
 export default async function handler(req, res) {
   try {
-    const { url } = req.query;
-    if (!url) {
-      return res.status(400).json({ error: "URL parameter is required" });
+    const url = req.method === "GET" ? req.query?.url : req.body?.url;
+    if (!url || typeof url !== "string" || url.trim() === "") {
+      return res.status(400).json({ status: false, error: "URL parameter is required" });
     }
 
-    const result = await ttdl(url);
-    return res.status(200).json(result);
+    const result = await tiktokDl(url.trim());
+    return res.status(200).json({ status: true, source: "TikWM", result, timestamp: new Date().toISOString() });
   } catch (error) {
     console.error("TTDL Error:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ status: false, error: error?.message || "Internal server error" });
   }
 }
