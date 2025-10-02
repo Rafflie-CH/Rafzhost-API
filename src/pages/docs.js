@@ -6,7 +6,6 @@ import "swagger-ui-react/swagger-ui.css";
 export default function Docs() {
   const [theme, setTheme] = useState("light");
 
-  // ambil tema dari localStorage / system
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme") || "system";
     applyTheme(storedTheme);
@@ -19,10 +18,7 @@ export default function Docs() {
       ).matches;
       document.documentElement.classList.toggle("dark", systemPrefersDark);
     } else {
-      document.documentElement.classList.toggle(
-        "dark",
-        selectedTheme === "dark"
-      );
+      document.documentElement.classList.toggle("dark", selectedTheme === "dark");
     }
     setTheme(selectedTheme);
     localStorage.setItem("theme", selectedTheme);
@@ -42,7 +38,7 @@ export default function Docs() {
           <option value="system">System</option>
         </select>
       </div>
-      {/* SwaggerUI konsumsi dari /api/swagger */}
+      {/* ✅ arahkan ke API swagger.json */}
       <SwaggerUI url="/api/swagger" />
     </div>
   );
