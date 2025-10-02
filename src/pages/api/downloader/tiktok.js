@@ -5,19 +5,19 @@ import { tiktokDl } from "../../../downloader/ttdl.js";
  * @swagger
  * /api/downloader/tiktok:
  *   get:
+ *     summary: Download video TikTok tanpa watermark
  *     tags:
  *       - Downloader
- *     summary: Download video TikTok tanpa watermark.
  *     parameters:
  *       - in: query
  *         name: url
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: URL lengkap video TikTok yang ingin didownload.
+ *         description: URL video TikTok
  *     responses:
- *       '200':
- *         description: Sukses
+ *       200:
+ *         description: Video berhasil diambil
  */
 export default async function handler(req, res) {
   const url = req.query?.url;
