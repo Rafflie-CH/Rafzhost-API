@@ -1,0 +1,18 @@
+openapi: 3.0.0
+info:
+  title: Rafzhost API
+  version: 1.0.0
+  description: 📖 Dokumentasi resmi API Rafzhost
+servers:
+  - url: https://api.rafzhost.xyz
+  - url: http://localhost:3000
+
+paths:
+  /api/ping:
+    get:
+      summary: Cek server hidup
+      tags:
+        - Test
+      responses:
+        "200":
+          description: Pong
