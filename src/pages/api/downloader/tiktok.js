@@ -1,25 +1,25 @@
 /**
  * @swagger
- * /api/downloader/tiktok:
+ * /downloader/tiktok:
  *   get:
  *     tags:
  *       - Downloader
- *     summary: Mendownload video TikTok tanpa watermark.
- *     description: Endpoint ini mengambil URL video TikTok, memprosesnya, dan mengembalikan link download video tanpa watermark.
+ *     summary: Mendownload video TikTok tanpa watermark
+ *     description: Endpoint ini mengambil URL video TikTok dan mengembalikan link download tanpa watermark
  *     parameters:
  *       - in: query
  *         name: url
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: URL lengkap video TikTok yang ingin didownload.
+ *         description: URL lengkap video TikTok
  *     responses:
  *       200:
- *         description: Respon sukses dengan data video.
+ *         description: Sukses
  *       400:
- *         description: Parameter url tidak ada.
+ *         description: Parameter url tidak ada
  *       500:
- *         description: Error server internal.
+ *         description: Error server
  */
 
 import { tiktokDl } from "../../../downloader/ttdl";
