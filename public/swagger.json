@@ -3,42 +3,49 @@
   "info": {
     "title": "Rafzhost API",
     "version": "1.0.0",
-    "description": "Dokumentasi API Rafzhost"
+    "description": "📖 Dokumentasi resmi API Rafzhost",
+    "contact": {
+      "name": "Rafflie Aditya",
+      "url": "https://api.rafzhost.xyz"
+    }
   },
   "servers": [
-    { "url": "https://api.rafzhost.xyz", "description": "Production" },
-    { "url": "http://localhost:3000", "description": "Local" }
+    { "url": "https://api.rafzhost.xyz", "description": "Production server" },
+    { "url": "http://localhost:3000", "description": "Local server" }
   ],
   "paths": {
-    "/api/downloader/tiktok": {
-      "get": {
-        "tags": ["Downloader"],
-        "summary": "Download TikTok (no watermark)",
-        "parameters": [
-          { "in": "query", "name": "url", "required": true, "schema": { "type": "string" }, "description": "TikTok URL" }
-        ],
-        "responses": {
-          "200": { "description": "OK" },
-          "400": { "description": "Bad Request" },
-          "500": { "description": "Server Error" }
-        }
-      }
-    },
-    "/api/ttdl": {
-      "get": {
-        "tags": ["Downloader"],
-        "summary": "Download TikTok (ttdl endpoint)",
-        "parameters": [
-          { "in": "query", "name": "url", "required": true, "schema": { "type": "string" }, "description": "TikTok URL" }
-        ],
-        "responses": { "200": { "description": "OK" } }
-      }
-    },
     "/api/ping": {
       "get": {
         "tags": ["Misc"],
-        "summary": "Ping endpoint",
-        "responses": { "200": { "description": "pong" } }
+        "summary": "Cek koneksi API",
+        "responses": {
+          "200": {
+            "description": "Server merespon dengan pong"
+          }
+        }
+      }
+    },
+    "/api/downloader/tiktok": {
+      "get": {
+        "tags": ["Downloader"],
+        "summary": "Download video TikTok tanpa watermark",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "url",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "URL video TikTok"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data video berhasil diambil"
+          },
+          "400": {
+            "description": "URL parameter tidak ada"
+          }
+        }
       }
     }
   }
