@@ -1,6 +1,3 @@
-// src/pages/api/downloader/tiktok.js
-import { tiktokDl } from "../../../downloader/ttdl";
-
 /**
  * @swagger
  * /api/downloader/tiktok:
@@ -24,14 +21,19 @@ import { tiktokDl } from "../../../downloader/ttdl";
  *       500:
  *         description: Error server internal.
  */
+
+import { tiktokDl } from "../../../downloader/ttdl";
+
 export default async function handler(req, res) {
   try {
     const { url } = req.query;
+
     if (!url) {
-      return res.status(400).json({ error: "URL parameter is required" });
+      return res.status(400).json({ error: "Parameter 'url' harus disertakan" });
     }
 
     const result = await tiktokDl(url);
+
     return res.status(200).json(result);
   } catch (error) {
     console.error("TTDL Error:", error);
