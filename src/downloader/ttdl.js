@@ -47,7 +47,7 @@ async function tiktokDl(url) {
       ).data.data;
 
       if (res?.duration === 0) {
-        res.images.map((v) => data.push({ type: "photo", url: v }));
+        res.images?.map((v) => data.push({ type: "photo", url: v }));
       } else {
         data.push(
           {
@@ -71,19 +71,22 @@ async function tiktokDl(url) {
         taken_at: formatDate(res.create_time).replace("1970", ""),
         region: res.region,
         id: res.id,
-        duration: res.duration + " Seconds",
+        duration: res.duration,
+        duration_text: (res.duration || 0) + " Seconds",
         cover: "https://www.tikwm.com" + res.cover,
         size_wm: res.wm_size,
         size_nowm: res.size,
         size_nowm_hd: res.hd_size,
         data: data,
-        music_info: {
-          id: res.music_info.id,
-          title: res.music_info.title,
-          author: res.music_info.author,
-          album: res.music_info.album || null,
-          url: "https://www.tikwm.com" + (res.music || res.music_info.play),
-        },
+        music_info: res.music_info
+          ? {
+              id: res.music_info.id,
+              title: res.music_info.title,
+              author: res.music_info.author,
+              album: res.music_info.album || null,
+              url: "https://www.tikwm.com" + (res.music || res.music_info.play),
+            }
+          : null,
         stats: {
           views: formatNumber(res.play_count),
           likes: formatNumber(res.digg_count),
@@ -91,18 +94,21 @@ async function tiktokDl(url) {
           share: formatNumber(res.share_count),
           download: formatNumber(res.download_count),
         },
-        author: {
-          id: res.author.id,
-          fullname: res.author.unique_id,
-          nickname: res.author.nickname,
-          avatar: "https://www.tikwm.com" + res.author.avatar,
-        },
+        author: res.author
+          ? {
+              id: res.author.id,
+              fullname: res.author.unique_id,
+              nickname: res.author.nickname,
+              avatar: "https://www.tikwm.com" + res.author.avatar,
+            }
+          : null,
       });
     } catch (e) {
-      reject(new Error("Gagal download TikTok: " + e.message));
+      reject(new Error("Gagal download TikTok: " + (e?.message || e)));
     }
   });
 }
 
-// ✅ tambahin default export
+// export both named and default so imports in either style won't break
+export { tiktokDl };
 export default tiktokDl;
