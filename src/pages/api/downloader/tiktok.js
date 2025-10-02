@@ -1,4 +1,3 @@
-// src/pages/api/downloader/tiktok.js
 import { tiktokDl } from "../../../downloader/ttdl.js";
 
 /**
@@ -19,6 +18,17 @@ import { tiktokDl } from "../../../downloader/ttdl.js";
  *     responses:
  *       200:
  *         description: Data video berhasil diambil
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 title:
+ *                   type: string
+ *                   example: "Video TikTok Keren"
+ *                 downloadUrl:
+ *                   type: string
+ *                   example: "https://example.com/video.mp4"
  *       400:
  *         description: URL parameter tidak ada
  *       500:
