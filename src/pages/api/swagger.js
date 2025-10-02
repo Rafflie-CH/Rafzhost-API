@@ -20,7 +20,7 @@ const swaggerDefinition = {
 const options = {
   definition: swaggerDefinition,
   // Pakai path relatif supaya Vercel/Next.js bisa resolve file API dengan benar
-  apis: ['./pages/api/**/*.js'], 
+  apis: ['./src/pages/api/**/*.js'], 
 };
 
 const swaggerSpec = swaggerJSDoc(options);
