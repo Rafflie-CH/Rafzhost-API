@@ -19,17 +19,13 @@ const swaggerDefinition = {
 
 const options = {
   definition: swaggerDefinition,
-  // Pakai path relatif supaya Vercel/Next.js bisa resolve file API dengan benar
-  apis: ['./src/pages/api/**/*.js'], 
+  apis: ['./src/pages/api/**/*.js'], // path relatif, sudah benar
 };
 
 const swaggerSpec = swaggerJSDoc(options);
 
 export default function handler(req, res) {
-  // Content-Type JSON
   res.setHeader("Content-Type", "application/json");
-  // Optional: untuk akses dari domain lain
   res.setHeader("Access-Control-Allow-Origin", "*");
-  // Kirim JSON dengan indentation supaya readable
   res.status(200).send(JSON.stringify(swaggerSpec, null, 2));
 }
