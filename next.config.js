@@ -4,9 +4,9 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: "/",       // kalau buka root
-        destination: "/docs", // diarahkan ke /docs
-        permanent: false,  // bisa ubah nanti kalau sudah fix
+        source: "/",          // buka root domain
+        destination: "/docs", // arahkan ke swagger docs
+        permanent: false,
       },
     ];
   },
