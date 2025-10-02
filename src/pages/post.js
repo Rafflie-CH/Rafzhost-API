@@ -18,10 +18,7 @@ export default function PostDocs() {
       ).matches;
       document.documentElement.classList.toggle("dark", systemPrefersDark);
     } else {
-      document.documentElement.classList.toggle(
-        "dark",
-        selectedTheme === "dark"
-      );
+      document.documentElement.classList.toggle("dark", selectedTheme === "dark");
     }
     setTheme(selectedTheme);
     localStorage.setItem("theme", selectedTheme);
@@ -41,7 +38,7 @@ export default function PostDocs() {
           <option value="system">System</option>
         </select>
       </div>
-      {/* SwaggerUI konsumsi dari /api/swagger */}
+      {/* ✅ ambil swagger JSON sama kayak docs.js */}
       <SwaggerUI url="/api/swagger" />
     </div>
   );
