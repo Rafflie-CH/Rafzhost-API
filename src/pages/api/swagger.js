@@ -25,7 +25,7 @@ const swaggerDefinition = {
 
 const options = {
   definition: swaggerDefinition,
-  apis: [`${process.cwd()}/src/pages/api/**/*.js`], // ✅ scan semua endpoint API
+  apis: ["src/pages/api/**/*.js"], // relatif ke root project
 };
 
 const swaggerSpec = swaggerJSDoc(options);
