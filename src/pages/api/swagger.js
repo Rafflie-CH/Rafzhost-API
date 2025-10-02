@@ -28,7 +28,7 @@ const swaggerDefinition = {
 // Opsi swagger-jsdoc → scan semua file API
 const options = {
   definition: swaggerDefinition,
-  apis: ["./src/pages/api/**/*.js"], // semua endpoint API (misal tiktok.js, downloader lain, dll)
+  apis: [`${process.cwd()}/src/pages/api/**/*.js`], // path absolut
 };
 
 // Buat spesifikasi
