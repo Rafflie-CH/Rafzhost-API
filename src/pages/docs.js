@@ -1,26 +1,55 @@
-// src/pages/docs.js
-import dynamic from "next/dynamic";
-import ThemeSwitcher from "@/components/ThemeSwitcher";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import SwaggerUI from "swagger-ui";
+import "swagger-ui/dist/swagger-ui.css";
 
-const SwaggerUI = dynamic(() => import("swagger-ui-react"), { ssr: false });
-import "swagger-ui-react/swagger-ui.css";
+export default function Docs() {
+  const [lang, setLang] = useState("id");
 
-export default function DocsPage() {
+  useEffect(() => {
+    SwaggerUI({
+      dom_id: "#swagger",
+      url: "/swagger.json",
+      presets: [SwaggerUI.presets.apis],
+      layout: "BaseLayout",
+      docExpansion: "none",
+      defaultModelsExpandDepth: -1,
+      deepLinking: true,
+      supportedSubmitMethods: ["get", "post", "put", "delete", "patch"],
+    });
+  }, []);
+
+  const getText = (key) => {
+    const texts = {
+      title: { id: "Dokumentasi Rafzhost API", en: "Rafzhost API Docs" },
+      switch: { id: "Beralih ke Post", en: "Switch to Post" },
+    };
+    return texts[key][lang];
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-6">
-      <header className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">📖 API Docs</h1>
-        <div className="flex gap-4 items-center">
-          <ThemeSwitcher />
-          <Link href="/post"><a className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600">Go to Post</a></Link>
+    <div className="min-h-screen flex flex-col">
+      <header className="bg-blue-600 text-white p-4 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-0">
+        <h1 className="text-xl font-bold">{getText("title")}</h1>
+        <div className="flex items-center gap-2">
+          <a
+            href="/post"
+            className="bg-white text-blue-600 px-3 py-1 rounded hover:bg-gray-100 transition"
+          >
+            {getText("switch")}
+          </a>
+          <select
+            value={lang}
+            onChange={(e) => setLang(e.target.value)}
+            className="rounded px-2 py-1 text-black"
+          >
+            <option value="id">🇮🇩 ID</option>
+            <option value="en">🇺🇸 EN</option>
+          </select>
         </div>
       </header>
-
-      <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md">
-        {/* Swagger UI mengambil spec dari API kita */}
-        <SwaggerUI url="/api/swagger" />
-      </div>
+      <main className="flex-1">
+        <div id="swagger" className="min-h-screen"></div>
+      </main>
     </div>
   );
 }
