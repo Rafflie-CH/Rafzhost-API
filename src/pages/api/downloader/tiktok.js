@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     }
 
     const result = await tiktokDl(url.trim());
-    return res.status(200).json({ status: true, source: "TikWM", result, timestamp: new Date().toISOString() });
+    return res.status(200).json({ status: true, source: "TikWM", result });
   } catch (error) {
     console.error("TTDL Error:", error);
     return res.status(500).json({ status: false, error: error?.message || "Internal server error" });
