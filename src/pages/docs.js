@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import SwaggerUI from "swagger-ui";
-import "swagger-ui/dist/swagger-ui.css";
+import SwaggerUI from "swagger-ui-react";
+import "swagger-ui-react/swagger-ui.css";
 
 export default function Docs() {
   const [lang, setLang] = useState("id");
