@@ -1,27 +1,54 @@
-// src/pages/post.js
-import dynamic from "next/dynamic";
-import ThemeSwitcher from "@/components/ThemeSwitcher";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+import SwaggerUI from "swagger-ui";
+import "swagger-ui/dist/swagger-ui.css";
 
-const SwaggerUI = dynamic(() => import("swagger-ui-react"), { ssr: false });
-import "swagger-ui-react/swagger-ui.css";
+export default function Post() {
+  const [lang, setLang] = useState("id");
 
-export default function PostPage() {
+  useEffect(() => {
+    SwaggerUI({
+      dom_id: "#swagger",
+      url: "/swagger.json",
+      presets: [SwaggerUI.presets.apis],
+      layout: "BaseLayout",
+      docExpansion: "none",
+      defaultModelsExpandDepth: -1,
+      deepLinking: true,
+      supportedSubmitMethods: ["get", "post", "put", "delete", "patch"],
+    });
+  }, []);
+
+  const getText = (key) => {
+    const texts = {
+      title: { id: "Post Rafzhost API", en: "Rafzhost API Post" },
+      switch: { id: "Beralih ke Docs", en: "Switch to Docs" },
+    };
+    return texts[key][lang];
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-6">
-      <header className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">✍️ Post Page</h1>
-        <div className="flex gap-4 items-center">
-          <ThemeSwitcher />
-          <Link href="/docs"><a className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600">Go to Docs</a></Link>
+    <div className="min-h-screen flex flex-col">
+      <header className="bg-green-600 text-white p-4 flex flex-col md:flex-row justify-between items-center gap-2 md:gap-0">
+        <h1 className="text-xl font-bold">{getText("title")}</h1>
+        <div className="flex items-center gap-2">
+          <a
+            href="/docs"
+            className="bg-white text-green-600 px-3 py-1 rounded hover:bg-gray-100 transition"
+          >
+            {getText("switch")}
+          </a>
+          <select
+            value={lang}
+            onChange={(e) => setLang(e.target.value)}
+            className="rounded px-2 py-1 text-black"
+          >
+            <option value="id">🇮🇩 ID</option>
+            <option value="en">🇺🇸 EN</option>
+          </select>
         </div>
       </header>
-
-      <main className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
-        <p className="text-lg">
-          Ini adalah halaman <strong>Post</strong>.  
-          Di sini kamu bisa menambahkan konten khusus.
-        </p>
+      <main className="flex-1">
+        <div id="swagger" className="min-h-screen"></div>
       </main>
     </div>
   );
