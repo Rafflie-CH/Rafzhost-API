@@ -1,48 +1,17 @@
-import swaggerJSDoc from "swagger-jsdoc";
-
-// ✅ Definisi utama
-const swaggerDefinition = {
-  openapi: "3.0.0",
-  info: {
-    title: "Rafzhost API",
-    version: "1.0.0",
-    description: "📖 Dokumentasi resmi API Rafzhost",
-    contact: {
-      name: "Rafflie Aditya",
-      url: "https://api.rafzhost.xyz",
-    },
-  },
-  servers: [
-    {
-      url: "https://api.rafzhost.xyz",
-      description: "Production server",
-    },
-    {
-      url: "http://localhost:3000",
-      description: "Local server",
-    },
-  ],
-};
-
-// ✅ Daftar file API manual (sesuaikan dengan isi project-mu)
-const options = {
-  definition: swaggerDefinition,
-  apis: [
-    "./src/pages/api/downloader/tiktok.js",
-    "./src/pages/api/ping.js"
-    // tambahkan semua endpoint lain di sini
-  ],
-};
-
-// ✅ Generate swagger spec
-const swaggerSpec = swaggerJSDoc(options);
-
-// Debug biar kelihatan pas deploy
-if (process.env.NODE_ENV !== "production") {
-  console.log("Swagger Spec Generated:", JSON.stringify(swaggerSpec, null, 2));
-}
+// src/pages/api/swagger.js
+import fs from "fs";
+import path from "path";
 
 export default function handler(req, res) {
-  res.setHeader("Content-Type", "application/json");
-  res.status(200).json(swaggerSpec);
+  try {
+    const p = path.join(process.cwd(), "public", "swagger.json");
+    if (!fs.existsSync(p)) {
+      return res.status(500).json({ error: "public/swagger.json not found" });
+    }
+    const raw = fs.readFileSync(p, "utf8");
+    res.setHeader("Content-Type", "application/json");
+    res.status(200).send(raw);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 }
