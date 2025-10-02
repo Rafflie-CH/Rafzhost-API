@@ -1,5 +1,4 @@
 // src/pages/api/swagger.js
-
 import swaggerJSDoc from "swagger-jsdoc";
 
 const swaggerDefinition = {
@@ -19,7 +18,7 @@ const swaggerDefinition = {
 
 const options = {
   swaggerDefinition,
-  apis: ["./src/pages/api/**/*.js"], // baca semua endpoint dengan swagger comment
+  apis: ["./src/pages/api/**/*.js"], // otomatis baca semua endpoint dengan swagger comment
 };
 
 const swaggerSpec = swaggerJSDoc(options);
