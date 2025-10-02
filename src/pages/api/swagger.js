@@ -1,5 +1,5 @@
+// src/pages/api/swagger.js
 import swaggerJSDoc from "swagger-jsdoc";
-import { serve, setup } from "swagger-ui-express";
 
 // Konfigurasi Swagger
 const swaggerDefinition = {
@@ -15,11 +15,11 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: "https://api.rafzhost.xyz",
+      url: "https://api.rafzhost.xyz/api",
       description: "Production server",
     },
     {
-      url: "http://localhost:3000",
+      url: "http://localhost:3000/api",
       description: "Local server",
     },
   ],
@@ -27,15 +27,14 @@ const swaggerDefinition = {
 
 // Opsi swagger-jsdoc → scan semua file API
 const options = {
-  swaggerDefinition,
-  apis: [
-    "./src/pages/api/**/*.js", // semua endpoint API (tiktok.js, downloader lain, dll)
-  ],
+  definition: swaggerDefinition,
+  apis: ["./src/pages/api/**/*.js"], // semua endpoint API (misal tiktok.js, downloader lain, dll)
 };
 
 // Buat spesifikasi
 const swaggerSpec = swaggerJSDoc(options);
 
+// Handler Next.js API
 export default function handler(req, res) {
   if (req.method === "GET") {
     res.setHeader("Content-Type", "application/json");
