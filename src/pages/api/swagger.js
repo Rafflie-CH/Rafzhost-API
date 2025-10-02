@@ -8,20 +8,26 @@ export default function handler(req, res) {
       info: {
         title: "Rafzhost API",
         version: "1.0.0",
-        description: "Dokumentasi API Rafzhost",
+        description: "Dokumentasi resmi untuk Rafzhost REST API",
       },
       servers: [
         {
-          url: "https://api.rafzhost.xyz", // ganti sesuai domain Vercel kamu
+          url: "https://api.rafzhost.xyz", // ganti sesuai domain deploy kamu
         },
       ],
     },
+    // Ambil semua definisi swagger dari file API
     apis: [
-      "./src/pages/api/**/*.js",   // baca semua file endpoint
-      "./src/downloader/**/*.js",  // kalau ada JSDoc di helper juga
+      "./src/pages/api/**/*.js", // semua endpoint API
+      "./src/downloader/**/*.js" // kalau ada tambahan swagger di helper
     ],
   };
 
-  const swaggerSpec = swaggerJsdoc(options);
-  res.status(200).json(swaggerSpec);
+  try {
+    const swaggerSpec = swaggerJsdoc(options);
+    res.status(200).json(swaggerSpec);
+  } catch (err) {
+    console.error("Swagger generation error:", err);
+    res.status(500).json({ error: "Gagal generate Swagger docs" });
+  }
 }
