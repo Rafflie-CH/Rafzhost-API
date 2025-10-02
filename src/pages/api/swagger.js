@@ -1,5 +1,6 @@
 import swaggerJSDoc from "swagger-jsdoc";
 
+// ✅ Definisi utama
 const swaggerDefinition = {
   openapi: "3.0.0",
   info: {
@@ -23,12 +24,22 @@ const swaggerDefinition = {
   ],
 };
 
+// ✅ Daftar file API manual (sesuaikan dengan isi project-mu)
 const options = {
   definition: swaggerDefinition,
-  apis: ["src/pages/api/**/*.js"], // relatif ke root project
+  apis: [
+    "src/pages/api/ping.js",
+    // tambahkan semua endpoint lain di sini
+  ],
 };
 
+// ✅ Generate swagger spec
 const swaggerSpec = swaggerJSDoc(options);
+
+// Debug biar kelihatan pas deploy
+if (process.env.NODE_ENV !== "production") {
+  console.log("Swagger Spec Generated:", JSON.stringify(swaggerSpec, null, 2));
+}
 
 export default function handler(req, res) {
   res.setHeader("Content-Type", "application/json");
