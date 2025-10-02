@@ -1,17 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  swcMinify: true,
   async redirects() {
     return [
       {
-        source: "/",
-        destination: "/docs",
-        permanent: true,
+        source: "/",       // kalau buka root
+        destination: "/docs", // diarahkan ke /docs
+        permanent: false,  // bisa ubah nanti kalau sudah fix
       },
     ];
   },
-  pageExtensions: ['js','jsx','ts','tsx','md','mdx'],
 };
 
 module.exports = nextConfig;
