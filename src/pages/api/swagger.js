@@ -19,7 +19,7 @@ const swaggerDefinition = {
 
 const options = {
   definition: swaggerDefinition,
-  apis: ["src/pages/api/**/*.js"], // 🔑 penting: jangan pakai ./ di depan
+  apis: [`${process.cwd()}/src/pages/api/**/*.js`],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
