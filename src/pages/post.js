@@ -1,9 +1,7 @@
 // src/pages/post.js
 import React, { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
+import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
-
-const SwaggerUI = dynamic(() => import("swagger-ui-react"), { ssr: false });
 
 export default function PostDocs() {
   const [theme, setTheme] = useState("light");
@@ -20,7 +18,10 @@ export default function PostDocs() {
       ).matches;
       document.documentElement.classList.toggle("dark", systemPrefersDark);
     } else {
-      document.documentElement.classList.toggle("dark", selectedTheme === "dark");
+      document.documentElement.classList.toggle(
+        "dark",
+        selectedTheme === "dark"
+      );
     }
     setTheme(selectedTheme);
     localStorage.setItem("theme", selectedTheme);
@@ -40,6 +41,7 @@ export default function PostDocs() {
           <option value="system">System</option>
         </select>
       </div>
+      {/* SwaggerUI konsumsi dari /api/swagger */}
       <SwaggerUI url="/api/swagger" />
     </div>
   );
