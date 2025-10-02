@@ -1,7 +1,6 @@
 // src/pages/api/swagger.js
 import swaggerJSDoc from "swagger-jsdoc";
 
-// Konfigurasi Swagger
 const swaggerDefinition = {
   openapi: "3.0.0",
   info: {
@@ -15,26 +14,23 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: "https://api.rafzhost.xyz/api",
+      url: "https://api.rafzhost.xyz",
       description: "Production server",
     },
     {
-      url: "http://localhost:3000/api",
+      url: "http://localhost:3000",
       description: "Local server",
     },
   ],
 };
 
-// Opsi swagger-jsdoc → scan semua file API
 const options = {
-  definition: swaggerDefinition,
-  apis: [`${process.cwd()}/src/pages/api/**/*.js`], // path absolut
+  definition: swaggerDefinition, // ✅ harus pakai definition
+  apis: [`${process.cwd()}/src/pages/api/**/*.js`], // ✅ scan semua API
 };
 
-// Buat spesifikasi
 const swaggerSpec = swaggerJSDoc(options);
 
-// Handler Next.js API
 export default function handler(req, res) {
   if (req.method === "GET") {
     res.setHeader("Content-Type", "application/json");
