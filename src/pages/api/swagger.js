@@ -1,4 +1,3 @@
-// src/pages/api/swagger.js
 import swaggerJSDoc from "swagger-jsdoc";
 
 const swaggerDefinition = {
@@ -20,8 +19,7 @@ const swaggerDefinition = {
 
 const options = {
   definition: swaggerDefinition,
-  // Pakai glob relative dari root project
-  apis: ["./src/pages/api/**/*.js"],
+  apis: ["src/pages/api/**/*.js"], // 🔑 penting: jangan pakai ./ di depan
 };
 
 const swaggerSpec = swaggerJSDoc(options);
