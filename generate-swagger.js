@@ -13,8 +13,8 @@ const swaggerDefinition = {
     },
   },
   servers: [
-    { url: "https://api.rafzhost.xyz", description: "Production server" },
-    { url: "http://localhost:3000", description: "Local server" },
+    { url: "https://api.rafzhost.xyz", description: "Main Server" },
+    { url: "https://rafzhost-api.vercel.app", description: "Vercel Server" },
   ],
 };
 
