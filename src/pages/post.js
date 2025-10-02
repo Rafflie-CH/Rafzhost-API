@@ -1,12 +1,13 @@
 // src/pages/post.js
 import React, { useEffect, useState } from "react";
-import SwaggerUI from "swagger-ui-react";
+import dynamic from "next/dynamic";
 import "swagger-ui-react/swagger-ui.css";
+
+const SwaggerUI = dynamic(() => import("swagger-ui-react"), { ssr: false });
 
 export default function PostDocs() {
   const [theme, setTheme] = useState("light");
 
-  // ambil tema dari localStorage / system
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme") || "system";
     applyTheme(storedTheme);
@@ -39,7 +40,7 @@ export default function PostDocs() {
           <option value="system">System</option>
         </select>
       </div>
-      <SwaggerUI url="/swagger.json" />
+      <SwaggerUI url="/api/swagger" />
     </div>
   );
 }
