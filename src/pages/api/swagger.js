@@ -1,29 +1,28 @@
 // src/pages/api/swagger.js
-import swaggerJSDoc from "swagger-jsdoc";
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
 
+// Konfigurasi Swagger
 const options = {
   definition: {
     openapi: "3.0.0",
     info: {
       title: "Rafzhost API",
       version: "1.0.0",
-      description: "Dokumentasi API Rafzhost",
+      description: "Dokumentasi API untuk Rafzhost",
     },
     servers: [
       {
-        url: "https://api.rafzhost.xyz/api", // ubah sesuai domain produksi
+        url: "https://api.rafzhost.xyz", // ganti sesuai domain
       },
     ],
   },
-  // TELL swagger-jsdoc to scan src/pages/api and src/pages
-  apis: ["./src/pages/api/*.js", "./src/pages/**/*.js"],
+  apis: ["./src/pages/api/**/*.js"], // ambil semua file di api/ untuk swagger comments
 };
 
+const swaggerSpec = swaggerJsdoc(options);
+
 export default function handler(req, res) {
-  try {
-    const swaggerSpec = swaggerJSDoc(options);
-    return res.status(200).json(swaggerSpec);
-  } catch (err) {
-    return res.status(500).json({ error: "Failed to generate Swagger spec", details: err.message });
-  }
+  res.setHeader("Content-Type", "application/json");
+  res.status(200).json(swaggerSpec);
 }
