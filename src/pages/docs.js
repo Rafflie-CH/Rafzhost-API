@@ -12,11 +12,8 @@ export default function DocsPage() {
         <h1 className="text-2xl font-bold">📖 Rafzhost API Docs</h1>
         <div className="flex gap-4">
           <ThemeSwitcher />
-          <Link
-            href="/post"
-            className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600"
-          >
-            Go to Post
+          <Link href="/post" className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600">
+            Go to POST API Page
           </Link>
         </div>
       </header>
@@ -24,6 +21,10 @@ export default function DocsPage() {
       <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md">
         <SwaggerUI url="/swagger.json" />
       </div>
+
+      <footer className="text-center text-sm mt-8 opacity-70">
+        Rafzhost API © 2025
+      </footer>
     </div>
   );
 }
