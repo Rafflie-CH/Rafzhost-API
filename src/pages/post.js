@@ -1,25 +1,45 @@
-import ThemeSwitcher from "@/components/ThemeSwitcher";
-import Link from "next/link";
+// src/pages/post.js
+import React, { useEffect, useState } from "react";
+import SwaggerUI from "swagger-ui-react";
+import "swagger-ui-react/swagger-ui.css";
 
-export default function PostPage() {
+export default function PostDocs() {
+  const [theme, setTheme] = useState("light");
+
+  // ambil tema dari localStorage / system
+  useEffect(() => {
+    const storedTheme = localStorage.getItem("theme") || "system";
+    applyTheme(storedTheme);
+  }, []);
+
+  const applyTheme = (selectedTheme) => {
+    if (selectedTheme === "system") {
+      const systemPrefersDark = window.matchMedia(
+        "(prefers-color-scheme: dark)"
+      ).matches;
+      document.documentElement.classList.toggle("dark", systemPrefersDark);
+    } else {
+      document.documentElement.classList.toggle("dark", selectedTheme === "dark");
+    }
+    setTheme(selectedTheme);
+    localStorage.setItem("theme", selectedTheme);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-6">
-      <header className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">✍️ Post Page</h1>
-        <div className="flex gap-4">
-          <ThemeSwitcher />
-          <Link href="/docs" className="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600">
-            Go to Docs
-          </Link>
-        </div>
-      </header>
-
-      <main className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
-        <p className="text-lg">
-          Ini adalah halaman <strong>Post</strong>.  
-          Di sini kamu bisa menambahkan konten khusus.
-        </p>
-      </main>
+    <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+      <div className="flex justify-between items-center p-4 border-b border-gray-300 dark:border-gray-700">
+        <h1 className="text-xl font-bold">📮 POST API Documentation</h1>
+        <select
+          value={theme}
+          onChange={(e) => applyTheme(e.target.value)}
+          className="px-2 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+        >
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="system">System</option>
+        </select>
+      </div>
+      <SwaggerUI url="/swagger.json" />
     </div>
   );
 }
