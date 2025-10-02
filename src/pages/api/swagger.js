@@ -26,8 +26,7 @@ const swaggerDefinition = {
 
 const options = {
   definition: swaggerDefinition,
-  // ✅ pakai relative glob biar bisa dibaca di build vercel
-  apis: ["./src/pages/api/**/*.js"],
+  apis: [`${process.cwd()}/src/pages/api/**/*.js`],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
