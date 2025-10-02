@@ -3,40 +3,42 @@
   "info": {
     "title": "Rafzhost API",
     "version": "1.0.0",
-    "description": "Dokumentasi API Rafzhost menggunakan Swagger UI"
+    "description": "Dokumentasi API Rafzhost"
   },
   "servers": [
-    {
-      "url": "https://api.rafzhost.xyz/api",
-      "description": "Server default Vercel"
-    }
+    { "url": "https://api.rafzhost.xyz", "description": "Production" },
+    { "url": "http://localhost:3000", "description": "Local" }
   ],
   "paths": {
-    "/ttdl": {
+    "/api/downloader/tiktok": {
       "get": {
         "tags": ["Downloader"],
-        "summary": "Mendownload video TikTok tanpa watermark",
-        "description": "Endpoint ini mengambil URL video TikTok, memprosesnya, dan mengembalikan link download video tanpa watermark.",
+        "summary": "Download TikTok (no watermark)",
         "parameters": [
-          {
-            "in": "query",
-            "name": "url",
-            "schema": { "type": "string" },
-            "required": true,
-            "description": "URL lengkap video TikTok yang ingin didownload"
-          }
+          { "in": "query", "name": "url", "required": true, "schema": { "type": "string" }, "description": "TikTok URL" }
         ],
         "responses": {
-          "200": {
-            "description": "Respon sukses dengan data video"
-          },
-          "400": {
-            "description": "Parameter url tidak ada"
-          },
-          "500": {
-            "description": "Error server internal"
-          }
+          "200": { "description": "OK" },
+          "400": { "description": "Bad Request" },
+          "500": { "description": "Server Error" }
         }
+      }
+    },
+    "/api/ttdl": {
+      "get": {
+        "tags": ["Downloader"],
+        "summary": "Download TikTok (ttdl endpoint)",
+        "parameters": [
+          { "in": "query", "name": "url", "required": true, "schema": { "type": "string" }, "description": "TikTok URL" }
+        ],
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/ping": {
+      "get": {
+        "tags": ["Misc"],
+        "summary": "Ping endpoint",
+        "responses": { "200": { "description": "pong" } }
       }
     }
   }
