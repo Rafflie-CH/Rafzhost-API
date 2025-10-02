@@ -1,17 +1,32 @@
 // src/pages/api/swagger.js
-import fs from "fs";
-import path from "path";
+import swaggerJSDoc from "swagger-jsdoc";
+
+const swaggerDefinition = {
+  openapi: "3.0.0",
+  info: {
+    title: "Rafzhost API",
+    version: "1.0.0",
+    description: "📖 Dokumentasi resmi API Rafzhost",
+    contact: {
+      name: "Rafflie Aditya",
+      url: "https://api.rafzhost.xyz",
+    },
+  },
+  servers: [
+    { url: "https://api.rafzhost.xyz", description: "Production server" },
+    { url: "http://localhost:3000", description: "Local server" },
+  ],
+};
+
+const options = {
+  definition: swaggerDefinition,
+  // Pakai glob relative dari root project
+  apis: ["./src/pages/api/**/*.js"],
+};
+
+const swaggerSpec = swaggerJSDoc(options);
 
 export default function handler(req, res) {
-  try {
-    const p = path.join(process.cwd(), "public", "swagger.json");
-    if (!fs.existsSync(p)) {
-      return res.status(500).json({ error: "public/swagger.json not found" });
-    }
-    const raw = fs.readFileSync(p, "utf8");
-    res.setHeader("Content-Type", "application/json");
-    res.status(200).send(raw);
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
+  res.setHeader("Content-Type", "application/json");
+  res.status(200).json(swaggerSpec);
 }
