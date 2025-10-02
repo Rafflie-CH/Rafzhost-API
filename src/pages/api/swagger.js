@@ -25,8 +25,8 @@ const swaggerDefinition = {
 };
 
 const options = {
-  definition: swaggerDefinition, // ✅ harus pakai definition
-  apis: [`${process.cwd()}/src/pages/api/**/*.js`], // ✅ scan semua API
+  definition: swaggerDefinition,
+  apis: ["./src/pages/api/**/*.js"], // ✅ pakai relative path, lebih aman
 };
 
 const swaggerSpec = swaggerJSDoc(options);
