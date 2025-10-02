@@ -5,13 +5,13 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: '/',
-        destination: '/docs',
+        source: "/",
+        destination: "/docs",
         permanent: true,
       },
-    ]
+    ];
   },
-  pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
+  pageExtensions: ['js','jsx','ts','tsx','md','mdx'],
 };
 
 module.exports = nextConfig;
