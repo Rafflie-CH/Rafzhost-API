@@ -1,24 +1,11 @@
-"user client";
+"use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
 
 export default function Post() {
   const [lang, setLang] = useState("id");
-
-  useEffect(() => {
-    SwaggerUI({
-      dom_id: "#swagger",
-      url: "/swagger.json",
-      presets: [SwaggerUI.presets.apis],
-      layout: "BaseLayout",
-      docExpansion: "none",
-      defaultModelsExpandDepth: -1,
-      deepLinking: true,
-      supportedSubmitMethods: ["get", "post", "put", "delete", "patch"],
-    });
-  }, []);
 
   const getText = (key) => {
     const texts = {
@@ -50,7 +37,7 @@ export default function Post() {
         </div>
       </header>
       <main className="flex-1">
-        <div id="swagger" className="min-h-screen"></div>
+        <SwaggerUI url="/swagger.json" />
       </main>
     </div>
   );
