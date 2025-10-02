@@ -28,7 +28,8 @@ const swaggerDefinition = {
 const options = {
   definition: swaggerDefinition,
   apis: [
-    "src/pages/api/ping.js",
+    "./src/pages/api/downloader/tiktok.js",
+    "./src/pages/api/ping.js"
     // tambahkan semua endpoint lain di sini
   ],
 };
