@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export async function tiktokDl(url) {
+async function tiktokDl(url) {
   if (!url) throw new Error("URL TikTok harus disertakan");
 
   return new Promise(async (resolve, reject) => {
@@ -26,23 +26,25 @@ export async function tiktokDl(url) {
       }
 
       const domain = "https://www.tikwm.com/api/";
-      const res = (await axios.post(
-        domain,
-        {},
-        {
-          headers: {
-            Accept: "application/json, text/javascript, */*; q=0.01",
-            "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            Origin: "https://www.tikwm.com",
-            Referer: "https://www.tikwm.com/",
-            "User-Agent":
-              "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36",
-            "X-Requested-With": "XMLHttpRequest",
-          },
-          params: { url, count: 12, cursor: 0, web: 1, hd: 1 },
-        }
-      )).data.data;
+      const res = (
+        await axios.post(
+          domain,
+          {},
+          {
+            headers: {
+              Accept: "application/json, text/javascript, */*; q=0.01",
+              "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+              "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+              Origin: "https://www.tikwm.com",
+              Referer: "https://www.tikwm.com/",
+              "User-Agent":
+                "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36",
+              "X-Requested-With": "XMLHttpRequest",
+            },
+            params: { url, count: 12, cursor: 0, web: 1, hd: 1 },
+          }
+        )
+      ).data.data;
 
       if (res?.duration === 0) {
         res.images.map((v) => data.push({ type: "photo", url: v }));
@@ -101,3 +103,6 @@ export async function tiktokDl(url) {
     }
   });
 }
+
+// ✅ tambahin default export
+export default tiktokDl;
