@@ -7,7 +7,7 @@ export const swaggerDefinition = {
     description: "📖 Dokumentasi resmi API Rafzhost",
   },
   servers: [
-    { url: "https://api.rafzhost.xyz", description: "Production" },
-    { url: "http://localhost:3000", description: "Local" },
+    { url: "https://api.rafzhost.xyz", description: "Main" },
+    { url: "https://rafzhost-api.vercel.app", description: "Vercel" },
   ],
 };
