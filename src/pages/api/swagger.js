@@ -1,5 +1,4 @@
 // src/pages/api/swagger.js
-import path from "path";
 import swaggerJSDoc from "swagger-jsdoc";
 
 const swaggerDefinition = {
@@ -27,12 +26,18 @@ const swaggerDefinition = {
 
 const options = {
   definition: swaggerDefinition,
-  apis: [path.join(process.cwd(), "src/pages/api/**/*.js")], // ✅ absolute path
+  // ✅ pakai relative glob biar bisa dibaca di build vercel
+  apis: ["./src/pages/api/**/*.js"],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
 
 export default function handler(req, res) {
-  res.setHeader("Content-Type", "application/json");
-  res.status(200).json(swaggerSpec);
+  if (req.method === "GET") {
+    res.setHeader("Content-Type", "application/json");
+    res.status(200).json(swaggerSpec);
+  } else {
+    res.setHeader("Allow", ["GET"]);
+    res.status(405).end(`Method ${req.method} Not Allowed`);
+  }
 }
