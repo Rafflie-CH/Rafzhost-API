@@ -1,7 +1,35 @@
+/* src/styles/globals.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* simple dark support */
-html.light body { background: white; color: black; }
-html.dark body { background: #111827; color: #f9fafb; }
+/* Globals (variables + overrides) */
+:root{
+  --bg-color: #ffffff;
+  --text-color: #111827;
+  --primary-color: #4f46e5;
+}
+
+html.dark {
+  --bg-color: #0b1220;
+  --text-color: #e6eef8;
+  --primary-color: #818cf8;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+/* Swagger UI small theme fixes */
+.swagger-ui {
+  background-color: var(--bg-color) !important;
+  color: var(--text-color) !important;
+}
+
+/* keep buttons consistent */
+button { transition: transform .15s ease; }
+button:hover { transform: scale(1.02); }
