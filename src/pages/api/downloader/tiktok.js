@@ -1,5 +1,5 @@
 // src/pages/api/downloader/tiktok.js
-import { tiktokDl } from "../../../downloader/ttdl.js";
+import { tiktokDl } from "../../../downloader/ttdl";
 
 /**
  * @swagger
