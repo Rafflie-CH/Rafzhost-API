@@ -27,20 +27,13 @@ export default async function handler(req, res) {
   try {
     const { url } = req.query;
     if (!url) {
-      return res.status(400).json({
-        status: false,
-        message: "Masukkan parameter ?url="
-      });
+      return res.status(400).json({ error: "URL parameter is required" });
     }
 
     const result = await ttdl(url);
-
-    res.status(200).json(result);
-  } catch (err) {
-    console.error("TikTok Downloader Error:", err);
-    res.status(500).json({
-      status: false,
-      message: err.message || "Terjadi error saat memproses permintaan."
-    });
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("TTDL Error:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
