@@ -5,7 +5,7 @@ info:
   description: 📖 Dokumentasi resmi API Rafzhost
 servers:
   - url: https://api.rafzhost.xyz
-  - url: http://localhost:3000
+  - url: https://rafzhost-api.vercel.app
 
 paths:
   /api/ping:
