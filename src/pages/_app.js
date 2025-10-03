@@ -6,7 +6,7 @@ export default function MyApp({ Component, pageProps }) {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // init theme
+    // apply theme from localStorage (system/light/dark)
     const applyTheme = (sel) => {
       if (sel === "system") {
         const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -21,23 +21,23 @@ export default function MyApp({ Component, pageProps }) {
     const storedTheme = localStorage.getItem("theme") || "system";
     applyTheme(storedTheme);
 
-    // init safe mode (reduced motion + disable animations)
+    // apply safe mode (disable animations)
     const safe = localStorage.getItem("safeMode") === "true";
     document.documentElement.classList.toggle("no-anim", safe);
 
-    // watch OS theme changes if system selected
+    // respond to OS theme changes only if system selected
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const handler = () => {
+    const onChange = () => {
       if ((localStorage.getItem("theme") || "system") === "system") {
         applyTheme("system");
       }
     };
-    if (mq.addEventListener) mq.addEventListener("change", handler);
-    else mq.addListener(handler);
+    if (mq.addEventListener) mq.addEventListener("change", onChange);
+    else mq.addListener(onChange);
 
     return () => {
-      if (mq.removeEventListener) mq.removeEventListener("change", handler);
-      else mq.removeListener(handler);
+      if (mq.removeEventListener) mq.removeEventListener("change", onChange);
+      else mq.removeListener(onChange);
     };
   }, []);
 
