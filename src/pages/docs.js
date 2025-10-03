@@ -1,29 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import SwaggerUI from "swagger-ui-react";
-import "swagger-ui-react/swagger-ui.css";
+import { useState } from "react";
+import dynamic from "next/dynamic";
 import { ThemeProvider, useTheme } from "next-themes";
 import Link from "next/link";
+import "swagger-ui-react/swagger-ui.css";
+
+// Dynamic import SwaggerUI agar hanya load di client
+const SwaggerUI = dynamic(() => import("swagger-ui-react"), { ssr: false });
 
 function DocsContent() {
   const { theme, setTheme } = useTheme();
   const [lang, setLang] = useState("id");
   const [safeMode, setSafeMode] = useState(false);
   const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
-    if (!safeMode || loaded) {
-      SwaggerUI({
-        dom_id: "#swagger",
-        url: "/swagger.json",
-        layout: "BaseLayout",
-        docExpansion: "none",
-        defaultModelsExpandDepth: -1,
-        deepLinking: true,
-      });
-    }
-  }, [safeMode, loaded]);
 
   const texts = {
     title: { id: "📖 Dokumentasi Rafzhost API", en: "📖 Rafzhost API Documentation" },
@@ -76,7 +66,7 @@ function DocsContent() {
             </button>
           </div>
         ) : (
-          <div id="swagger" className="min-h-screen"></div>
+          <SwaggerUI url="/swagger.json" docExpansion="none" defaultModelsExpandDepth={-1} deepLinking={true} />
         )}
       </main>
 
