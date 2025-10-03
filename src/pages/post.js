@@ -1,164 +1,127 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
-import Head from "next/head";
-import Link from "next/link";
-import { useTheme } from "next-themes";
-import { Github } from "lucide-react";
-
-const SwaggerUI = dynamic(() => import("swagger-ui-react"), { ssr: false });
+import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
+import { ThemeProvider, useTheme } from "next-themes";
+import Link from "next/link";
 
-export default function PostPage() {
+function PostContent() {
   const { theme, setTheme } = useTheme();
   const [lang, setLang] = useState("id");
   const [safeMode, setSafeMode] = useState(false);
-  const [minimalLoad, setMinimalLoad] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [specLoaded, setSpecLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    const saved = typeof window !== "undefined" && localStorage.getItem("rafz_theme");
-    if (saved) setTheme(saved);
-  }, [setTheme]);
-
-  useEffect(() => {
-    if (safeMode) document.documentElement.classList.add("rafz-reduced-motion");
-    else document.documentElement.classList.remove("rafz-reduced-motion");
-  }, [safeMode]);
-
-  useEffect(() => {
-    let mounted = true;
-    setLoading(true);
-    fetch("/swagger.json")
-      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
-      .then(() => { if (!mounted) return; setSpecLoaded(true); })
-      .catch(() => { if (!mounted) return; setSpecLoaded(false); })
-      .finally(() => { if (!mounted) return; setTimeout(() => setLoading(false), 350); });
-    return () => { mounted = false; };
-  }, []);
+    if (!safeMode || loaded) {
+      SwaggerUI({
+        dom_id: "#swagger",
+        url: "/swagger.json",
+        layout: "BaseLayout",
+        docExpansion: "none",
+        defaultModelsExpandDepth: -1,
+        deepLinking: true,
+        filter: search || false
+      });
+    }
+  }, [safeMode, loaded, search]);
 
   const texts = {
     title: { id: "📤 Post Rafzhost API", en: "📤 Rafzhost API Post" },
     switch: { id: "Beralih ke Docs", en: "Switch to Docs" },
-    safe: { id: "Mode Aman (non-anim)", en: "Safe Mode (reduced animations)" },
-    minimal: { id: "Load Minimal (bandwidth-friendly)", en: "Load Minimal (bandwidth-friendly)" },
-    loadDocs: { id: "Muat Post API", en: "Load Post API" },
+    safe: { id: "Mode Aman", en: "Safe Mode" },
+    normal: { id: "Kembali Normal", en: "Back to Normal" },
+    loadDocs: { id: "Muat Dokumentasi", en: "Load Documentation" },
+    search: { id: "Cari Endpoint...", en: "Search Endpoint..." },
     hint: {
-      id: "Gunakan kontrol di kanan atas untuk mengganti tema, bahasa, dan mode aman.",
-      en: "Use the controls on the top-right to change theme, language and safe mode."
-    },
-    thanks: { id: "Thanks to", en: "Thanks to" },
-    source: { id: "Siputzx for source code", en: "Siputzx for source code" },
-    owner: { id: "Rafzhost API by Rafz (Rafflie Aditya)", en: "Rafzhost API by Rafz (Rafflie Aditya)" }
+      id: "Gunakan tombol di atas untuk mengganti tema, bahasa, mode aman, atau mencari endpoint.",
+      en: "Use the buttons above to change theme, language, safe mode, or search endpoints."
+    }
   };
 
   return (
-    <>
-      <Head><title>Rafzhost API — Post</title></Head>
-      <div className={`min-h-screen flex flex-col transition-colors duration-300 ${theme === "dark" ? "dark" : ""}`}>
-        <style jsx global>{`
-          .rafz-reduced-motion *, .rafz-reduced-motion *::before, .rafz-reduced-motion *::after {
-            animation: none !important;
-            transition: none !important;
-          }
-          /* reuse same vars as docs */
-          :root { --rafz-bg: #ffffff; --rafz-text: #111827; --rafz-card:#ffffff; --rafz-border:#e5e7eb }
-          .dark :root, .dark { --rafz-bg: #0b1220; --rafz-text: #e6eef8; --rafz-card:#0f1724; --rafz-border:#2b3440 }
-          .swagger-ui .info, .swagger-ui .wrapper, .swagger-ui .block, .swagger-ui .opblock, .swagger-ui .opblock-body {
-            background: var(--rafz-card) !important;
-            color: var(--rafz-text) !important;
-            border-color: var(--rafz-border) !important;
-          }
-        `}</style>
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition animate-fadeIn">
+      <header className="bg-green-600 text-white p-4 flex flex-wrap justify-between items-center gap-3 shadow-md">
+        <h1 className="text-xl font-bold">{texts.title[lang]}</h1>
+        <div className="flex flex-wrap gap-2 items-center">
+          <Link href="/docs" className="btn btn-light text-green-600">
+            {texts.switch[lang]}
+          </Link>
+          <select value={lang} onChange={(e) => setLang(e.target.value)} className="select">
+            <option value="id">🇮🇩 ID</option>
+            <option value="en">🇺🇸 EN</option>
+          </select>
+          <select
+            onChange={(e) => setTheme(e.target.value)}
+            value={theme}
+            className="select"
+          >
+            <option value="light">☀️ Light</option>
+            <option value="dark">🌙 Dark</option>
+            <option value="system">💻 System</option>
+          </select>
+          <button
+            onClick={() => setSafeMode(!safeMode)}
+            className="btn btn-warning"
+          >
+            {safeMode ? texts.normal[lang] : texts.safe[lang]}
+          </button>
+        </div>
+      </header>
 
-        <header className="flex items-start md:items-center justify-between gap-4 p-4">
-          <div>
-            <h1 className="text-2xl font-semibold text-green-700 dark:text-green-300">{texts.title[lang]}</h1>
-            <p className="text-sm opacity-80">{texts.hint[lang]}</p>
+      <main className="flex-1 p-4">
+        <p className="mb-4 italic text-sm opacity-80">{texts.hint[lang]}</p>
+
+        {!safeMode && (
+          <div className="search-bar">
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={texts.search[lang]}
+              className="search-input"
+            />
           </div>
+        )}
 
-          <div className="rafz-controls flex flex-wrap gap-3 items-center border p-3 rounded-lg shadow">
-            <Link href="/docs"><a className="px-4 py-2 rounded-lg border">{texts.switch[lang]}</a></Link>
-
-            <div>
-              <label className="block text-xs mb-1">{lang === "id" ? "Bahasa" : "Language"}</label>
-              <select value={lang} onChange={(e) => setLang(e.target.value)} className="px-3 py-2 rounded-md border" style={{minWidth:140}}>
-                <option value="id">🇮🇩 Indonesia</option>
-                <option value="en">🇺🇸 English</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs mb-1">{lang === "id" ? "Tema" : "Theme"}</label>
-              <select value={theme === "system" ? "system" : theme} onChange={(e)=>applyTheme(e.target.value)} className="px-3 py-2 rounded-md border" style={{minWidth:160}}>
-                <option value="system">System (OS)</option>
-                <option value="light">Light</option>
-                <option value="dark">Dark</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs mb-1">{lang === "id" ? "Mode Aman" : "Safe Mode"}</label>
-              <div style={{display:"flex", gap:8}}>
-                <button onClick={()=>setSafeMode(!safeMode)} className={`px-3 py-2 rounded-md border ${safeMode ? "bg-yellow-300":""}`}>{safeMode ? (lang==="id"?"Aktif":"Enabled"):(lang==="id"?"Non-Aktif":"Disabled")}</button>
-                <button onClick={()=>setMinimalLoad(!minimalLoad)} className={`px-3 py-2 rounded-md border ${minimalLoad ? "bg-gray-200":""}`}>{minimalLoad ? (lang==="id"?"Minimal On":"Minimal On"):(lang==="id"?"Load Normal":"Load Normal")}</button>
-              </div>
-            </div>
+        {safeMode && !loaded ? (
+          <div className="flex flex-col items-center justify-center mt-10">
+            <p className="mb-3">{texts.safe[lang]} ✅</p>
+            <button
+              onClick={() => setLoaded(true)}
+              className="btn btn-secondary"
+            >
+              {texts.loadDocs[lang]}
+            </button>
           </div>
-        </header>
+        ) : (
+          <div id="swagger" className="min-h-screen"></div>
+        )}
+      </main>
 
-        <main className="flex-1 p-4">
-          {loading && (
-            <div className="space-y-3 animate-pulse">
-              <div className="h-6 w-1/4 bg-gray-200 dark:bg-gray-800 rounded"></div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="h-36 bg-gray-200 dark:bg-gray-800 rounded"></div>
-                <div className="h-36 bg-gray-200 dark:bg-gray-800 rounded"></div>
-                <div className="h-36 bg-gray-200 dark:bg-gray-800 rounded"></div>
-              </div>
-            </div>
-          )}
+      <footer>
+        <p>
+          Thanks to{" "}
+          <a href="https://github.com/siputzx/apisku" target="_blank" rel="noopener noreferrer" className="text-green-500 hover:underline inline-flex items-center gap-1">
+            <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 0C3.58 0 0 3.58..."></path>
+            </svg>
+            Siputzx for source code
+          </a>
+        </p>
+        <p>Rafzhost API by Rafz (Rafflie Aditya)</p>
+      </footer>
 
-          {!loading && !specLoaded && (
-            <div className="p-6 bg-red-50 dark:bg-red-900 rounded">
-              <strong className="text-red-700 dark:text-red-300">{lang==="id"?"Gagal memuat dokumentasi.":"Failed to load documentation."}</strong>
-              <p className="opacity-80 mt-2">{lang==="id"?"Coba refresh atau periksa swagger.json":"Try refreshing or check swagger.json"}</p>
-            </div>
-          )}
-
-          {!loading && specLoaded && (
-            <div className="rounded-lg overflow-hidden">
-              <SwaggerUI
-                url="/swagger.json"
-                docExpansion="none"
-                defaultModelsExpandDepth={-1}
-                deepLinking={!safeMode}
-                filter={true}
-                supportedSubmitMethods={["get","post","put","delete","patch"]}
-              />
-            </div>
-          )}
-        </main>
-
-        <div className="rafz-watermark" style={{position:"fixed", right:12, bottom:12, opacity:0.7, fontSize:12, pointerEvents:"none"}}>Rafzhost API by Rafz (Rafflie Aditya)</div>
-
-        <footer className="p-6 rafz-footer">
-          <div>
-            <span>{texts.thanks[lang]} </span>
-            <a href="https://github.com/siputzx/apisku" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-blue-600 hover:underline">
-              <Github size={16} /> {texts.source[lang]}
-            </a>
-          </div>
-          <div className="opacity-80">{texts.owner[lang]}</div>
-        </footer>
-      </div>
-    </>
+      <div className="watermark">Rafzhost API by Rafz (Rafflie Aditya)</div>
+    </div>
   );
+}
 
-  function applyTheme(val) {
-    if (val === "system") { setTheme("system"); if (typeof window!=="undefined") localStorage.setItem("rafz_theme","system"); }
-    else { setTheme(val); if (typeof window!=="undefined") localStorage.setItem("rafz_theme", val); }
-  }
+export default function PostPage() {
+  return (
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <PostContent />
+    </ThemeProvider>
+  );
 }
