@@ -13,24 +13,13 @@
       "post": {
         "tags": ["Misc"],
         "summary": "Test POST hello",
-        "requestBody": {
-          "content": { "application/json": { "schema": { "type": "object" } } }
-        },
-        "responses": {
-          "200": { "description": "OK" }
-        }
+        "requestBody": { "content": { "application/json": { "schema": { "type": "object" } } } },
+        "responses": { "200": { "description": "OK" } }
       },
       "get": {
         "tags": ["Misc"],
         "summary": "Simple hello GET",
         "responses": { "200": { "description": "OK" } }
-      }
-    },
-    "/api/private": {
-      "get": {
-        "tags": ["Private"],
-        "summary": "Private endpoint (risky)",
-        "responses": { "200": { "description": "private" } }
       }
     },
     "/api/downloader/tiktok": {
@@ -41,6 +30,13 @@
           { "in": "query", "name": "url", "required": true, "schema": { "type": "string" }, "description": "Video URL" }
         ],
         "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/private": {
+      "get": {
+        "tags": ["Private"],
+        "summary": "Private endpoint (risky)",
+        "responses": { "200": { "description": "private" } }
       }
     }
   }
