@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import Link from "next/link";
 
@@ -24,18 +23,14 @@ export default function Home() {
       <h1 className="text-3xl md:text-4xl font-bold mb-4">{texts.title[lang]}</h1>
       <p className="text-lg text-center max-w-lg mb-6">{texts.desc[lang]}</p>
       <div className="flex gap-4">
-        <Link href="/docs" className="btn btn-primary">
-          {texts.docs[lang]}
-        </Link>
-        <Link href="/post" className="btn btn-secondary">
-          {texts.post[lang]}
-        </Link>
+        <Link href="/docs" className="btn btn-primary">{texts.docs[lang]}</Link>
+        <Link href="/post" className="btn btn-secondary">{texts.post[lang]}</Link>
       </div>
       <div className="mt-6">
         <select
           value={lang}
           onChange={(e) => setLang(e.target.value)}
-          className="select text-black"
+          className="select"
         >
           <option value="id">🇮🇩 Bahasa</option>
           <option value="en">🇺🇸 English</option>
