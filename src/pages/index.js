@@ -1,48 +1,73 @@
 // src/pages/index.js
-import { useState } from "react";
-import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export default function Home() {
-  const [safeMode, setSafeMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const [lang, setLang] = useState("id");
+  const [safeMode, setSafeMode] = useState(true);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (darkMode) {
+      root.classList.add("dark");
+      root.setAttribute("data-theme", "dark");
+    } else {
+      root.classList.remove("dark");
+      root.setAttribute("data-theme", "light");
+    }
+  }, [darkMode]);
 
   return (
-    <div className={`container ${safeMode ? "safe-mode" : ""}`}>
+    <div className="container">
       <header className="header">
-        <h1>🚀 Rafzhost API</h1>
-        <p className="subtitle">Selamat datang di API resmi Rafzhost</p>
-        <div className="nav-buttons">
-          <Link href="/docs"><button className="btn docs">📖 Docs</button></Link>
-          <Link href="/post"><button className="btn post">📮 Post</button></Link>
+        <h1 className="title animate-fade">🌐 RafzHost API</h1>
+        <div className="controls">
+          {/* Tombol Theme */}
           <button
-            className="btn theme"
-            onClick={() => {
-              const current = localStorage.getItem("theme") || "system";
-              const next = current === "light" ? "dark" : current === "dark" ? "system" : "light";
-              localStorage.setItem("theme", next);
-              window.location.reload();
-            }}
+            className="btn bordered"
+            onClick={() => setDarkMode((prev) => !prev)}
           >
-            🎨 Ganti Tema
+            {darkMode ? "🌙 Dark" : "☀️ Light"}
           </button>
+
+          {/* Tombol Ganti Bahasa */}
           <button
-            className="btn safe"
-            onClick={() => setSafeMode(!safeMode)}
+            className="btn bordered"
+            onClick={() => setLang(lang === "id" ? "en" : "id")}
           >
-            {safeMode ? "⚡ Mode Normal" : "🛡️ Safe Mode"}
+            {lang === "id" ? "🇮🇩 ID" : "🇬🇧 EN"}
           </button>
-          <button className="btn lang">🌐 Ganti Bahasa</button>
+
+          {/* Tombol Safe Mode */}
+          <button
+            className={`btn bordered ${safeMode ? "active" : ""}`}
+            onClick={() => setSafeMode((prev) => !prev)}
+          >
+            {safeMode ? "🛡️ Safe Mode" : "⚠️ Unsafe"}
+          </button>
         </div>
       </header>
 
-      <main>
-        <section className="card">
-          <h2>Cari Endpoint</h2>
-          <input className="search" placeholder="🔎 Ketik nama endpoint..." />
-        </section>
+      <main className="main">
+        <h2 className="subtitle animate-slide">
+          {lang === "id" ? "Selamat datang di API RafzHost" : "Welcome to RafzHost API"}
+        </h2>
+        <p className="description">
+          {lang === "id"
+            ? "Gunakan menu navigasi di atas untuk mengakses dokumentasi atau postingan."
+            : "Use the navigation menu above to access documentation or posts."}
+        </p>
+
+        {safeMode && (
+          <div className="alert">
+            {lang === "id"
+              ? "Safe mode aktif: beberapa konten sensitif mungkin disembunyikan."
+              : "Safe mode active: some sensitive content may be hidden."}
+          </div>
+        )}
       </main>
 
       <footer className="footer">
-        <p className="watermark">© Rafzhost API by Rafz (Rafflie Aditya)</p>
         <div className="thanks centered">
           <a
             href="https://github.com/siputzx/apisku"
@@ -60,12 +85,28 @@ export default function Home() {
             >
               <path
                 fill="currentColor"
-                d="M8 0C3.58 0 0 3.58 0 8c0 3.54..."
+                d="M8 0C3.58 0 0 3.58 0 8c0 3.54
+                2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+                0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94
+                -.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+                -.01-.53.63-.01 1.08.58 1.23.82.72 1.21
+                1.87.87 2.33.66.07-.52.28-.87.51-1.07
+                -1.78-.2-3.64-.89-3.64-3.95
+                0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12
+                0 0 .67-.21 2.2.82.64-.18
+                1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04
+                2.2-.82 2.2-.82.44 1.1.16 1.92.08
+                2.12.51.56.82 1.27.82 2.15
+                0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54
+                1.48 0 1.07-.01 1.93-.01 2.2
+                0 .21.15.46.55.38A8.013 8.013 0
+                0 0 16 8c0-4.42-3.58-8-8-8z"
               />
             </svg>
-            Siputzx for source code
+            <span>Siputzx for source code</span>
           </a>
         </div>
+        <p className="watermark">© 2025 RafzHost</p>
       </footer>
     </div>
   );
