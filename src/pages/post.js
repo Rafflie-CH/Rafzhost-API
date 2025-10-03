@@ -3,97 +3,103 @@
 import { useEffect, useState } from "react";
 import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
-import { Sun, Moon, Monitor, Github } from "lucide-react";
+import { ThemeProvider, useTheme } from "next-themes";
+import Link from "next/link";
 
-export default function Post() {
+function PostContent() {
+  const { theme, setTheme } = useTheme();
   const [lang, setLang] = useState("id");
   const [safeMode, setSafeMode] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (connection && connection.downlink < 1) setSafeMode(true);
-  }, []);
+    if (!safeMode || loaded) {
+      SwaggerUI({
+        dom_id: "#swagger",
+        url: "/swagger.json",
+        layout: "BaseLayout",
+        docExpansion: "none",
+        defaultModelsExpandDepth: -1,
+        deepLinking: true,
+      });
+    }
+  }, [safeMode, loaded]);
 
-  useEffect(() => {
-    SwaggerUI({
-      dom_id: "#swagger",
-      url: "/swagger.json",
-      presets: [SwaggerUI.presets.apis],
-      layout: "BaseLayout",
-      docExpansion: "none",
-      defaultModelsExpandDepth: -1,
-      deepLinking: true,
-      supportedSubmitMethods: ["get", "post", "put", "delete", "patch"],
-    });
-  }, []);
-
-  const getText = (key) => {
-    const texts = {
-      title: { id: "📮 Post Resmi API Rafzhost", en: "📮 Rafzhost Official API Post" },
-      switch: { id: "⬅️ Beralih ke Docs", en: "⬅️ Switch to Docs" },
-      safe: { id: "⚡ Mode Aman aktif (jaringan lambat terdeteksi)", en: "⚡ Safe Mode enabled (slow network detected)" },
-      thanks: { id: "Thanks to", en: "Thanks to" },
-      by: { id: "Rafzhost API by Rafz (Rafflie Aditya)", en: "Rafzhost API by Rafz (Rafflie Aditya)" }
-    };
-    return texts[key][lang];
+  const texts = {
+    title: { id: "📤 Post Rafzhost API", en: "📤 Rafzhost API Post" },
+    switch: { id: "Beralih ke Docs", en: "Switch to Docs" },
+    safe: { id: "Mode Aman", en: "Safe Mode" },
+    loadDocs: { id: "Muat Dokumentasi", en: "Load Documentation" },
+    hint: {
+      id: "Gunakan tombol di atas untuk mengganti tema, bahasa, dan mode aman.",
+      en: "Use the buttons above to switch theme, language, and safe mode."
+    }
   };
-
-  const toggleTheme = (mode) => {
-    if (mode === "dark") document.documentElement.classList.add("dark");
-    else document.documentElement.classList.remove("dark");
-    localStorage.setItem("theme", mode);
-  };
-
-  useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    if (saved === "dark") document.documentElement.classList.add("dark");
-  }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 text-black dark:text-white transition-colors duration-500">
-      <header className="bg-green-600 dark:bg-green-800 text-white p-4 flex flex-col md:flex-row justify-between items-center gap-4 shadow-md animate-fadeIn">
-        <h1 className="text-xl md:text-2xl font-bold">{getText("title")}</h1>
-        <div className="flex flex-wrap gap-3 items-center">
-          <a
-            href="/docs"
-            className="px-4 py-2 rounded-lg bg-white text-green-600 dark:bg-gray-700 dark:text-white font-semibold shadow hover:scale-105 transition"
-          >
-            {getText("switch")}
-          </a>
-
-          <select
-            value={lang}
-            onChange={(e) => setLang(e.target.value)}
-            className="rounded-lg px-3 py-2 shadow bg-white dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-600 hover:scale-105 transition"
-          >
-            <option value="id">🇮🇩 Bahasa</option>
-            <option value="en">🇺🇸 English</option>
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition">
+      <header className="bg-green-600 text-white p-4 flex flex-wrap justify-between items-center gap-3 shadow-md">
+        <h1 className="text-xl font-bold">{texts.title[lang]}</h1>
+        <div className="flex flex-wrap gap-2 items-center">
+          <Link href="/docs" className="px-3 py-2 bg-white text-green-600 rounded-lg hover:bg-gray-100">
+            {texts.switch[lang]}
+          </Link>
+          <select value={lang} onChange={(e) => setLang(e.target.value)} className="px-3 py-2 rounded text-black">
+            <option value="id">🇮🇩 ID</option>
+            <option value="en">🇺🇸 EN</option>
           </select>
-
-          <div className="flex gap-2">
-            <button onClick={() => toggleTheme("light")} className="p-2 rounded-full bg-white dark:bg-gray-700 shadow hover:scale-110 transition"><Sun className="w-5 h-5 text-yellow-500" /></button>
-            <button onClick={() => toggleTheme("dark")} className="p-2 rounded-full bg-white dark:bg-gray-700 shadow hover:scale-110 transition"><Moon className="w-5 h-5 text-gray-800 dark:text-yellow-300" /></button>
-            <button onClick={() => toggleTheme("system")} className="p-2 rounded-full bg-white dark:bg-gray-700 shadow hover:scale-110 transition"><Monitor className="w-5 h-5 text-blue-600" /></button>
-          </div>
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className="px-3 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg"
+          >
+            {theme === "dark" ? "🌙 Dark" : "☀️ Light"}
+          </button>
+          <button
+            onClick={() => setSafeMode(!safeMode)}
+            className="px-3 py-2 bg-yellow-400 text-black font-semibold rounded-lg hover:scale-105 transition"
+          >
+            {texts.safe[lang]}
+          </button>
         </div>
       </header>
 
-      {safeMode && <div className="bg-yellow-400 text-black text-center py-2 animate-pulse font-medium">{getText("safe")}</div>}
-
       <main className="flex-1 p-4">
-        <div id="swagger" className="min-h-screen rounded-lg shadow-lg bg-white dark:bg-gray-800 p-4"></div>
+        <p className="mb-4 italic text-sm opacity-80">{texts.hint[lang]}</p>
+        {safeMode && !loaded ? (
+          <div className="flex flex-col items-center justify-center mt-10">
+            <p className="mb-3">{texts.safe[lang]}: {lang === "id" ? "Aktif" : "Enabled"}</p>
+            <button
+              onClick={() => setLoaded(true)}
+              className="px-5 py-3 bg-green-600 text-white font-bold rounded-lg hover:scale-105 transition"
+            >
+              {texts.loadDocs[lang]}
+            </button>
+          </div>
+        ) : (
+          <div id="swagger" className="min-h-screen"></div>
+        )}
       </main>
 
-      <footer className="bg-gray-200 dark:bg-gray-800 text-center py-4 mt-6 text-sm space-y-2">
+      <footer className="bg-gray-200 dark:bg-gray-800 text-center p-4 text-sm mt-6">
         <p>
-          {getText("thanks")}{" "}
-          <a href="https://github.com/siputzx/apisku" target="_blank" rel="noopener noreferrer"
-             className="font-semibold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1">
-            <Github className="w-4 h-4" /> Siputzx for source code
+          Thanks to{" "}
+          <a href="https://github.com/siputzx/apisku" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline flex items-center justify-center gap-1">
+            <svg className="w-4 h-4 inline" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M8 0C3.58 0 0 3.58..."></path>
+            </svg>
+            Siputzx for source code
           </a>
         </p>
-        <p className="opacity-80">{getText("by")}</p>
+        <p className="mt-1">Rafzhost API by Rafz (Rafflie Aditya)</p>
       </footer>
     </div>
+  );
+}
+
+export default function PostPage() {
+  return (
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <PostContent />
+    </ThemeProvider>
   );
 }
