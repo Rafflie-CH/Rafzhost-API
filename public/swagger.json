@@ -3,49 +3,44 @@
   "info": {
     "title": "Rafzhost API",
     "version": "1.0.0",
-    "description": "📖 Dokumentasi resmi API Rafzhost",
-    "contact": {
-      "name": "Rafflie Aditya",
-      "url": "https://api.rafzhost.xyz"
-    }
+    "description": "📖 Dokumentasi resmi API Rafzhost"
   },
   "servers": [
-    { "url": "https://api.rafzhost.xyz", "description": "Main Server" },
-    { "url": "https://rafzhost-api.vercel.app", "description": "Vercel Server" }
+    { "url": "https://api.rafzhost.xyz", "description": "Main Server" }
   ],
   "paths": {
-    "/api/ping": {
+    "/api/hello": {
+      "post": {
+        "tags": ["Misc"],
+        "summary": "Test POST hello",
+        "requestBody": {
+          "content": { "application/json": { "schema": { "type": "object" } } }
+        },
+        "responses": {
+          "200": { "description": "OK" }
+        }
+      },
       "get": {
         "tags": ["Misc"],
-        "summary": "Cek koneksi API",
-        "responses": {
-          "200": {
-            "description": "Server merespon dengan pong"
-          }
-        }
+        "summary": "Simple hello GET",
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/private": {
+      "get": {
+        "tags": ["Private"],
+        "summary": "Private endpoint (risky)",
+        "responses": { "200": { "description": "private" } }
       }
     },
     "/api/downloader/tiktok": {
       "get": {
         "tags": ["Downloader"],
-        "summary": "Download video TikTok tanpa watermark",
+        "summary": "Download TikTok video",
         "parameters": [
-          {
-            "in": "query",
-            "name": "url",
-            "required": true,
-            "schema": { "type": "string" },
-            "description": "URL video TikTok"
-          }
+          { "in": "query", "name": "url", "required": true, "schema": { "type": "string" }, "description": "Video URL" }
         ],
-        "responses": {
-          "200": {
-            "description": "Data video berhasil diambil"
-          },
-          "400": {
-            "description": "URL parameter tidak ada"
-          }
-        }
+        "responses": { "200": { "description": "OK" } }
       }
     }
   }
