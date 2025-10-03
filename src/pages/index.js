@@ -52,32 +52,45 @@ export default function Home() {
         <p className="landing-desc">{texts.desc[lang]}</p>
 
         <div className="landing-actions">
-          <Link href="/docs"><a className="big-btn blue">{texts.docs[lang]}</a></Link>
-          <Link href="/post"><a className="big-btn green">{texts.post[lang]}</a></Link>
+          <Link href="/docs"><a className="big-btn blue" aria-label="Open Docs">{texts.docs[lang]}</a></Link>
+          <Link href="/post"><a className="big-btn green" aria-label="Open Post">{texts.post[lang]}</a></Link>
         </div>
 
         <div className="landing-controls">
-          <select className="control-select" value={theme} onChange={(e) => applyTheme(e.target.value)}>
+          <select
+            className="control-select"
+            value={theme}
+            onChange={(e) => applyTheme(e.target.value)}
+            aria-label="Select theme"
+          >
             <option value="system">System</option>
             <option value="light">Light</option>
             <option value="dark">Dark</option>
           </select>
 
-          <select className="control-select" value={lang} onChange={(e) => setLang(e.target.value)}>
+          <select
+            className="control-select"
+            value={lang}
+            onChange={(e) => setLang(e.target.value)}
+            aria-label="Select language"
+          >
             <option value="id">🇮🇩 ID</option>
             <option value="en">🇺🇸 EN</option>
           </select>
 
-          <button className="control-btn" onClick={toggleSafe}>
-            {safeMode ? "Mode: Aman (On)" : "Mode: Aman (Off)"}
+          <button className="control-btn" onClick={toggleSafe} aria-pressed={safeMode}>
+            {safeMode ? "Mode Aman: ON" : "Mode Aman: OFF"}
           </button>
         </div>
       </header>
 
       <footer className="landing-footer">
-        <div className="thanks">
-          <a href="https://github.com/siputzx/apisku" target="_blank" rel="noreferrer" className="thanks-link">
-            <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58..."/></svg>
+        <div className="thanks centered">
+          <a href="https://github.com/siputzx/apisku" target="_blank" rel="noopener noreferrer" className="thanks-link">
+            <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false" className="github-icon">
+              <!-- replace with full GitHub path if desired -->
+              <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54..."></path>
+            </svg>
             Siputzx for source code
           </a>
         </div>
