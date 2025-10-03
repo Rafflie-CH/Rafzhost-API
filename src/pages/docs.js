@@ -1,33 +1,40 @@
+// src/pages/docs.js
 "use client";
+
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import SwaggerUI from "swagger-ui-react";
-import "swagger-ui-react/swagger-ui.css";
 import Link from "next/link";
+import "swagger-ui-react/swagger-ui.css";
+
+// import Swagger client-only
+const SwaggerUI = dynamic(() => import("swagger-ui-react"), { ssr: false });
 
 export default function DocsPage() {
   const [lang, setLang] = useState("id");
-  const [safeMode, setSafeMode] = useState(
-    typeof window !== "undefined" && localStorage.getItem("safeMode") === "true"
-  );
-  const [loaded, setLoaded] = useState(false);
+  const [theme, setTheme] = useState(typeof window !== "undefined" ? (localStorage.getItem("theme") || "system") : "system");
+  const [safeMode, setSafeMode] = useState(typeof window !== "undefined" && localStorage.getItem("safeMode") === "true");
   const [search, setSearch] = useState("");
-  const [theme, setTheme] = useState(
-    typeof window !== "undefined" ? localStorage.getItem("theme") || "system" : "system"
-  );
+  const [specReady, setSpecReady] = useState(false); // show skeleton while spec loads
+  const [useSafeSwagger, setUseSafeSwagger] = useState(false);
 
   useEffect(() => {
-    if (!safeMode || loaded) {
-      SwaggerUI({
-        dom_id: "#swagger",
-        url: "/swagger.json",
-        layout: "BaseLayout",
-        docExpansion: "none",
-        defaultModelsExpandDepth: -1,
-        deepLinking: true,
-        filter: search || false
-      });
-    }
-  }, [safeMode, loaded, search]);
+    // load swagger.json to detect availability; keep skeleton for small time
+    let mounted = true;
+    setSpecReady(false);
+    fetch("/swagger.json")
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then(() => { if (mounted) { setSpecReady(true); } })
+      .catch(() => { if (mounted) setSpecReady(false); })
+      .finally(() => { if (mounted) setTimeout(()=> setSpecReady(true), 300); });
+    return () => { mounted = false; };
+  }, []);
+
+  useEffect(() => {
+    const t = localStorage.getItem("theme") || "system";
+    setTheme(t);
+    const s = localStorage.getItem("safeMode") === "true";
+    setSafeMode(s);
+  }, []);
 
   const applyTheme = (val) => {
     localStorage.setItem("theme", val);
@@ -40,81 +47,94 @@ export default function DocsPage() {
     }
   };
 
-  const toggleSafeMode = () => {
-    const newVal = !safeMode;
-    setSafeMode(newVal);
-    localStorage.setItem("safeMode", newVal);
-    document.documentElement.classList.toggle("no-anim", newVal);
+  const toggleSafe = () => {
+    const v = !safeMode;
+    localStorage.setItem("safeMode", v);
+    document.documentElement.classList.toggle("no-anim", v);
+    setSafeMode(v);
   };
 
   const texts = {
     title: { id: "📖 Dokumentasi Rafzhost API", en: "📖 Rafzhost API Documentation" },
     switch: { id: "Beralih ke Post", en: "Switch to Post" },
     safe: { id: "Mode Aman", en: "Safe Mode" },
-    normal: { id: "Kembali Normal", en: "Back to Normal" },
-    loadDocs: { id: "Muat Dokumentasi", en: "Load Documentation" },
-    search: { id: "Cari Endpoint...", en: "Search Endpoint..." },
-    hint: {
-      id: "Gunakan tombol di atas untuk mengganti tema, bahasa, mode aman, atau mencari endpoint.",
-      en: "Use the buttons above to change theme, language, safe mode, or search endpoints."
-    }
+    load: { id: "Muat Dokumentasi", en: "Load Documentation" },
+    searchPlaceholder: { id: "🔍 Cari endpoint...", en: "🔍 Search endpoint..." }
   };
 
   return (
-    <div className="page dark:bg-gray-900 dark:text-white">
-      <header className="header bg-blue-600">
-        <h1>{texts.title[lang]}</h1>
-        <div className="controls">
-          <Link href="/post" className="btn btn-light text-blue-600">{texts.switch[lang]}</Link>
-          <select value={lang} onChange={(e) => setLang(e.target.value)} className="select">
+    <div className="page docs-page">
+      <header className="page-header docs-header">
+        <div>
+          <h1>{texts.title[lang]}</h1>
+        </div>
+        <div className="header-controls">
+          <Link href="/post"><a className="btn-outline"> {texts.switch[lang]} </a></Link>
+
+          <select className="control-select" value={lang} onChange={(e)=> setLang(e.target.value)}>
             <option value="id">🇮🇩 ID</option>
             <option value="en">🇺🇸 EN</option>
           </select>
-          <select onChange={(e) => applyTheme(e.target.value)} value={theme} className="select">
-            <option value="light">☀️ Light</option>
-            <option value="dark">🌙 Dark</option>
-            <option value="system">💻 System</option>
+
+          <select className="control-select" value={theme} onChange={(e)=> applyTheme(e.target.value)}>
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
           </select>
-          <button onClick={toggleSafeMode} className="btn btn-warning">
-            {safeMode ? texts.normal[lang] : texts.safe[lang]}
-          </button>
+
+          <button className="control-btn" onClick={toggleSafe}>{safeMode ? "Safe: On" : "Safe: Off"}</button>
         </div>
       </header>
 
-      <main className="main">
-        <p className="hint">{texts.hint[lang]}</p>
-        {!safeMode && (
-          <div className="search-bar">
+      <main className="page-main">
+        <div className="search-row">
+          <input
+            className="search-input"
+            placeholder={texts.searchPlaceholder[lang]}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <label className="safe-toggle-inline">
             <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={texts.search[lang]}
-              className="search-input"
+              type="checkbox"
+              checked={useSafeSwagger}
+              onChange={(e) => setUseSafeSwagger(e.target.checked)}
+            /> use safe swagger
+          </label>
+        </div>
+
+        {!specReady && (
+          <div className="skeleton-wrap">
+            <div className="skeleton title-skel" />
+            <div className="skeleton row-skel" />
+            <div className="skeleton row-skel" />
+          </div>
+        )}
+
+        {specReady && (
+          <div className="swagger-wrap">
+            <SwaggerUI
+              url={useSafeSwagger ? "/swagger-safe.json" : "/swagger.json"}
+              docExpansion="none"
+              defaultModelsExpandDepth={-1}
+              deepLinking={!safeMode}
+              filter={search || false}
             />
           </div>
         )}
-        {safeMode && !loaded ? (
-          <div className="safe-box">
-            <p>{texts.safe[lang]} ✅</p>
-            <button onClick={() => setLoaded(true)} className="btn btn-secondary">
-              {texts.loadDocs[lang]}
-            </button>
-          </div>
-        ) : (
-          <div id="swagger" className="swagger-box"></div>
-        )}
       </main>
 
-      <footer className="footer">
-        <p>
-          Thanks to{" "}
-          <a href="https://github.com/siputzx/apisku" target="_blank" className="link-blue">
+      <footer className="page-footer">
+        <div className="footer-center">
+          <a href="https://github.com/siputzx/apisku" target="_blank" rel="noreferrer" className="thanks-link">
+            <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0..."/></svg>
             Siputzx for source code
           </a>
-        </p>
-        <p className="watermark">Rafzhost API by Rafz (Rafflie Aditya)</p>
+          <div className="owner">Rafzhost API by Rafz (Rafflie Aditya)</div>
+        </div>
       </footer>
+
+      <div className="watermark">Rafzhost API — Rafz (Rafflie Aditya)</div>
     </div>
   );
 }
