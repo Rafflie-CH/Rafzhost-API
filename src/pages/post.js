@@ -16,7 +16,6 @@ export default function PostPage() {
   const [search, setSearch] = useState("");
   const [specReady, setSpecReady] = useState(false);
 
-  // trial inputs
   const [endpoint, setEndpoint] = useState("/api/hello");
   const [method, setMethod] = useState("post");
   const [body, setBody] = useState('{"msg":"hello"}');
@@ -27,8 +26,13 @@ export default function PostPage() {
     fetch("/swagger.json")
       .then((r) => r.ok ? r.json() : Promise.reject())
       .then(() => { if (mounted) setSpecReady(true); })
-      .catch(() => { if (mounted) setSpecReady(true); }) // still allow Post UI
+      .catch(() => { if (mounted) setSpecReady(true); })
       .finally(() => { mounted = false; });
+  }, []);
+
+  useEffect(() => {
+    setTheme(localStorage.getItem("theme") || "system");
+    setSafeMode(localStorage.getItem("safeMode") === "true");
   }, []);
 
   const applyTheme = (val) => {
@@ -62,24 +66,27 @@ export default function PostPage() {
   return (
     <div className="page post-page">
       <header className="page-header post-header">
-        <h1>📤 Post Rafzhost API</h1>
+        <div><h1>📤 Post Rafzhost API</h1></div>
         <div className="header-controls">
           <Link href="/docs"><a className="btn-outline">Switch to Docs</a></Link>
+
           <select className="control-select" value={lang} onChange={(e)=> setLang(e.target.value)}>
             <option value="id">🇮🇩 ID</option>
             <option value="en">🇺🇸 EN</option>
           </select>
+
           <select className="control-select" value={theme} onChange={(e)=> applyTheme(e.target.value)}>
             <option value="system">System</option>
             <option value="light">Light</option>
             <option value="dark">Dark</option>
           </select>
+
           <button className="control-btn" onClick={toggleSafe}>{safeMode ? "Safe: On" : "Safe: Off"}</button>
         </div>
       </header>
 
       <main className="page-main">
-        <div className="post-left">
+        <div style={{flex:1}}>
           <div className="search-row">
             <input className="search-input" placeholder="🔍 Cari endpoint..." value={search} onChange={(e)=> setSearch(e.target.value)} />
           </div>
