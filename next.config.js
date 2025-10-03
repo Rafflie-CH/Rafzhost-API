@@ -1,15 +1,12 @@
-// next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   async redirects() {
     return [
-      {
-        source: "/",       // kalau buka root
-        destination: "/docs", // langsung diarahkan ke /docs
-        permanent: true,
-      },
+      // ❌ Hapus redirect ke /docs, biarkan root "/" ke index.js
+      // Kalau mau redirect lain tinggal tambahkan di sini
     ];
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
