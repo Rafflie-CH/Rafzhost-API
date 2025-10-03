@@ -1,17 +1,19 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
-import { ThemeProvider, useTheme } from "next-themes";
 import Link from "next/link";
 
-function PostContent() {
-  const { theme, setTheme } = useTheme();
+export default function PostPage() {
   const [lang, setLang] = useState("id");
-  const [safeMode, setSafeMode] = useState(false);
+  const [safeMode, setSafeMode] = useState(
+    typeof window !== "undefined" && localStorage.getItem("safeMode") === "true"
+  );
   const [loaded, setLoaded] = useState(false);
   const [search, setSearch] = useState("");
+  const [theme, setTheme] = useState(
+    typeof window !== "undefined" ? localStorage.getItem("theme") || "system" : "system"
+  );
 
   useEffect(() => {
     if (!safeMode || loaded) {
@@ -27,6 +29,24 @@ function PostContent() {
     }
   }, [safeMode, loaded, search]);
 
+  const applyTheme = (val) => {
+    localStorage.setItem("theme", val);
+    setTheme(val);
+    if (val === "system") {
+      const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.classList.toggle("dark", isDark);
+    } else {
+      document.documentElement.classList.toggle("dark", val === "dark");
+    }
+  };
+
+  const toggleSafeMode = () => {
+    const newVal = !safeMode;
+    setSafeMode(newVal);
+    localStorage.setItem("safeMode", newVal);
+    document.documentElement.classList.toggle("no-anim", newVal);
+  };
+
   const texts = {
     title: { id: "📤 Post Rafzhost API", en: "📤 Rafzhost API Post" },
     switch: { id: "Beralih ke Docs", en: "Switch to Docs" },
@@ -41,38 +61,28 @@ function PostContent() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition animate-fadeIn">
-      <header className="bg-green-600 text-white p-4 flex flex-wrap justify-between items-center gap-3 shadow-md">
-        <h1 className="text-xl font-bold">{texts.title[lang]}</h1>
-        <div className="flex flex-wrap gap-2 items-center">
-          <Link href="/docs" className="btn btn-light text-green-600">
-            {texts.switch[lang]}
-          </Link>
+    <div className="page dark:bg-gray-900 dark:text-white">
+      <header className="header bg-green-600">
+        <h1>{texts.title[lang]}</h1>
+        <div className="controls">
+          <Link href="/docs" className="btn btn-light text-green-600">{texts.switch[lang]}</Link>
           <select value={lang} onChange={(e) => setLang(e.target.value)} className="select">
             <option value="id">🇮🇩 ID</option>
             <option value="en">🇺🇸 EN</option>
           </select>
-          <select
-            onChange={(e) => setTheme(e.target.value)}
-            value={theme}
-            className="select"
-          >
+          <select onChange={(e) => applyTheme(e.target.value)} value={theme} className="select">
             <option value="light">☀️ Light</option>
             <option value="dark">🌙 Dark</option>
             <option value="system">💻 System</option>
           </select>
-          <button
-            onClick={() => setSafeMode(!safeMode)}
-            className="btn btn-warning"
-          >
+          <button onClick={toggleSafeMode} className="btn btn-warning">
             {safeMode ? texts.normal[lang] : texts.safe[lang]}
           </button>
         </div>
       </header>
 
-      <main className="flex-1 p-4">
-        <p className="mb-4 italic text-sm opacity-80">{texts.hint[lang]}</p>
-
+      <main className="main">
+        <p className="hint">{texts.hint[lang]}</p>
         {!safeMode && (
           <div className="search-bar">
             <input
@@ -84,44 +94,27 @@ function PostContent() {
             />
           </div>
         )}
-
         {safeMode && !loaded ? (
-          <div className="flex flex-col items-center justify-center mt-10">
-            <p className="mb-3">{texts.safe[lang]} ✅</p>
-            <button
-              onClick={() => setLoaded(true)}
-              className="btn btn-secondary"
-            >
+          <div className="safe-box">
+            <p>{texts.safe[lang]} ✅</p>
+            <button onClick={() => setLoaded(true)} className="btn btn-secondary">
               {texts.loadDocs[lang]}
             </button>
           </div>
         ) : (
-          <div id="swagger" className="min-h-screen"></div>
+          <div id="swagger" className="swagger-box"></div>
         )}
       </main>
 
-      <footer>
+      <footer className="footer">
         <p>
           Thanks to{" "}
-          <a href="https://github.com/siputzx/apisku" target="_blank" rel="noopener noreferrer" className="text-green-500 hover:underline inline-flex items-center gap-1">
-            <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
-              <path d="M8 0C3.58 0 0 3.58..."></path>
-            </svg>
+          <a href="https://github.com/siputzx/apisku" target="_blank" className="link-green">
             Siputzx for source code
           </a>
         </p>
-        <p>Rafzhost API by Rafz (Rafflie Aditya)</p>
+        <p className="watermark">Rafzhost API by Rafz (Rafflie Aditya)</p>
       </footer>
-
-      <div className="watermark">Rafzhost API by Rafz (Rafflie Aditya)</div>
     </div>
-  );
-}
-
-export default function PostPage() {
-  return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <PostContent />
-    </ThemeProvider>
   );
 }
