@@ -1,33 +1,35 @@
+// src/pages/post.js
 "use client";
+
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
-import SwaggerUI from "swagger-ui-react";
-import "swagger-ui-react/swagger-ui.css";
 import Link from "next/link";
+import axios from "axios";
+import "swagger-ui-react/swagger-ui.css";
+
+const SwaggerUI = dynamic(() => import("swagger-ui-react"), { ssr: false });
 
 export default function PostPage() {
   const [lang, setLang] = useState("id");
-  const [safeMode, setSafeMode] = useState(
-    typeof window !== "undefined" && localStorage.getItem("safeMode") === "true"
-  );
-  const [loaded, setLoaded] = useState(false);
+  const [theme, setTheme] = useState(typeof window !== "undefined" ? localStorage.getItem("theme") || "system" : "system");
+  const [safeMode, setSafeMode] = useState(typeof window !== "undefined" && localStorage.getItem("safeMode") === "true");
   const [search, setSearch] = useState("");
-  const [theme, setTheme] = useState(
-    typeof window !== "undefined" ? localStorage.getItem("theme") || "system" : "system"
-  );
+  const [specReady, setSpecReady] = useState(false);
+
+  // trial inputs
+  const [endpoint, setEndpoint] = useState("/api/hello");
+  const [method, setMethod] = useState("post");
+  const [body, setBody] = useState('{"msg":"hello"}');
+  const [result, setResult] = useState(null);
 
   useEffect(() => {
-    if (!safeMode || loaded) {
-      SwaggerUI({
-        dom_id: "#swagger",
-        url: "/swagger.json",
-        layout: "BaseLayout",
-        docExpansion: "none",
-        defaultModelsExpandDepth: -1,
-        deepLinking: true,
-        filter: search || false
-      });
-    }
-  }, [safeMode, loaded, search]);
+    let mounted = true;
+    fetch("/swagger.json")
+      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then(() => { if (mounted) setSpecReady(true); })
+      .catch(() => { if (mounted) setSpecReady(true); }) // still allow Post UI
+      .finally(() => { mounted = false; });
+  }, []);
 
   const applyTheme = (val) => {
     localStorage.setItem("theme", val);
@@ -40,81 +42,83 @@ export default function PostPage() {
     }
   };
 
-  const toggleSafeMode = () => {
-    const newVal = !safeMode;
-    setSafeMode(newVal);
-    localStorage.setItem("safeMode", newVal);
-    document.documentElement.classList.toggle("no-anim", newVal);
+  const toggleSafe = () => {
+    const v = !safeMode;
+    localStorage.setItem("safeMode", v);
+    document.documentElement.classList.toggle("no-anim", v);
+    setSafeMode(v);
   };
 
-  const texts = {
-    title: { id: "📤 Post Rafzhost API", en: "📤 Rafzhost API Post" },
-    switch: { id: "Beralih ke Docs", en: "Switch to Docs" },
-    safe: { id: "Mode Aman", en: "Safe Mode" },
-    normal: { id: "Kembali Normal", en: "Back to Normal" },
-    loadDocs: { id: "Muat Dokumentasi", en: "Load Documentation" },
-    search: { id: "Cari Endpoint...", en: "Search Endpoint..." },
-    hint: {
-      id: "Gunakan tombol di atas untuk mengganti tema, bahasa, mode aman, atau mencari endpoint.",
-      en: "Use the buttons above to change theme, language, safe mode, or search endpoints."
+  const tryRequest = async () => {
+    try {
+      const parsed = body ? JSON.parse(body) : {};
+      const resp = await axios({ url: endpoint, method, data: parsed });
+      setResult({ ok: true, data: resp.data });
+    } catch (err) {
+      setResult({ ok: false, error: err.response?.data || err.message });
     }
   };
 
   return (
-    <div className="page dark:bg-gray-900 dark:text-white">
-      <header className="header bg-green-600">
-        <h1>{texts.title[lang]}</h1>
-        <div className="controls">
-          <Link href="/docs" className="btn btn-light text-green-600">{texts.switch[lang]}</Link>
-          <select value={lang} onChange={(e) => setLang(e.target.value)} className="select">
+    <div className="page post-page">
+      <header className="page-header post-header">
+        <h1>📤 Post Rafzhost API</h1>
+        <div className="header-controls">
+          <Link href="/docs"><a className="btn-outline">Switch to Docs</a></Link>
+          <select className="control-select" value={lang} onChange={(e)=> setLang(e.target.value)}>
             <option value="id">🇮🇩 ID</option>
             <option value="en">🇺🇸 EN</option>
           </select>
-          <select onChange={(e) => applyTheme(e.target.value)} value={theme} className="select">
-            <option value="light">☀️ Light</option>
-            <option value="dark">🌙 Dark</option>
-            <option value="system">💻 System</option>
+          <select className="control-select" value={theme} onChange={(e)=> applyTheme(e.target.value)}>
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
           </select>
-          <button onClick={toggleSafeMode} className="btn btn-warning">
-            {safeMode ? texts.normal[lang] : texts.safe[lang]}
-          </button>
+          <button className="control-btn" onClick={toggleSafe}>{safeMode ? "Safe: On" : "Safe: Off"}</button>
         </div>
       </header>
 
-      <main className="main">
-        <p className="hint">{texts.hint[lang]}</p>
-        {!safeMode && (
-          <div className="search-bar">
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={texts.search[lang]}
-              className="search-input"
-            />
+      <main className="page-main">
+        <div className="post-left">
+          <div className="search-row">
+            <input className="search-input" placeholder="🔍 Cari endpoint..." value={search} onChange={(e)=> setSearch(e.target.value)} />
           </div>
-        )}
-        {safeMode && !loaded ? (
-          <div className="safe-box">
-            <p>{texts.safe[lang]} ✅</p>
-            <button onClick={() => setLoaded(true)} className="btn btn-secondary">
-              {texts.loadDocs[lang]}
-            </button>
+
+          {specReady && (
+            <div className="swagger-wrap">
+              <SwaggerUI url="/swagger.json" docExpansion="none" filter={search || false} />
+            </div>
+          )}
+        </div>
+
+        <aside className="post-right">
+          <h3>Try endpoint</h3>
+          <label>Endpoint</label>
+          <input className="input" value={endpoint} onChange={(e)=> setEndpoint(e.target.value)} />
+          <label>Method</label>
+          <select className="control-select" value={method} onChange={(e)=> setMethod(e.target.value)}>
+            <option value="post">POST</option>
+            <option value="get">GET</option>
+          </select>
+          <label>JSON Body</label>
+          <textarea className="textarea" rows="6" value={body} onChange={(e)=> setBody(e.target.value)} />
+          <button className="btn" onClick={tryRequest}>Send</button>
+
+          <div className="result-box">
+            <h4>Result</h4>
+            <pre className="result-pre">{ result ? JSON.stringify(result, null, 2) : "No result yet" }</pre>
           </div>
-        ) : (
-          <div id="swagger" className="swagger-box"></div>
-        )}
+        </aside>
       </main>
 
-      <footer className="footer">
-        <p>
-          Thanks to{" "}
-          <a href="https://github.com/siputzx/apisku" target="_blank" className="link-green">
-            Siputzx for source code
-          </a>
-        </p>
-        <p className="watermark">Rafzhost API by Rafz (Rafflie Aditya)</p>
+      <footer className="page-footer">
+        <div className="footer-center">
+          <a href="https://github.com/siputzx/apisku" target="_blank" rel="noreferrer" className="thanks-link">Siputzx for source code</a>
+          <div className="owner">Rafzhost API by Rafz (Rafflie Aditya)</div>
+        </div>
       </footer>
+
+      <div className="watermark">Rafzhost API — Rafz</div>
     </div>
   );
 }
