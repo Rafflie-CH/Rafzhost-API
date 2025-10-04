@@ -10,33 +10,110 @@
   ],
   "paths": {
     "/api/hello": {
-      "post": {
-        "tags": ["Misc"],
-        "summary": "Test POST hello",
-        "requestBody": { "content": { "application/json": { "schema": { "type": "object" } } } },
-        "responses": { "200": { "description": "OK" } }
-      },
       "get": {
-        "tags": ["Misc"],
+        "tags": ["Docs"],
         "summary": "Simple hello GET",
-        "responses": { "200": { "description": "OK" } }
+        "responses": {
+          "200": { "description": "OK" }
+        }
+      },
+      "post": {
+        "tags": ["Post"],
+        "summary": "Test POST hello",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "OK" }
+        }
       }
     },
     "/api/downloader/tiktok": {
       "get": {
-        "tags": ["Downloader"],
-        "summary": "Download TikTok video",
+        "tags": ["Docs"],
+        "summary": "Download TikTok video (via query)",
         "parameters": [
-          { "in": "query", "name": "url", "required": true, "schema": { "type": "string" }, "description": "Video URL" }
+          {
+            "in": "query",
+            "name": "url",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Video URL",
+            "example": "https://www.tiktok.com/@username/video/1234567890"
+          }
         ],
-        "responses": { "200": { "description": "OK" } }
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": true,
+                  "data": {
+                    "title": "Video title",
+                    "author": "username",
+                    "video": "https://download-link.mp4",
+                    "music": "https://music-link.mp3"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Post"],
+        "summary": "Download TikTok video (via JSON body)",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "example": "https://www.tiktok.com/@username/video/1234567890"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": true,
+                  "data": {
+                    "title": "Video title",
+                    "author": "username",
+                    "video": "https://download-link.mp4",
+                    "music": "https://music-link.mp3"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/private": {
       "get": {
         "tags": ["Private"],
         "summary": "Private endpoint (risky)",
-        "responses": { "200": { "description": "private" } }
+        "responses": {
+          "200": { "description": "private" }
+        }
       }
     }
   }
