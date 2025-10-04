@@ -66,33 +66,28 @@
       }
     },
     {
-  "/api/m/brat": {
-    "post": {
-      "summary": "Contoh POST request Brat API",
-      "tags": ["Maker", "Image", "GIF"],
-      "requestBody": {
-        "required": true,
-        "content": {
-          "application/json": {
-            "example": {
-              "text": "Hello from Rafzhost!",
-              "isAnimated": true,
-              "delay": 300
+    "/api/m/brat": {
+      "post": {
+        "summary": "Generate Brat Media via POST",
+        "consumes": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "text": { "type": "string" },
+                "media": { "type": "string", "enum": ["png", "gif", "webp", "mp4"] },
+                "delay": { "type": "integer" }
+              },
+              "required": ["text", "media"]
             }
           }
-        }
-      },
-      "responses": {
-        "200": {
-          "description": "Image/GIF berhasil dibuat",
-          "content": {
-            "image/png": {},
-            "image/gif": {}
-          }
-        }
+        ],
+        "responses": { "200": { "description": "Media berhasil dihasilkan" } }
       }
     }
-  }
-  }
   }
 }
