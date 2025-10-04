@@ -187,3 +187,46 @@ html.dark .swagger-ui * {
 
 /* disable animations in safe mode (class 'no-anim' on <html>) */
 html.no-anim * { transition: none !important; animation: none !important; }
+
+.swagger-card {
+  position: relative;
+}
+
+/* Badge label untuk Docs */
+.docs-page .swagger-card::before {
+  content: "📖 Docs";
+  position: absolute;
+  top: -12px;
+  left: 12px;
+  background: #007bff; /* biru */
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Badge label untuk Post */
+.post-page .swagger-card::before {
+  content: "📤 Post";
+  position: absolute;
+  top: -12px;
+  left: 12px;
+  background: #28a745; /* hijau */
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Dark theme versi */
+.dark .docs-page .swagger-card::before {
+  background: #3399ff;
+}
+
+.dark .post-page .swagger-card::before {
+  background: #34d058;
+}
