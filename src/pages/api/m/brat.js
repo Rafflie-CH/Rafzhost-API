@@ -1,4 +1,4 @@
-const { createCanvas } = require("@napi-rs/canvas-linux-x64-gnu");
+const { createCanvas } = require("@napi-rs/canvas");
 const GIFEncoder = require("gifencoder");
 
 function createImageResponse(res, buffer, contentType = "image/png") {
