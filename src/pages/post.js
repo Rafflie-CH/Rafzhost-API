@@ -25,7 +25,7 @@ export default function PostPage() {
     setTheme(localStorage.getItem("theme") || "system");
     setSafeMode(localStorage.getItem("safeMode") === "true");
     let mounted = true;
-    fetch("/swagger.json")
+    fetch("/swagger-post.json")
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(() => mounted && setSpecReady(true))
       .catch(() => mounted && setSpecReady(true));
@@ -63,9 +63,9 @@ export default function PostPage() {
   return (
     <div className="page post-page">
       <header className="page-header header-centered">
-        <div><h1>📤 Post Rafzhost API</h1></div>
+        <div><h1>📤 {lang === "id" ? "Post Rafzhost API" : "Post Rafzhost API"}</h1></div>
         <div className="header-controls">
-          <Link href="/docs"><a className="btn outline">Switch to Docs</a></Link>
+          <Link href="/docs"><a className="btn outline">{lang === "id" ? "Beralih ke Docs" : "Switch to Docs"}</a></Link>
           <select className="control-select" value={lang} onChange={(e)=> setLang(e.target.value)}>
             <option value="id">🇮🇩 ID</option>
             <option value="en">🇺🇸 EN</option>
@@ -82,12 +82,12 @@ export default function PostPage() {
       <main className="page-main split">
         <div className="card swagger-card">
           <div className="search-row">
-            <input className="search-input" placeholder="🔍 Cari endpoint..." value={search} onChange={(e)=> setSearch(e.target.value)} />
+            <input className="search-input" placeholder={lang === "id" ? "🔍 Cari endpoint..." : "🔍 Search endpoint..."} value={search} onChange={(e)=> setSearch(e.target.value)} />
           </div>
 
           {specReady && (
             <div className="swagger-wrap">
-              <SwaggerUI url="/swagger.json" docExpansion="none" filter={search || false} />
+              <SwaggerUI url="/swagger-post.json" docExpansion="none" filter={search || false} />
             </div>
           )}
         </div>
