@@ -18,7 +18,8 @@
     "swagger-jsdoc": "^6.2.8",
     "next-swagger-doc": "^0.4.0",
     "@napi-rs/canvas": "^0.1.80",
-    "framer-motion": "^11.0.3"
+    "framer-motion": "^11.0.3",
+    "sharp": "latest"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",
