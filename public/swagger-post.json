@@ -65,11 +65,9 @@
         "responses": { "200": { "description": "OK" } }
       }
     },
-    {
     "/api/m/brat": {
       "post": {
-        "summary": "Generate Brat Media via POST",
-        "consumes": ["application/json"],
+        "summary": "Generate Brat image/video",
         "parameters": [
           {
             "in": "body",
@@ -80,13 +78,13 @@
               "properties": {
                 "text": { "type": "string" },
                 "media": { "type": "string", "enum": ["png", "gif", "webp", "mp4"] },
-                "delay": { "type": "integer" }
+                "delay": { "type": "integer", "default": 150 }
               },
               "required": ["text", "media"]
             }
           }
         ],
-        "responses": { "200": { "description": "Media berhasil dihasilkan" } }
+        "responses": { "200": { "description": "Berhasil generate" } }
       }
     }
   }
