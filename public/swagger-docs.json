@@ -1,46 +1,54 @@
 {
   "openapi": "3.0.0",
-  "info": { "title": "Rafzhost API (Docs)", "version": "1.0.0" },
+  "info": { 
+    "title": "Rafzhost API (Docs)", 
+    "version": "1.0.0" 
+  },
   "paths": {
     "/api/ping": {
-      "get": { "summary": "Cek koneksi API", "responses": { "200": { "description": "OK" } } }
+      "get": { 
+        "summary": "Cek koneksi API", 
+        "responses": { 
+          "200": { "description": "OK" } 
+        } 
+      }
     },
     "/api/dl/tiktok": {
-  "get": {
-    "summary": "TikTok Downloader",
-    "description": "Download video TikTok tanpa watermark via query param.",
-    "tags": ["DOWNLOADER", "VIDEO", "TIKTOK"],
-    "parameters": [
-      {
-        "name": "url",
-        "in": "query",
-        "required": true,
-        "schema": {
-          "type": "string",
-          "example": "https://www.tiktok.com/@username/video/1234567890"
-        },
-        "description": "URL video TikTok"
-      }
-    ],
-    "responses": {
-      "200": {
-        "description": "Berhasil ambil data TikTok",
-        "content": {
-          "application/json": {
-            "example": {
-              "status": true,
-              "data": {
-                "title": "Video title",
-                "author": "username",
-                "video": "https://download-link.mp4",
-                "music": "https://music-link.mp3"
+      "get": {
+        "summary": "TikTok Downloader",
+        "description": "Download video TikTok tanpa watermark via query param.",
+        "tags": ["DOWNLOADER", "VIDEO", "TIKTOK"],
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "https://www.tiktok.com/@username/video/1234567890"
+            },
+            "description": "URL video TikTok"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Berhasil ambil data TikTok",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": true,
+                  "data": {
+                    "title": "Video title",
+                    "author": "username",
+                    "video": "https://download-link.mp4",
+                    "music": "https://music-link.mp3"
+                  }
+                }
               }
             }
           }
         }
       }
-    }
-  }
     }
   }
 }
