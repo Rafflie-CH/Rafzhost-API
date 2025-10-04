@@ -32,13 +32,19 @@
     },
     "/api/m/brat": {
       "get": {
-        "summary": "Generate Brat Media",
+        "summary": "Generate Brat image/video",
         "parameters": [
           { "name": "text", "in": "query", "required": true, "type": "string" },
-          { "name": "media", "in": "query", "required": true, "type": "string", "enum": ["png", "gif", "webp", "mp4"] },
-          { "name": "delay", "in": "query", "required": false, "type": "integer" }
+          {
+            "name": "media",
+            "in": "query",
+            "required": true,
+            "type": "string",
+            "enum": ["png", "gif", "webp", "mp4"]
+          },
+          { "name": "delay", "in": "query", "required": false, "type": "integer", "default": 150 }
         ],
-        "responses": { "200": { "description": "Media berhasil dihasilkan" } }
+        "responses": { "200": { "description": "Berhasil generate" } }
       }
     }
   }
