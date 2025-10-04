@@ -1,113 +1,93 @@
 // src/pages/index.js
-import { useState, useEffect } from "react";
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  const [darkMode, setDarkMode] = useState(false);
   const [lang, setLang] = useState("id");
-  const [safeMode, setSafeMode] = useState(true);
+  const [theme, setTheme] = useState("system");
+  const [safeMode, setSafeMode] = useState(false);
 
   useEffect(() => {
-    const root = document.documentElement;
-    if (darkMode) {
-      root.classList.add("dark");
-      root.setAttribute("data-theme", "dark");
+    setTheme(localStorage.getItem("theme") || "system");
+    setSafeMode(localStorage.getItem("safeMode") === "true");
+  }, []);
+
+  const applyTheme = (val) => {
+    localStorage.setItem("theme", val);
+    setTheme(val);
+    if (val === "system") {
+      const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.classList.toggle("dark", isDark);
     } else {
-      root.classList.remove("dark");
-      root.setAttribute("data-theme", "light");
+      document.documentElement.classList.toggle("dark", val === "dark");
     }
-  }, [darkMode]);
+  };
+
+  const toggleSafe = () => {
+    const v = !safeMode;
+    localStorage.setItem("safeMode", v);
+    setSafeMode(v);
+    document.documentElement.classList.toggle("no-anim", v);
+  };
+
+  const texts = {
+    title: { id: "Selamat datang di Rafzhost API", en: "Welcome to Rafzhost API" },
+    subtitle: { id: "Pilih Docs atau Post untuk mulai", en: "Choose Docs or Post to get started" },
+    docs: { id: "📖 Buka Docs", en: "📖 Open Docs" },
+    post: { id: "📤 Coba Endpoint", en: "📤 Try Endpoint" }
+  };
 
   return (
-    <div className="container">
-      <header className="header">
-        <h1 className="title animate-fade">🌐 RafzHost API</h1>
-        <div className="controls">
-          {/* Tombol Theme */}
-          <button
-            className="btn bordered"
-            onClick={() => setDarkMode((prev) => !prev)}
-          >
-            {darkMode ? "🌙 Dark" : "☀️ Light"}
-          </button>
+    <div className="page home-page">
+      <header className="page-header header-centered">
+        <div className="header-left">
+          <h1 className="brand">{texts.title[lang]}</h1>
+          <p className="muted">{texts.subtitle[lang]}</p>
+        </div>
+        <div className="header-controls">
+          <select className="control-select" value={lang} onChange={(e)=> setLang(e.target.value)}>
+            <option value="id">🇮🇩 ID</option>
+            <option value="en">🇺🇸 EN</option>
+          </select>
 
-          {/* Tombol Ganti Bahasa */}
-          <button
-            className="btn bordered"
-            onClick={() => setLang(lang === "id" ? "en" : "id")}
-          >
-            {lang === "id" ? "🇮🇩 ID" : "🇬🇧 EN"}
-          </button>
+          <select className="control-select" value={theme} onChange={(e)=> applyTheme(e.target.value)}>
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
 
-          {/* Tombol Safe Mode */}
-          <button
-            className={`btn bordered ${safeMode ? "active" : ""}`}
-            onClick={() => setSafeMode((prev) => !prev)}
-          >
-            {safeMode ? "🛡️ Safe Mode" : "⚠️ Unsafe"}
-          </button>
+          <button className="control-btn" onClick={toggleSafe}>{safeMode ? "Safe: On" : "Safe: Off"}</button>
         </div>
       </header>
 
-      <main className="main">
-        <h2 className="subtitle animate-slide">
-          {lang === "id" ? "Selamat datang di API RafzHost" : "Welcome to RafzHost API"}
-        </h2>
-        <p className="description">
-          {lang === "id"
-            ? "Gunakan menu navigasi di atas untuk mengakses dokumentasi atau postingan."
-            : "Use the navigation menu above to access documentation or posts."}
-        </p>
+      <main className="page-main center-card">
+        <div className="card card-lg">
+          <h2 className="card-title">{texts.title[lang]}</h2>
+          <p className="card-desc">{texts.subtitle[lang]}</p>
 
-        {safeMode && (
-          <div className="alert">
-            {lang === "id"
-              ? "Safe mode aktif: beberapa konten sensitif mungkin disembunyikan."
-              : "Safe mode active: some sensitive content may be hidden."}
+          <div className="actions">
+            <Link href="/docs"><a className="btn primary">{texts.docs[lang]}</a></Link>
+            <Link href="/post"><a className="btn outline">{texts.post[lang]}</a></Link>
           </div>
-        )}
+        </div>
       </main>
 
-      <footer className="footer">
-        <div className="thanks centered">
-          <a
-            href="https://github.com/siputzx/apisku"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="thanks-link"
-          >
-            <svg
-              viewBox="0 0 16 16"
-              width="16"
-              height="16"
-              aria-hidden="true"
-              focusable="false"
-              className="github-icon"
-            >
-              <path
-                fill="currentColor"
-                d="M8 0C3.58 0 0 3.58 0 8c0 3.54
-                2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
-                0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94
-                -.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
-                -.01-.53.63-.01 1.08.58 1.23.82.72 1.21
-                1.87.87 2.33.66.07-.52.28-.87.51-1.07
-                -1.78-.2-3.64-.89-3.64-3.95
-                0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12
-                0 0 .67-.21 2.2.82.64-.18
-                1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04
-                2.2-.82 2.2-.82.44 1.1.16 1.92.08
-                2.12.51.56.82 1.27.82 2.15
-                0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54
-                1.48 0 1.07-.01 1.93-.01 2.2
-                0 .21.15.46.55.38A8.013 8.013 0
-                0 0 16 8c0-4.42-3.58-8-8-8z"
-              />
+      <footer className="page-footer">
+        <div className="footer-center">
+          <a href="https://github.com/siputzx/apisku" target="_blank" rel="noreferrer" className="thanks-link">
+            {/* GitHub icon (simple) */}
+            <svg width="16" height="16" viewBox="0 0 16 16" className="github-icon" aria-hidden>
+              <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54..."></path>
             </svg>
-            <span>Siputzx for source code</span>
+            Siputzx for source code
           </a>
+          <div className="owner">Rafzhost API by Rafz (Rafflie Aditya)</div>
         </div>
-        <p className="watermark">© 2025 RafzHost</p>
       </footer>
+
+      <div className="watermark">Rafzhost API — Rafz</div>
     </div>
   );
 }
