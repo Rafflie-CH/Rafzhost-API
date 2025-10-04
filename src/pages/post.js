@@ -24,6 +24,7 @@ export default function PostPage() {
   useEffect(() => {
     setTheme(localStorage.getItem("theme") || "system");
     setSafeMode(localStorage.getItem("safeMode") === "true");
+
     let mounted = true;
     fetch("/swagger-post.json")
       .then(r => r.ok ? r.json() : Promise.reject())
@@ -63,9 +64,11 @@ export default function PostPage() {
   return (
     <div className="page post-page">
       <header className="page-header header-centered">
-        <div><h1>📤 {lang === "id" ? "Post Rafzhost API" : "Post Rafzhost API"}</h1></div>
+        <h1>📤 {lang === "id" ? "Post Rafzhost API" : "Post Rafzhost API"}</h1>
         <div className="header-controls">
-          <Link href="/docs"><a className="btn outline">{lang === "id" ? "Beralih ke Docs" : "Switch to Docs"}</a></Link>
+          <Link href="/docs" className="btn outline">
+            {lang === "id" ? "Beralih ke Docs" : "Switch to Docs"}
+          </Link>
           <select className="control-select" value={lang} onChange={(e)=> setLang(e.target.value)}>
             <option value="id">🇮🇩 ID</option>
             <option value="en">🇺🇸 EN</option>
@@ -75,46 +78,73 @@ export default function PostPage() {
             <option value="light">Light</option>
             <option value="dark">Dark</option>
           </select>
-          <button className="control-btn" onClick={toggleSafe}>{safeMode ? "Safe: On" : "Safe: Off"}</button>
+          <button className="control-btn" onClick={toggleSafe}>
+            {safeMode ? "Safe: On" : "Safe: Off"}
+          </button>
         </div>
       </header>
 
       <main className="page-main split">
         <div className="card swagger-card">
           <div className="search-row">
-            <input className="search-input" placeholder={lang === "id" ? "🔍 Cari endpoint..." : "🔍 Search endpoint..."} value={search} onChange={(e)=> setSearch(e.target.value)} />
+            <input
+              className="search-input"
+              placeholder={lang === "id" ? "🔍 Cari endpoint..." : "🔍 Search endpoint..."}
+              value={search}
+              onChange={(e)=> setSearch(e.target.value)}
+            />
           </div>
 
           {specReady && (
-            <div className="swagger-wrap">
-              <SwaggerUI url="/swagger-post.json" docExpansion="none" filter={search || false} />
-            </div>
+            <SwaggerUI
+              url="/swagger-post.json"
+              docExpansion="none"
+              defaultModelsExpandDepth={-1}
+              filter={search || false}
+            />
           )}
         </div>
 
         <aside className="card try-panel">
           <h3>Try endpoint</h3>
           <label>Endpoint</label>
-          <input className="search-input" value={endpoint} onChange={(e)=> setEndpoint(e.target.value)} />
+          <input
+            className="search-input"
+            value={endpoint}
+            onChange={(e)=> setEndpoint(e.target.value)}
+          />
           <label>Method</label>
-          <select className="control-select" value={method} onChange={(e)=> setMethod(e.target.value)}>
+          <select
+            className="control-select"
+            value={method}
+            onChange={(e)=> setMethod(e.target.value)}
+          >
             <option value="post">POST</option>
             <option value="get">GET</option>
           </select>
           <label>JSON Body</label>
-          <textarea className="search-input" rows="6" value={body} onChange={(e)=> setBody(e.target.value)} />
+          <textarea
+            className="search-input"
+            rows="6"
+            value={body}
+            onChange={(e)=> setBody(e.target.value)}
+          />
           <button className="btn primary" onClick={tryRequest}>Send</button>
 
           <div className="result-box">
             <h4>Result</h4>
-            <pre className="result-pre">{result ? JSON.stringify(result, null, 2) : "No result yet"}</pre>
+            <pre className="result-pre">
+              {result ? JSON.stringify(result, null, 2) : "No result yet"}
+            </pre>
           </div>
         </aside>
       </main>
 
       <footer className="page-footer">
         <div className="footer-center">
-          <a href="https://github.com/siputzx/apisku" target="_blank" rel="noreferrer" className="thanks-link">Siputzx for source code</a>
+          <a href="https://github.com/siputzx/apisku" target="_blank" rel="noreferrer" className="thanks-link">
+            Siputzx for source code
+          </a>
           <div className="owner">Rafzhost API by Rafz (Rafflie Aditya)</div>
         </div>
       </footer>
