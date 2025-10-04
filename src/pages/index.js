@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-export default function Home() {
+export default function HomePage() {
   const [lang, setLang] = useState("id");
   const [theme, setTheme] = useState("system");
   const [safeMode, setSafeMode] = useState(false);
@@ -42,23 +42,26 @@ export default function Home() {
   return (
     <div className="page home-page">
       <header className="page-header header-centered">
-        <div className="header-left">
+        <div>
           <h1 className="brand">{texts.title[lang]}</h1>
           <p className="muted">{texts.subtitle[lang]}</p>
         </div>
+
         <div className="header-controls">
-          <select className="control-select" value={lang} onChange={(e)=> setLang(e.target.value)}>
+          <select className="control-select" value={lang} onChange={(e) => setLang(e.target.value)}>
             <option value="id">🇮🇩 ID</option>
             <option value="en">🇺🇸 EN</option>
           </select>
 
-          <select className="control-select" value={theme} onChange={(e)=> applyTheme(e.target.value)}>
+          <select className="control-select" value={theme} onChange={(e) => applyTheme(e.target.value)}>
             <option value="system">System</option>
             <option value="light">Light</option>
             <option value="dark">Dark</option>
           </select>
 
-          <button className="control-btn" onClick={toggleSafe}>{safeMode ? "Safe: On" : "Safe: Off"}</button>
+          <button className="control-btn" onClick={toggleSafe}>
+            {safeMode ? "Safe: On" : "Safe: Off"}
+          </button>
         </div>
       </header>
 
@@ -76,13 +79,7 @@ export default function Home() {
 
       <footer className="page-footer">
         <div className="footer-center">
-          <a href="https://github.com/siputzx/apisku" target="_blank" rel="noreferrer" className="thanks-link">
-            {/* GitHub icon (simple) */}
-            <svg width="16" height="16" viewBox="0 0 16 16" className="github-icon" aria-hidden>
-              <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54..."></path>
-            </svg>
-            Siputzx for source code
-          </a>
+          <a href="https://github.com/siputzx/apisku" target="_blank" rel="noreferrer" className="thanks-link">Siputzx for source code</a>
           <div className="owner">Rafzhost API by Rafz (Rafflie Aditya)</div>
         </div>
       </footer>
