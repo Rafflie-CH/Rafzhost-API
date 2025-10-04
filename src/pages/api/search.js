@@ -15,7 +15,7 @@ export default function handler(req, res) {
       for (const p of Object.keys(spec.paths)) {
         const methods = spec.paths[p];
         for (const m of Object.keys(methods)) {
-          const op = methods[m];
+          const op = methods[m] || {};
           const title = (op.summary || "").toString();
           const desc = (op.description || "").toString();
           const combined = `${p} ${m} ${title} ${desc}`.toLowerCase();
