@@ -1,15 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
-import Jimp from "jimp";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
-import GIFEncoder from "gifencoder";
+import { GifCodec, GifFrame } from "gifwrap";
 import sharp from "sharp";
 import { spawn } from "child_process";
 
-// ===========================
-// UTILITY
-// ===========================
 const FRAME_SIZE = { width: 256, height: 256 };
 
 // Split string jadi beberapa frame animasi (support emoji)
@@ -27,10 +23,7 @@ async function generateFrameBuffer(text) {
   const canvas = createCanvas(FRAME_SIZE.width, FRAME_SIZE.height);
   const ctx = canvas.getContext("2d");
 
-  // Background transparan
   ctx.clearRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
-
-  // Teks putih tengah
   ctx.fillStyle = "#ffffff";
   ctx.font = "32px sans-serif";
   ctx.textAlign = "center";
@@ -41,7 +34,7 @@ async function generateFrameBuffer(text) {
 }
 
 // ===========================
-// MAIN GENERATORS
+// GENERATORS
 // ===========================
 
 // PNG / FOTO
@@ -49,53 +42,41 @@ async function generatePNG(text) {
   return await generateFrameBuffer(text);
 }
 
-// GIF
+// GIF via gifwrap
 async function generateGIF(text, delay = 150) {
-  const frames = splitStringToFrames(text);
-  const encoder = new GIFEncoder(FRAME_SIZE.width, FRAME_SIZE.height);
-  const chunks = [];
-  encoder.start();
-  encoder.setRepeat(0);
-  encoder.setDelay(delay);
-  encoder.setQuality(10);
+  const framesText = splitStringToFrames(text);
+  const codec = new GifCodec();
+  const frames = [];
 
-  encoder.on("data", (chunk) => chunks.push(chunk));
-
-  for (const t of frames) {
+  for (const t of framesText) {
     const buf = await generateFrameBuffer(t);
     const img = await loadImage(buf);
-    const canvas = createCanvas(FRAME_SIZE.width, FRAME_SIZE.height);
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0);
-    encoder.addFrame(ctx);
+    frames.push(new GifFrame(img, { delay: delay }));
   }
 
-  encoder.finish();
-  return Buffer.concat(chunks);
+  const gif = await codec.encodeGif(frames, { loops: 0 });
+  return gif.buffer;
 }
 
-// WEBP
+// WEBP via sharp
 async function generateWEBP(text, delay = 150) {
-  const frames = splitStringToFrames(text);
-  if (frames.length === 1) return generateFrameBuffer(text); // statis
+  const framesText = splitStringToFrames(text);
+  if (framesText.length === 1) return generateFrameBuffer(text);
 
   const buffers = [];
-  for (const t of frames) {
-    buffers.push(await generateFrameBuffer(t));
-  }
+  for (const t of framesText) buffers.push(await generateFrameBuffer(t));
 
-  const webpBuffer = await sharp({
+  return await sharp({
     create: {
       width: FRAME_SIZE.width,
       height: FRAME_SIZE.height,
       channels: 4,
       background: { r: 0, g: 0, b: 0, alpha: 0 }
     }
-  }).composite(buffers.map((b, i) => ({ input: b, top: 0, left: 0 })))
+  })
+    .composite(buffers.map(b => ({ input: b, top: 0, left: 0 })))
     .webp({ quality: 100, animated: true, delay: delay })
     .toBuffer();
-
-  return webpBuffer;
 }
 
 // MP4 via ffmpeg
@@ -112,9 +93,9 @@ async function generateMP4(text, delay = 150) {
   }
 
   const outputPath = path.join(tempDir, "output.mp4");
-  // ffmpeg -framerate X -i frame_%d.png -c:v libx264 -pix_fmt yuv420p output.mp4
+  const framerate = 1000 / delay;
+
   await new Promise((resolve, reject) => {
-    const framerate = 1000 / delay;
     const ffmpeg = spawn("ffmpeg", [
       "-y",
       "-framerate", framerate.toString(),
@@ -124,11 +105,8 @@ async function generateMP4(text, delay = 150) {
       outputPath
     ]);
 
-    ffmpeg.stderr.on("data", (data) => console.log(data.toString()));
-    ffmpeg.on("close", (code) => {
-      if (code === 0) resolve();
-      else reject(new Error("FFmpeg failed"));
-    });
+    ffmpeg.stderr.on("data", data => console.log(data.toString()));
+    ffmpeg.on("close", code => (code === 0 ? resolve() : reject(new Error("FFmpeg failed"))));
   });
 
   const buffer = fs.readFileSync(outputPath);
