@@ -3,6 +3,7 @@
   "info": { "title": "Rafzhost API (Docs)", "version": "1.0.0" },
   "servers": [
     { "url": "https://api.rafzhost.xyz", "description": "Main Server" }
+    { "url": "https://rafzhost-api.vercel.app", "description": "Vercel Server" }
   ],
   "paths": {
     "/api/hello": {
