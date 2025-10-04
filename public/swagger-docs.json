@@ -32,19 +32,47 @@
     },
     "/api/m/brat": {
       "get": {
-        "summary": "Generate Brat image/video",
+        "summary": "Generate Brat Media",
+        "description": "Generate Brat image, animated webp, or mp4 video from text/emoji",
         "parameters": [
-          { "name": "text", "in": "query", "required": true, "type": "string" },
+          {
+            "name": "text",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Text or emoji to render"
+          },
           {
             "name": "media",
             "in": "query",
             "required": true,
-            "type": "string",
-            "enum": ["png", "gif", "webp", "mp4"]
+            "schema": {
+              "type": "string",
+              "enum": ["png", "webp", "mp4"],
+              "default": "png"
+            },
+            "description": "Output media type. PNG is static, webp/mp4 are animated."
           },
-          { "name": "delay", "in": "query", "required": false, "type": "integer", "default": 150 }
+          {
+            "name": "delay",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 150 },
+            "description": "Frame delay in ms (ignored for PNG)"
+          }
         ],
-        "responses": { "200": { "description": "Berhasil generate" } }
+        "responses": {
+          "200": {
+            "description": "Media generated successfully",
+            "content": {
+              "image/png": { "schema": { "type": "string", "format": "binary" } },
+              "image/webp": { "schema": { "type": "string", "format": "binary" } },
+              "video/mp4": { "schema": { "type": "string", "format": "binary" } }
+            }
+          },
+          "400": { "description": "Bad Request" },
+          "500": { "description": "Internal Server Error" }
+        }
       }
     }
   }
