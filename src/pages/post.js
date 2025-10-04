@@ -1,3 +1,4 @@
+// src/pages/post.js
 "use client";
 
 import dynamic from "next/dynamic";
@@ -10,12 +11,8 @@ const SwaggerUI = dynamic(() => import("swagger-ui-react"), { ssr: false });
 
 export default function PostPage() {
   const [lang, setLang] = useState("id");
-  const [theme, setTheme] = useState(
-    typeof window !== "undefined" ? localStorage.getItem("theme") || "system" : "system"
-  );
-  const [safeMode, setSafeMode] = useState(
-    typeof window !== "undefined" && localStorage.getItem("safeMode") === "true"
-  );
+  const [theme, setTheme] = useState("system");
+  const [safeMode, setSafeMode] = useState(false);
   const [search, setSearch] = useState("");
   const [specReady, setSpecReady] = useState(false);
 
@@ -25,19 +22,14 @@ export default function PostPage() {
   const [result, setResult] = useState(null);
 
   useEffect(() => {
-    let mounted = true;
-    fetch("/swagger.json")
-      .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then(() => mounted && setSpecReady(true))
-      .catch(() => mounted && setSpecReady(true));
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  useEffect(() => {
     setTheme(localStorage.getItem("theme") || "system");
     setSafeMode(localStorage.getItem("safeMode") === "true");
+    let mounted = true;
+    fetch("/swagger.json")
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(() => mounted && setSpecReady(true))
+      .catch(() => mounted && setSpecReady(true));
+    return () => { mounted = false; };
   }, []);
 
   const applyTheme = (val) => {
@@ -54,8 +46,8 @@ export default function PostPage() {
   const toggleSafe = () => {
     const v = !safeMode;
     localStorage.setItem("safeMode", v);
-    document.documentElement.classList.toggle("safe-mode", v);
     setSafeMode(v);
+    document.documentElement.classList.toggle("no-anim", v);
   };
 
   const tryRequest = async () => {
@@ -69,45 +61,28 @@ export default function PostPage() {
   };
 
   return (
-    <div className="container post-theme">
-      <header className="header">
-        <h1>📤 Post Rafzhost API</h1>
-        <div className="nav-buttons">
-          <Link href="/docs">
-            <button className="btn docs">Switch to Docs</button>
-          </Link>
-          <select
-            className="btn lang"
-            value={lang}
-            onChange={(e) => setLang(e.target.value)}
-          >
+    <div className="page post-page">
+      <header className="page-header header-centered">
+        <div><h1>📤 Post Rafzhost API</h1></div>
+        <div className="header-controls">
+          <Link href="/docs"><a className="btn outline">Switch to Docs</a></Link>
+          <select className="control-select" value={lang} onChange={(e)=> setLang(e.target.value)}>
             <option value="id">🇮🇩 ID</option>
             <option value="en">🇺🇸 EN</option>
           </select>
-          <select
-            className="btn theme"
-            value={theme}
-            onChange={(e) => applyTheme(e.target.value)}
-          >
+          <select className="control-select" value={theme} onChange={(e)=> applyTheme(e.target.value)}>
             <option value="system">System</option>
             <option value="light">Light</option>
             <option value="dark">Dark</option>
           </select>
-          <button className="btn safe" onClick={toggleSafe}>
-            {safeMode ? "Safe: On" : "Safe: Off"}
-          </button>
+          <button className="control-btn" onClick={toggleSafe}>{safeMode ? "Safe: On" : "Safe: Off"}</button>
         </div>
       </header>
 
-      <main className="page-main">
-        <div className="card">
+      <main className="page-main split">
+        <div className="card swagger-card">
           <div className="search-row">
-            <input
-              className="search"
-              placeholder="🔍 Cari endpoint..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+            <input className="search-input" placeholder="🔍 Cari endpoint..." value={search} onChange={(e)=> setSearch(e.target.value)} />
           </div>
 
           {specReady && (
@@ -117,56 +92,34 @@ export default function PostPage() {
           )}
         </div>
 
-        <aside className="card">
+        <aside className="card try-panel">
           <h3>Try endpoint</h3>
           <label>Endpoint</label>
-          <input
-            className="search"
-            value={endpoint}
-            onChange={(e) => setEndpoint(e.target.value)}
-          />
+          <input className="search-input" value={endpoint} onChange={(e)=> setEndpoint(e.target.value)} />
           <label>Method</label>
-          <select
-            className="btn"
-            value={method}
-            onChange={(e) => setMethod(e.target.value)}
-          >
+          <select className="control-select" value={method} onChange={(e)=> setMethod(e.target.value)}>
             <option value="post">POST</option>
             <option value="get">GET</option>
           </select>
           <label>JSON Body</label>
-          <textarea
-            className="search"
-            rows="6"
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-          />
-          <button className="btn post" onClick={tryRequest}>
-            Send
-          </button>
+          <textarea className="search-input" rows="6" value={body} onChange={(e)=> setBody(e.target.value)} />
+          <button className="btn primary" onClick={tryRequest}>Send</button>
 
           <div className="result-box">
             <h4>Result</h4>
-            <pre className="result-pre">
-              {result ? JSON.stringify(result, null, 2) : "No result yet"}
-            </pre>
+            <pre className="result-pre">{result ? JSON.stringify(result, null, 2) : "No result yet"}</pre>
           </div>
         </aside>
       </main>
 
-      <footer className="footer">
-        <div className="thanks">
-          <a
-            href="https://github.com/siputzx/apisku"
-            target="_blank"
-            rel="noreferrer"
-            className="thanks-link"
-          >
-            Siputzx for source code
-          </a>
+      <footer className="page-footer">
+        <div className="footer-center">
+          <a href="https://github.com/siputzx/apisku" target="_blank" rel="noreferrer" className="thanks-link">Siputzx for source code</a>
+          <div className="owner">Rafzhost API by Rafz (Rafflie Aditya)</div>
         </div>
-        <div className="watermark">Rafzhost API — Rafz</div>
       </footer>
+
+      <div className="watermark">Rafzhost API — Rafz</div>
     </div>
   );
 }
