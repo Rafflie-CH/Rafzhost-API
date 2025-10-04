@@ -6,7 +6,7 @@
     "description": "📖 Dokumentasi resmi API Rafzhost"
   },
   "servers": [
-    { "url": "https://api.rafzhost.xyz", "description": "Main Server" }
+    { "url": "https://api.rafzhost.xyz", "description": "Main Server" },
     { "url": "https://rafzhost-api.vercel.app", "description": "Vercel Server" }
   ],
   "paths": {
