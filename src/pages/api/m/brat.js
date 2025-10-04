@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
 import { createCanvas, loadImage } from "@napi-rs/canvas";
-import { GifCodec, GifFrame } from "gifwrap";
 import sharp from "sharp";
 import { spawn } from "child_process";
 
@@ -19,12 +18,16 @@ function splitStringToFrames(str) {
 }
 
 // Generate single frame buffer
-async function generateFrameBuffer(text) {
+async function generateFrameBuffer(text, isAnimated = false) {
   const canvas = createCanvas(FRAME_SIZE.width, FRAME_SIZE.height);
   const ctx = canvas.getContext("2d");
 
-  ctx.clearRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
-  ctx.fillStyle = "#ffffff";
+  // Background putih untuk PNG / animasi transparan
+  ctx.fillStyle = isAnimated ? "rgba(0,0,0,0)" : "#ffffff";
+  ctx.fillRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
+
+  // Teks hitam (atau bisa ganti warna sesuai kebutuhan)
+  ctx.fillStyle = "#000000";
   ctx.font = "32px sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
@@ -34,66 +37,47 @@ async function generateFrameBuffer(text) {
 }
 
 // ===========================
-// GENERATORS
+// GENERATE MEDIA
 // ===========================
 
-// PNG / FOTO
+// PNG / Foto
 async function generatePNG(text) {
-  return await generateFrameBuffer(text);
+  return await generateFrameBuffer(text, false);
 }
 
-// GIF via gifwrap
-async function generateGIF(text, delay = 150) {
-  const framesText = splitStringToFrames(text);
-  const codec = new GifCodec();
-  const frames = [];
-
-  for (const t of framesText) {
-    const buf = await generateFrameBuffer(t);
-    const img = await loadImage(buf);
-    frames.push(new GifFrame(img, { delay: delay }));
-  }
-
-  const gif = await codec.encodeGif(frames, { loops: 0 });
-  return gif.buffer;
-}
-
-// WEBP via sharp
+// Animated WebP
 async function generateWEBP(text, delay = 150) {
-  const framesText = splitStringToFrames(text);
-  if (framesText.length === 1) return generateFrameBuffer(text);
+  const frames = splitStringToFrames(text);
+  if (frames.length === 1) return generateFrameBuffer(text, false);
 
   const buffers = [];
-  for (const t of framesText) buffers.push(await generateFrameBuffer(t));
+  for (const t of frames) buffers.push(await generateFrameBuffer(t, true));
 
-  return await sharp({
-    create: {
-      width: FRAME_SIZE.width,
-      height: FRAME_SIZE.height,
-      channels: 4,
-      background: { r: 0, g: 0, b: 0, alpha: 0 }
-    }
+  const webpBuffer = await sharp({
+    create: { width: FRAME_SIZE.width, height: FRAME_SIZE.height, channels: 4, background: { r:0,g:0,b:0,alpha:0 } }
   })
-    .composite(buffers.map(b => ({ input: b, top: 0, left: 0 })))
-    .webp({ quality: 100, animated: true, delay: delay })
-    .toBuffer();
+  .composite(buffers.map((b) => ({ input: b, top: 0, left: 0 })))
+  .webp({ quality: 100, animated: true, delay })
+  .toBuffer();
+
+  return webpBuffer;
 }
 
-// MP4 via ffmpeg
+// Animated MP4 via ffmpeg
 async function generateMP4(text, delay = 150) {
   const frames = splitStringToFrames(text);
   const tempDir = fs.mkdtempSync("/tmp/brat-");
   const frameFiles = [];
 
   for (let i = 0; i < frames.length; i++) {
-    const buf = await generateFrameBuffer(frames[i]);
+    const buf = await generateFrameBuffer(frames[i], true);
     const filePath = path.join(tempDir, `frame_${i}.png`);
     fs.writeFileSync(filePath, buf);
     frameFiles.push(filePath);
   }
 
   const outputPath = path.join(tempDir, "output.mp4");
-  const framerate = 1000 / delay;
+  const framerate = Math.max(Math.floor(1000 / delay), 1);
 
   await new Promise((resolve, reject) => {
     const ffmpeg = spawn("ffmpeg", [
@@ -105,8 +89,8 @@ async function generateMP4(text, delay = 150) {
       outputPath
     ]);
 
-    ffmpeg.stderr.on("data", data => console.log(data.toString()));
-    ffmpeg.on("close", code => (code === 0 ? resolve() : reject(new Error("FFmpeg failed"))));
+    ffmpeg.stderr.on("data", (data) => console.log(data.toString()));
+    ffmpeg.on("close", (code) => (code === 0 ? resolve() : reject(new Error("FFmpeg failed"))));
   });
 
   const buffer = fs.readFileSync(outputPath);
@@ -131,10 +115,6 @@ export default async function handler(req, res) {
         buffer = await generatePNG(text);
         res.setHeader("Content-Type", "image/png");
         break;
-      case "gif":
-        buffer = await generateGIF(text, Number(delay));
-        res.setHeader("Content-Type", "image/gif");
-        break;
       case "webp":
         buffer = await generateWEBP(text, Number(delay));
         res.setHeader("Content-Type", "image/webp");
@@ -144,7 +124,7 @@ export default async function handler(req, res) {
         res.setHeader("Content-Type", "video/mp4");
         break;
       default:
-        return res.status(400).json({ error: "media tidak valid" });
+        return res.status(400).json({ error: "media tidak valid, pilih: png, webp, mp4" });
     }
 
     res.status(200).send(buffer);
