@@ -1,16 +1,83 @@
 {
   "openapi": "3.0.0",
-  "info": { "title": "Rafzhost API (POST)", "version": "1.0.0" },
+  "info": { "title": "Rafzhost API (Docs)", "version": "1.0.0" },
   "servers": [
     { "url": "https://api.rafzhost.xyz", "description": "Main Server" }
   ],
   "paths": {
     "/api/hello": {
+      "get": {
+        "tags": ["Misc"],
+        "summary": "Simple hello GET",
+        "responses": { "200": { "description": "OK" } }
+      },
       "post": {
         "tags": ["Misc"],
-        "summary": "Test POST hello",
+        "summary": "Simple hello POST",
         "requestBody": {
-          "content": { "application/json": { "schema": { "type": "object" } } }
+          "description": "Optional body for hello",
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "Rafflie" }
+                }
+              }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/ping": {
+      "get": {
+        "tags": ["Misc"],
+        "summary": "Cek koneksi API",
+        "responses": { "200": { "description": "OK" } }
+      },
+      "post": {
+        "tags": ["Misc"],
+        "summary": "Cek koneksi API via POST",
+        "requestBody": {
+          "description": "Optional body for ping",
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object" }
+            }
+          }
+        },
+        "responses": { "200": { "description": "OK" } }
+      }
+    },
+    "/api/downloader/tiktok": {
+      "get": {
+        "tags": ["Downloader"],
+        "summary": "Download TikTok video",
+        "parameters": [
+          { "in": "query", "name": "url", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": { "200": { "description": "OK" } }
+      },
+      "post": {
+        "tags": ["Downloader"],
+        "summary": "Download TikTok video via POST",
+        "requestBody": {
+          "description": "URL TikTok video",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": { "type": "string", "example": "https://www.tiktok.com/@user/video/123456" }
+                },
+                "required": ["url"]
+              }
+            }
+          }
         },
         "responses": { "200": { "description": "OK" } }
       }
