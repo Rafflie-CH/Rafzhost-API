@@ -18,8 +18,9 @@ export default function MyApp({ Component, pageProps }) {
     const stored = localStorage.getItem("theme") || "system";
     applyTheme(stored);
 
-    const safe = localStorage.getItem("safeMode") === "true";
-    if (safe) document.documentElement.classList.add("no-anim");
+    if (localStorage.getItem("safeMode") === "true") {
+      document.documentElement.classList.add("no-anim");
+    }
 
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const handler = () => {
@@ -29,7 +30,6 @@ export default function MyApp({ Component, pageProps }) {
     };
     if (mq.addEventListener) mq.addEventListener("change", handler);
     else mq.addListener(handler);
-
     return () => {
       if (mq.removeEventListener) mq.removeEventListener("change", handler);
       else mq.removeListener(handler);
