@@ -17,7 +17,7 @@
     "next-themes": "^0.2.1",
     "swagger-jsdoc": "^6.2.8",
     "next-swagger-doc": "^0.4.0",
-    "@napi-rs/canvas": "^0.11.1",
+    "@napi-rs/canvas-linux-x64-gnu": "^0.1.80",
     "gifencoder": "^2.0.1",
     "framer-motion": "^11.0.3"
   },
