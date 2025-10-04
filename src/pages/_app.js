@@ -10,15 +10,13 @@ export default function MyApp({ Component, pageProps }) {
       if (sel === "system") {
         const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
         document.documentElement.classList.toggle("dark", isDark);
-        document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
       } else {
         document.documentElement.classList.toggle("dark", sel === "dark");
-        document.documentElement.setAttribute("data-theme", sel);
       }
     };
 
-    const storedTheme = localStorage.getItem("theme") || "system";
-    applyTheme(storedTheme);
+    const stored = localStorage.getItem("theme") || "system";
+    applyTheme(stored);
 
     const safe = localStorage.getItem("safeMode") === "true";
     if (safe) document.documentElement.classList.add("no-anim");
@@ -31,6 +29,7 @@ export default function MyApp({ Component, pageProps }) {
     };
     if (mq.addEventListener) mq.addEventListener("change", handler);
     else mq.addListener(handler);
+
     return () => {
       if (mq.removeEventListener) mq.removeEventListener("change", handler);
       else mq.removeListener(handler);
