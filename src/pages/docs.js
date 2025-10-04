@@ -26,7 +26,7 @@ export default function DocsPage() {
     applyTheme(t);
 
     let mounted = true;
-    fetch("/swagger-docs.json")
+    fetch("/swagger.json")
       .then((r)=> r.ok ? r.json() : Promise.reject())
       .then(()=> { if (mounted) setSpecReady(true); })
       .catch(()=> { if (mounted) setSpecReady(true); })
@@ -99,7 +99,7 @@ export default function DocsPage() {
           {specReady && (
             <div style={{marginTop:8}}>
               <SwaggerUI
-                url={useSafeSwagger ? "/swagger-safe.json" : "/swagger-docs.json"}
+                url={useSafeSwagger ? "/swagger-safe.json" : "/swagger.json"}
                 docExpansion="none"
                 defaultModelsExpandDepth={-1}
                 deepLinking={!safeMode}
