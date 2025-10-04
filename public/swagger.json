@@ -50,15 +50,14 @@
     },
     "/api/m/brat": {
       "get": {
-        "summary": "Generate Brat Media",
-        "description": "Generate image/video Brat. PNG tidak animasi. GIF/WEBP/MP4 otomatis animasi.",
+        "summary": "Generate Brat image/video",
         "parameters": [
           {
             "name": "text",
             "in": "query",
             "required": true,
             "schema": { "type": "string" },
-            "description": "Teks yang ingin ditampilkan, bisa emoji"
+            "description": "Teks yang ingin ditampilkan"
           },
           {
             "name": "media",
@@ -68,19 +67,19 @@
               "type": "string",
               "enum": ["png", "gif", "webp", "mp4"]
             },
-            "description": "Tipe media yang dihasilkan"
+            "description": "Format output yang diinginkan"
           },
           {
             "name": "delay",
             "in": "query",
             "required": false,
             "schema": { "type": "integer", "default": 150 },
-            "description": "Delay per frame (ms), hanya berlaku untuk media animasi"
+            "description": "Delay per frame (ms), hanya untuk media animasi"
           }
         ],
         "responses": {
           "200": {
-            "description": "Media berhasil dihasilkan",
+            "description": "Berhasil generate",
             "content": {
               "image/png": { "schema": { "type": "string", "format": "binary" } },
               "image/gif": { "schema": { "type": "string", "format": "binary" } },
@@ -88,13 +87,12 @@
               "video/mp4": { "schema": { "type": "string", "format": "binary" } }
             }
           },
-          "400": { "description": "Parameter tidak valid" },
-          "500": { "description": "Error generate media" }
+          "400": { "description": "Request invalid" },
+          "500": { "description": "Server error" }
         }
       },
       "post": {
-        "summary": "Generate Brat Media (POST)",
-        "description": "Endpoint POST untuk generate Brat image/video.",
+        "summary": "Generate Brat image/video via POST",
         "requestBody": {
           "required": true,
           "content": {
@@ -102,9 +100,9 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "text": { "type": "string", "description": "Teks yang ingin ditampilkan" },
-                  "media": { "type": "string", "enum": ["png", "gif", "webp", "mp4"], "description": "Tipe media" },
-                  "delay": { "type": "integer", "description": "Delay frame animasi (ms)" }
+                  "text": { "type": "string" },
+                  "media": { "type": "string", "enum": ["png", "gif", "webp", "mp4"] },
+                  "delay": { "type": "integer", "default": 150 }
                 },
                 "required": ["text", "media"]
               }
@@ -113,7 +111,7 @@
         },
         "responses": {
           "200": {
-            "description": "Media berhasil dihasilkan",
+            "description": "Berhasil generate",
             "content": {
               "image/png": { "schema": { "type": "string", "format": "binary" } },
               "image/gif": { "schema": { "type": "string", "format": "binary" } },
@@ -121,8 +119,8 @@
               "video/mp4": { "schema": { "type": "string", "format": "binary" } }
             }
           },
-          "400": { "description": "Parameter tidak valid" },
-          "500": { "description": "Error generate media" }
+          "400": { "description": "Request invalid" },
+          "500": { "description": "Server error" }
         }
       }
     }
