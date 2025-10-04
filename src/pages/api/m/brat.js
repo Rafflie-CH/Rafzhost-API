@@ -136,6 +136,6 @@ export default async function handler(req, res) {
     res.status(400).json({ error: "Format tidak didukung. Gunakan png, gif, atau mp4." });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Gagal generate image/video" string: err});
+    res.status(500).json({ error: `Gagal generate image/video: ${err}`});
   }
 }
