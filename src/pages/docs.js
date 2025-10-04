@@ -103,7 +103,7 @@ export default function DocsPage() {
                 docExpansion="none"
                 defaultModelsExpandDepth={-1}
                 deepLinking={!safeMode}
-                filter={search || false}
+                filter="DOCS"
               />
             </div>
           )}
