@@ -1,90 +1,87 @@
-// src/pages/index.js
-"use client";
-
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
-export default function HomePage() {
+export default function Home() {
+  const [darkMode, setDarkMode] = useState(false);
   const [lang, setLang] = useState("id");
-  const [theme, setTheme] = useState("system");
-  const [safeMode, setSafeMode] = useState(false);
+  const [safeMode, setSafeMode] = useState(true);
 
   useEffect(() => {
-    setTheme(localStorage.getItem("theme") || "system");
-    setSafeMode(localStorage.getItem("safeMode") === "true");
-  }, []);
-
-  const applyTheme = (val) => {
-    localStorage.setItem("theme", val);
-    setTheme(val);
-    if (val === "system") {
-      const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      document.documentElement.classList.toggle("dark", isDark);
-    } else {
-      document.documentElement.classList.toggle("dark", val === "dark");
-    }
-  };
-
-  const toggleSafe = () => {
-    const v = !safeMode;
-    localStorage.setItem("safeMode", v);
-    setSafeMode(v);
-    document.documentElement.classList.toggle("no-anim", v);
-  };
-
-  const texts = {
-    title: { id: "Selamat datang di Rafzhost API", en: "Welcome to Rafzhost API" },
-    subtitle: { id: "Pilih Docs atau Post untuk mulai", en: "Choose Docs or Post to get started" },
-    docs: { id: "📖 Buka Docs", en: "📖 Open Docs" },
-    post: { id: "📤 Coba Endpoint", en: "📤 Try Endpoint" }
-  };
+    if (darkMode) document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
+  }, [darkMode]);
 
   return (
-    <div className="page home-page">
-      <header className="page-header header-centered">
-        <div>
-          <h1 className="brand">{texts.title[lang]}</h1>
-          <p className="muted">{texts.subtitle[lang]}</p>
-        </div>
-
+    <div className="page">
+      {/* Header */}
+      <header className="page-header">
+        <h1 className="logo">Rafzhost API</h1>
         <div className="header-controls">
-          <select className="control-select" value={lang} onChange={(e) => setLang(e.target.value)}>
-            <option value="id">🇮🇩 ID</option>
-            <option value="en">🇺🇸 EN</option>
+          <select
+            value={lang}
+            onChange={(e) => setLang(e.target.value)}
+            className="control-select"
+          >
+            <option value="id">ID</option>
+            <option value="en">EN</option>
           </select>
-
-          <select className="control-select" value={theme} onChange={(e) => applyTheme(e.target.value)}>
-            <option value="system">System</option>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
-
-          <button className="control-btn" onClick={toggleSafe}>
-            {safeMode ? "Safe: On" : "Safe: Off"}
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="control-btn"
+          >
+            {darkMode ? "🌙" : "☀️"}
+          </button>
+          <button
+            onClick={() => setSafeMode(!safeMode)}
+            className="control-btn"
+          >
+            {safeMode ? "Safe ✅" : "Unsafe ⚠️"}
           </button>
         </div>
       </header>
 
-      <main className="page-main center-card">
-        <div className="card card-lg">
-          <h2 className="card-title">{texts.title[lang]}</h2>
-          <p className="card-desc">{texts.subtitle[lang]}</p>
-
-          <div className="actions">
-            <Link href="/docs"><a className="btn primary">{texts.docs[lang]}</a></Link>
-            <Link href="/post"><a className="btn outline">{texts.post[lang]}</a></Link>
+      {/* Main */}
+      <main className="page-main">
+        <div className="card">
+          <h2>Selamat datang di Rafzhost API 🚀</h2>
+          <p>Gunakan navigasi di bawah untuk menjelajah API:</p>
+          <div className="btn-row">
+            <Link href="/docs" className="btn primary">📖 Docs</Link>
+            <Link href="/post" className="btn outline">📝 Post</Link>
           </div>
         </div>
       </main>
 
+      {/* Footer */}
       <footer className="page-footer">
         <div className="footer-center">
-          <a href="https://github.com/siputzx/apisku" target="_blank" rel="noreferrer" className="thanks-link">Siputzx for source code</a>
-          <div className="owner">Rafzhost API by Rafz (Rafflie Aditya)</div>
+          <p>© {new Date().getFullYear()} Rafzhost API</p>
+          <a
+            href="https://github.com/siputzx/apisku"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="thanks-link"
+          >
+            <svg
+              viewBox="0 0 16 16"
+              width="16"
+              height="16"
+              aria-hidden="true"
+              focusable="false"
+              className="github-icon"
+            >
+              <path
+                fill="currentColor"
+                d="M8 0C3.58 0 0 3.58 0 8c0 3.54..."
+              ></path>
+            </svg>
+            Siputzx for source code
+          </a>
         </div>
       </footer>
 
-      <div className="watermark">Rafzhost API — Rafz</div>
+      {/* Watermark */}
+      <div className="watermark">Rafzhost API</div>
     </div>
   );
 }
