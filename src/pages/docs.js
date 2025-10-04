@@ -14,17 +14,19 @@ export default function DocsPage() {
   const [safeMode, setSafeMode] = useState(false);
   const [search, setSearch] = useState("");
   const [specReady, setSpecReady] = useState(false);
-  const [useSafeSwagger, setUseSafeSwagger] = useState(false);
+  const [useSafe, setUseSafe] = useState(false);
 
   useEffect(() => {
     setTheme(localStorage.getItem("theme") || "system");
     setSafeMode(localStorage.getItem("safeMode") === "true");
+
     let mounted = true;
     setSpecReady(false);
-    fetch("/swagger.json")
-      .then(r => r.ok ? r.json() : Promise.reject())
+    fetch("/swagger-docs.json")
+      .then((r) => r.ok ? r.json() : Promise.reject())
       .then(() => mounted && setSpecReady(true))
       .catch(() => mounted && setSpecReady(true));
+
     return () => { mounted = false; };
   }, []);
 
@@ -42,22 +44,16 @@ export default function DocsPage() {
   const toggleSafe = () => {
     const v = !safeMode;
     localStorage.setItem("safeMode", v);
-    setSafeMode(v);
     document.documentElement.classList.toggle("no-anim", v);
-  };
-
-  const texts = {
-    title: { id: "📖 Dokumentasi Rafzhost API", en: "📖 Rafzhost API Documentation" },
-    switch: { id: "Beralih ke Post", en: "Switch to Post" },
-    placeholder: { id: "🔍 Cari endpoint...", en: "🔍 Search endpoint..." }
+    setSafeMode(v);
   };
 
   return (
     <div className="page docs-page">
       <header className="page-header header-centered">
-        <div><h1>{texts.title[lang]}</h1></div>
+        <div><h1>{lang === "id" ? "📖 Dokumentasi Rafzhost API" : "📖 Rafzhost API Documentation"}</h1></div>
         <div className="header-controls">
-          <Link href="/post"><a className="btn outline">{texts.switch[lang]}</a></Link>
+          <Link href="/post"><a className="btn outline">{lang === "id" ? "Beralih ke Post" : "Switch to Post"}</a></Link>
 
           <select className="control-select" value={lang} onChange={(e)=> setLang(e.target.value)}>
             <option value="id">🇮🇩 ID</option>
@@ -77,10 +73,10 @@ export default function DocsPage() {
       <main className="page-main">
         <div className="card swagger-card">
           <div className="search-row">
-            <input className="search-input" placeholder={texts.placeholder[lang]} value={search} onChange={(e)=> setSearch(e.target.value)} />
-            <label className="safe-label">
-              <input type="checkbox" checked={useSafeSwagger} onChange={(e)=> setUseSafeSwagger(e.target.checked)} />
-              Safe Swagger
+            <input className="search-input" placeholder={lang === "id" ? "🔍 Cari endpoint..." : "🔍 Search endpoint..."} value={search} onChange={(e)=> setSearch(e.target.value)} />
+            <label style={{display:'flex', alignItems:'center', gap:8}}>
+              <input type="checkbox" checked={useSafe} onChange={(e)=> setUseSafe(e.target.checked)} />
+              {lang === "id" ? "Safe Swagger" : "Safe Swagger"}
             </label>
           </div>
 
@@ -95,7 +91,7 @@ export default function DocsPage() {
           {specReady && (
             <div className="swagger-wrap">
               <SwaggerUI
-                url={useSafeSwagger ? "/swagger-safe.json" : "/swagger.json"}
+                url={useSafe ? "/swagger-safe.json" : "/swagger-docs.json"}
                 docExpansion="none"
                 defaultModelsExpandDepth={-1}
                 deepLinking={!safeMode}
