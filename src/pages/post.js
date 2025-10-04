@@ -26,7 +26,7 @@ export default function PostPage() {
     const s = localStorage.getItem("safeMode") === "true";
     setTheme(t); setSafeMode(s);
     applyTheme(t);
-    fetch("/swagger-post.json").finally(() => setSpecReady(true));
+    fetch("/swagger.json").finally(() => setSpecReady(true));
   }, []);
 
   const applyTheme = (val) => {
@@ -91,7 +91,7 @@ export default function PostPage() {
 
           {specReady && (
             <SwaggerUI
-              url="/swagger-post.json"
+              url="/swagger.json"
               docExpansion="none"
               defaultModelsExpandDepth={-1}
               filter={search || false}
