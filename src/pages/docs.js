@@ -21,9 +21,8 @@ export default function DocsPage() {
     setSafeMode(localStorage.getItem("safeMode") === "true");
 
     let mounted = true;
-    setSpecReady(false);
     fetch("/swagger-docs.json")
-      .then((r) => r.ok ? r.json() : Promise.reject())
+      .then(r => r.ok ? r.json() : Promise.reject())
       .then(() => mounted && setSpecReady(true))
       .catch(() => mounted && setSpecReady(true));
 
@@ -51,31 +50,41 @@ export default function DocsPage() {
   return (
     <div className="page docs-page">
       <header className="page-header header-centered">
-        <div><h1>{lang === "id" ? "📖 Dokumentasi Rafzhost API" : "📖 Rafzhost API Documentation"}</h1></div>
+        <h1>{lang === "id" ? "📖 Dokumentasi Rafzhost API" : "📖 Rafzhost API Documentation"}</h1>
         <div className="header-controls">
-          <Link href="/post"><a className="btn outline">{lang === "id" ? "Beralih ke Post" : "Switch to Post"}</a></Link>
-
+          <Link href="/post" className="btn outline">
+            {lang === "id" ? "Beralih ke Post" : "Switch to Post"}
+          </Link>
           <select className="control-select" value={lang} onChange={(e)=> setLang(e.target.value)}>
             <option value="id">🇮🇩 ID</option>
             <option value="en">🇺🇸 EN</option>
           </select>
-
           <select className="control-select" value={theme} onChange={(e)=> applyTheme(e.target.value)}>
             <option value="system">System</option>
             <option value="light">Light</option>
             <option value="dark">Dark</option>
           </select>
-
-          <button className="control-btn" onClick={toggleSafe}>{safeMode ? "Safe: On" : "Safe: Off"}</button>
+          <button className="control-btn" onClick={toggleSafe}>
+            {safeMode ? "Safe: On" : "Safe: Off"}
+          </button>
         </div>
       </header>
 
       <main className="page-main">
         <div className="card swagger-card">
           <div className="search-row">
-            <input className="search-input" placeholder={lang === "id" ? "🔍 Cari endpoint..." : "🔍 Search endpoint..."} value={search} onChange={(e)=> setSearch(e.target.value)} />
-            <label style={{display:'flex', alignItems:'center', gap:8}}>
-              <input type="checkbox" checked={useSafe} onChange={(e)=> setUseSafe(e.target.checked)} />
+            <input
+              className="search-input"
+              placeholder={lang === "id" ? "🔍 Cari endpoint..." : "🔍 Search endpoint..."}
+              value={search}
+              onChange={(e)=> setSearch(e.target.value)}
+            />
+            <label style={{display:"flex", alignItems:"center", gap:8}}>
+              <input
+                type="checkbox"
+                checked={useSafe}
+                onChange={(e)=> setUseSafe(e.target.checked)}
+              />
               {lang === "id" ? "Safe Swagger" : "Safe Swagger"}
             </label>
           </div>
@@ -89,22 +98,22 @@ export default function DocsPage() {
           )}
 
           {specReady && (
-            <div className="swagger-wrap">
-              <SwaggerUI
-                url={useSafe ? "/swagger-safe.json" : "/swagger-docs.json"}
-                docExpansion="none"
-                defaultModelsExpandDepth={-1}
-                deepLinking={!safeMode}
-                filter={search || false}
-              />
-            </div>
+            <SwaggerUI
+              url={useSafe ? "/swagger-safe.json" : "/swagger-docs.json"}
+              docExpansion="none"
+              defaultModelsExpandDepth={-1}
+              deepLinking={!safeMode}
+              filter={search || false}
+            />
           )}
         </div>
       </main>
 
       <footer className="page-footer">
         <div className="footer-center">
-          <a href="https://github.com/siputzx/apisku" target="_blank" rel="noreferrer" className="thanks-link">Siputzx for source code</a>
+          <a href="https://github.com/siputzx/apisku" target="_blank" rel="noreferrer" className="thanks-link">
+            Siputzx for source code
+          </a>
           <div className="owner">Rafzhost API by Rafz (Rafflie Aditya)</div>
         </div>
       </footer>
