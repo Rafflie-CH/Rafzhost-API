@@ -230,3 +230,29 @@ html.no-anim * { transition: none !important; animation: none !important; }
 .dark .post-page .swagger-card::before {
   background: #34d058;
 }
+
+/* === Swagger per-method borders === */
+.swagger-ui .opblock.opblock-get { border-color: #2563eb !important; }   /* biru */
+.swagger-ui .opblock.opblock-post { border-color: #16a34a !important; }  /* hijau */
+.swagger-ui .opblock.opblock-put { border-color: #d97706 !important; }   /* oranye */
+.swagger-ui .opblock.opblock-delete { border-color: #dc2626 !important; } /* merah */
+
+html.dark .swagger-ui .opblock.opblock-get { border-color: #3b82f6 !important; }
+html.dark .swagger-ui .opblock.opblock-post { border-color: #22c55e !important; }
+html.dark .swagger-ui .opblock.opblock-put { border-color: #f59e0b !important; }
+html.dark .swagger-ui .opblock.opblock-delete { border-color: #ef4444 !important; }
+
+/* === Highlight card sesuai halaman === */
+.docs-page .swagger-card {
+  border-left: 4px solid #2563eb !important; /* biru terang */
+}
+html.dark .docs-page .swagger-card {
+  border-left: 4px solid #3b82f6 !important; /* biru dark */
+}
+
+.post-page .swagger-card {
+  border-left: 4px solid #16a34a !important; /* hijau terang */
+}
+html.dark .post-page .swagger-card {
+  border-left: 4px solid #22c55e !important; /* hijau dark */
+}
