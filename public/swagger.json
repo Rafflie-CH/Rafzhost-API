@@ -48,44 +48,81 @@
         "responses": { "200": { "description": "OK" } }
       }
     },
-        "/api/m/brat": {
+    "/api/m/brat": {
       "get": {
-        "tags": ["Maker", "Image", "GIF"],
-        "summary": "Generate Brat image atau GIF (GET)",
+        "summary": "Generate Brat Media",
+        "description": "Generate image/video Brat. PNG tidak animasi. GIF/WEBP/MP4 otomatis animasi.",
         "parameters": [
-          { "name": "text", "in": "query", "required": true, "schema": { "type": "string", "maxLength": 800 }, "description": "Teks untuk Brat image/GIF" },
-          { "name": "isAnimated", "in": "query", "schema": { "type": "boolean", "default": false }, "description": "Set true untuk GIF animasi" },
-          { "name": "delay", "in": "query", "schema": { "type": "integer", "default": 500, "minimum": 100, "maximum": 1500 }, "description": "Delay antar kata untuk GIF (ms)" }
+          {
+            "name": "text",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Teks yang ingin ditampilkan, bisa emoji"
+          },
+          {
+            "name": "media",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": ["png", "gif", "webp", "mp4"]
+            },
+            "description": "Tipe media yang dihasilkan"
+          },
+          {
+            "name": "delay",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "default": 150 },
+            "description": "Delay per frame (ms), hanya berlaku untuk media animasi"
+          }
         ],
         "responses": {
-          "200": { "description": "Image/GIF berhasil dibuat", "content": { "image/png": {}, "image/gif": {} } },
-          "400": { "description": "Bad request" },
-          "500": { "description": "Internal server error" }
+          "200": {
+            "description": "Media berhasil dihasilkan",
+            "content": {
+              "image/png": { "schema": { "type": "string", "format": "binary" } },
+              "image/gif": { "schema": { "type": "string", "format": "binary" } },
+              "image/webp": { "schema": { "type": "string", "format": "binary" } },
+              "video/mp4": { "schema": { "type": "string", "format": "binary" } }
+            }
+          },
+          "400": { "description": "Parameter tidak valid" },
+          "500": { "description": "Error generate media" }
         }
       },
       "post": {
-        "tags": ["Maker", "Image", "GIF"],
-        "summary": "Generate Brat image atau GIF (POST)",
+        "summary": "Generate Brat Media (POST)",
+        "description": "Endpoint POST untuk generate Brat image/video.",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "type": "object",
-                "required": ["text"],
                 "properties": {
-                  "text": { "type": "string", "maxLength": 800 },
-                  "isAnimated": { "type": "boolean", "default": false },
-                  "delay": { "type": "integer", "default": 500, "minimum": 100, "maximum": 1500 }
-                }
+                  "text": { "type": "string", "description": "Teks yang ingin ditampilkan" },
+                  "media": { "type": "string", "enum": ["png", "gif", "webp", "mp4"], "description": "Tipe media" },
+                  "delay": { "type": "integer", "description": "Delay frame animasi (ms)" }
+                },
+                "required": ["text", "media"]
               }
             }
           }
         },
         "responses": {
-          "200": { "description": "Image/GIF berhasil dibuat", "content": { "image/png": {}, "image/gif": {} } },
-          "400": { "description": "Bad request" },
-          "500": { "description": "Internal server error" }
+          "200": {
+            "description": "Media berhasil dihasilkan",
+            "content": {
+              "image/png": { "schema": { "type": "string", "format": "binary" } },
+              "image/gif": { "schema": { "type": "string", "format": "binary" } },
+              "image/webp": { "schema": { "type": "string", "format": "binary" } },
+              "video/mp4": { "schema": { "type": "string", "format": "binary" } }
+            }
+          },
+          "400": { "description": "Parameter tidak valid" },
+          "500": { "description": "Error generate media" }
         }
       }
     }
