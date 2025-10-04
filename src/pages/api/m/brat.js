@@ -1,141 +1,111 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import Jimp from "jimp";
-import { GifWriter } from "omggif";
-import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
+// src/pages/api/m/brat.js
+import { createCanvas } from '@napi-rs/canvas';
+import { GifUtil, GifFrame } from 'gifwrap';
+import sharp from 'sharp';
+import ffmpeg from 'fluent-ffmpeg';
+import stream from 'stream';
+import { promisify } from 'util';
 
-// Ukuran frame
 const FRAME_SIZE = { width: 256, height: 256 };
 
-// ===========================
-// UTILITY
-// ===========================
-
-// Generate frame PNG dari teks (support emoji)
-async function generateFrame(text) {
-  const image = new Jimp(FRAME_SIZE.width, FRAME_SIZE.height, 0x00000000); // transparan
-  const font = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
-
-  image.print(
-    font,
-    0,
-    0,
-    {
-      text,
-      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER,
-      alignmentY: Jimp.VERTICAL_ALIGN_MIDDLE,
-    },
-    FRAME_SIZE.width,
-    FRAME_SIZE.height
-  );
-
-  return await image.getBufferAsync(Jimp.MIME_PNG);
-}
-
-// Split string jadi beberapa frame animasi (dukungan emoji)
+// Utility
 function splitStringToFrames(str) {
-  const chars = Array.from(str);
+  const chars = Array.from(str); // dukung emoji
   const frames = [];
   for (let i = 1; i <= chars.length; i++) {
-    frames.push(chars.slice(0, i).join(""));
+    frames.push(chars.slice(0, i).join(''));
   }
   return frames;
 }
 
-// ===========================
-// API HANDLER
-// ===========================
+async function generateFrame(text) {
+  const canvas = createCanvas(FRAME_SIZE.width, FRAME_SIZE.height);
+  const ctx = canvas.getContext('2d');
 
+  ctx.fillStyle = 'black';
+  ctx.fillRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
+
+  ctx.fillStyle = 'white';
+  ctx.font = '32px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, FRAME_SIZE.width / 2, FRAME_SIZE.height / 2);
+
+  return canvas.toBuffer('png');
+}
+
+// API Handler
 export default async function handler(req, res) {
   try {
-    const {
-      text = "Brat",
-      isAnimated = "false",
-      delay = "150",
-      format = "gif", // gif | png | mp4
-    } = req.query;
-
-    const animated = isAnimated === "true";
+    const { text = 'Brat', isAnimated = 'false', delay = '150', media = 'png' } = req.query;
+    const isAnim = isAnimated === 'true';
     const delayMs = parseInt(delay);
 
-    // -----------------
-    // Static PNG
-    // -----------------
-    if (!animated || format === "png") {
+    if (!isAnim) {
       const buffer = await generateFrame(text);
-      res.setHeader("Content-Type", "image/png");
+      res.setHeader('Content-Type', 'image/png');
       return res.send(buffer);
     }
 
-    // -----------------
-    // Animated GIF
-    // -----------------
-    if (format === "gif") {
-      const framesStr = splitStringToFrames(text);
-      const framesBuffers = [];
+    const framesStr = splitStringToFrames(text);
+    const buffers = await Promise.all(framesStr.map(t => generateFrame(t)));
 
-      for (const t of framesStr) {
-        const buf = await generateFrame(t);
-        framesBuffers.push(buf);
+    switch (media.toLowerCase()) {
+      case 'gif': {
+        const gifFrames = [];
+        for (const buf of buffers) {
+          const frame = await GifFrame.fromBuffer(buf);
+          frame.delayCentisecs = Math.floor(delayMs / 10);
+          gifFrames.push(frame);
+        }
+        const gifBuffer = await GifUtil.writeBuffer(gifFrames);
+        res.setHeader('Content-Type', 'image/gif');
+        return res.send(gifBuffer);
       }
-
-      const width = FRAME_SIZE.width;
-      const height = FRAME_SIZE.height;
-      const gifBuffer = Buffer.alloc(width * height * framesBuffers.length * 4); // placeholder
-      const writer = new GifWriter(gifBuffer, width, height, { loop: 0 });
-
-      for (const buf of framesBuffers) {
-        const jimpFrame = await Jimp.read(buf);
-        const pixels = [];
-        jimpFrame.scan(0, 0, width, height, function (x, y, idx) {
-          const r = this.bitmap.data[idx + 0];
-          const g = this.bitmap.data[idx + 1];
-          const b = this.bitmap.data[idx + 2];
-          const a = this.bitmap.data[idx + 3];
-          pixels.push(r, g, b, a);
-        });
-        writer.addFrame(0, 0, width, height, pixels, { delay: delayMs });
+      case 'webp': {
+        const image = sharp(buffers[0]);
+        const webpBuffer = await sharp({
+          create: {
+            width: FRAME_SIZE.width,
+            height: FRAME_SIZE.height,
+            channels: 4,
+            background: 'black',
+          },
+        })
+          .composite(buffers.map(buf => ({ input: buf })))
+          .webp({ animated: true, delay: delayMs })
+          .toBuffer();
+        res.setHeader('Content-Type', 'image/webp');
+        return res.send(webpBuffer);
       }
+      case 'mp4': {
+        // ffmpeg memerlukan writable stream
+        const passThrough = new stream.PassThrough();
+        const getStreamBuffer = promisify(stream.finished);
 
-      res.setHeader("Content-Type", "image/gif");
-      return res.send(writer.data);
+        ffmpeg()
+          .inputOptions('-framerate', `${1000 / delayMs}`)
+          .input('pipe:0')
+          .inputFormat('image2pipe')
+          .videoCodec('libx264')
+          .outputOptions('-pix_fmt', 'yuv420p')
+          .format('mp4')
+          .pipe(passThrough);
+
+        buffers.forEach(buf => passThrough.write(buf));
+        passThrough.end();
+
+        res.setHeader('Content-Type', 'video/mp4');
+        await getStreamBuffer(passThrough);
+        return res.send(passThrough);
+      }
+      default:
+        // fallback PNG
+        res.setHeader('Content-Type', 'image/png');
+        return res.send(buffers[buffers.length - 1]);
     }
-
-    // -----------------
-    // Animated MP4
-    // -----------------
-    if (format === "mp4") {
-      const framesStr = splitStringToFrames(text);
-      const ffmpeg = createFFmpeg({ log: false });
-      await ffmpeg.load();
-
-      // Generate frame PNG files
-      for (let i = 0; i < framesStr.length; i++) {
-        const buf = await generateFrame(framesStr[i]);
-        ffmpeg.FS("writeFile", `frame${i}.png`, await fetchFile(buf));
-      }
-
-      // Buat video dari frames
-      await ffmpeg.run(
-        "-framerate",
-        `${1000 / delayMs}`,
-        "-i",
-        "frame%d.png",
-        "-c:v",
-        "libx264",
-        "-pix_fmt",
-        "yuv420p",
-        "output.mp4"
-      );
-
-      const data = ffmpeg.FS("readFile", "output.mp4");
-      res.setHeader("Content-Type", "video/mp4");
-      return res.send(Buffer.from(data.buffer));
-    }
-
-    // Default fallback
-    res.status(400).json({ error: "Format tidak didukung. Gunakan png, gif, atau mp4." });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: `Gagal generate image/video: ${err}`});
+    res.status(500).json({ error: 'Gagal generate image/video', details: err.message });
   }
 }
