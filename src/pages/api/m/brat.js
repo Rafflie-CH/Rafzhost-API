@@ -1,34 +1,37 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import fs from "fs";
 import path from "path";
-import { createCanvas, loadImage } from "@napi-rs/canvas";
+import { createCanvas, registerFont } from "@napi-rs/canvas";
 import sharp from "sharp";
 import { spawn } from "child_process";
 
 const FRAME_SIZE = { width: 256, height: 256 };
 
-// Split string jadi beberapa frame animasi (support emoji)
+// Daftarkan font lokal OpenSans yang support emoji
+const FONT_PATH = path.join(process.cwd(), "fonts/OpenSans-Bold.ttf");
+if (fs.existsSync(FONT_PATH)) registerFont(FONT_PATH, { family: "OpenSans" });
+
+// ===========================
+// UTILITY
+// ===========================
 function splitStringToFrames(str) {
-  const chars = Array.from(str);
+  const chars = Array.from(str); // dukung emoji
   const frames = [];
-  for (let i = 1; i <= chars.length; i++) {
-    frames.push(chars.slice(0, i).join(""));
-  }
+  for (let i = 1; i <= chars.length; i++) frames.push(chars.slice(0, i).join(""));
   return frames;
 }
 
-// Generate single frame buffer
-async function generateFrameBuffer(text, isAnimated = false) {
+async function generateFrameBuffer(text) {
   const canvas = createCanvas(FRAME_SIZE.width, FRAME_SIZE.height);
   const ctx = canvas.getContext("2d");
 
-  // Background putih untuk PNG / animasi transparan
-  ctx.fillStyle = isAnimated ? "rgba(0,0,0,0)" : "#ffffff";
+  // Background putih
+  ctx.fillStyle = "#ffffff";
   ctx.fillRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
 
-  // Teks hitam (atau bisa ganti warna sesuai kebutuhan)
+  // Teks tengah
   ctx.fillStyle = "#000000";
-  ctx.font = "32px sans-serif";
+  ctx.font = "32px OpenSans";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(text, FRAME_SIZE.width / 2, FRAME_SIZE.height / 2);
@@ -37,56 +40,60 @@ async function generateFrameBuffer(text, isAnimated = false) {
 }
 
 // ===========================
-// GENERATE MEDIA
+// GENERATORS
 // ===========================
 
-// PNG / Foto
 async function generatePNG(text) {
-  return await generateFrameBuffer(text, false);
+  return generateFrameBuffer(text);
 }
 
-// Animated WebP
 async function generateWEBP(text, delay = 150) {
   const frames = splitStringToFrames(text);
-  if (frames.length === 1) return generateFrameBuffer(text, false);
+  if (frames.length === 1) return generateFrameBuffer(text); // static
 
   const buffers = [];
-  for (const t of frames) buffers.push(await generateFrameBuffer(t, true));
+  for (const t of frames) buffers.push(await generateFrameBuffer(t));
 
-  const webpBuffer = await sharp({
-    create: { width: FRAME_SIZE.width, height: FRAME_SIZE.height, channels: 4, background: { r:0,g:0,b:0,alpha:0 } }
+  return sharp({
+    create: {
+      width: FRAME_SIZE.width,
+      height: FRAME_SIZE.height,
+      channels: 4,
+      background: { r: 255, g: 255, b: 255, alpha: 0 },
+    },
   })
-  .composite(buffers.map((b) => ({ input: b, top: 0, left: 0 })))
-  .webp({ quality: 100, animated: true, delay })
-  .toBuffer();
-
-  return webpBuffer;
+    .composite(buffers.map((b) => ({ input: b, top: 0, left: 0 })))
+    .webp({ quality: 100, animated: true, delay })
+    .toBuffer();
 }
 
-// Animated MP4 via ffmpeg
 async function generateMP4(text, delay = 150) {
   const frames = splitStringToFrames(text);
   const tempDir = fs.mkdtempSync("/tmp/brat-");
   const frameFiles = [];
 
   for (let i = 0; i < frames.length; i++) {
-    const buf = await generateFrameBuffer(frames[i], true);
+    const buf = await generateFrameBuffer(frames[i]);
     const filePath = path.join(tempDir, `frame_${i}.png`);
     fs.writeFileSync(filePath, buf);
     frameFiles.push(filePath);
   }
 
   const outputPath = path.join(tempDir, "output.mp4");
-  const framerate = Math.max(Math.floor(1000 / delay), 1);
+  const framerate = 1000 / delay;
 
   await new Promise((resolve, reject) => {
     const ffmpeg = spawn("ffmpeg", [
       "-y",
-      "-framerate", framerate.toString(),
-      "-i", path.join(tempDir, "frame_%d.png"),
-      "-c:v", "libx264",
-      "-pix_fmt", "yuv420p",
-      outputPath
+      "-framerate",
+      framerate.toString(),
+      "-i",
+      path.join(tempDir, "frame_%d.png"),
+      "-c:v",
+      "libx264",
+      "-pix_fmt",
+      "yuv420p",
+      outputPath,
     ]);
 
     ffmpeg.stderr.on("data", (data) => console.log(data.toString()));
@@ -104,11 +111,10 @@ async function generateMP4(text, delay = 150) {
 export default async function handler(req, res) {
   try {
     const { text, delay = 150, media = "png" } = req.query;
-
     if (!text) return res.status(400).json({ error: "text wajib diisi" });
 
-    let buffer;
     const mediaLower = media.toLowerCase();
+    let buffer;
 
     switch (mediaLower) {
       case "png":
@@ -124,7 +130,7 @@ export default async function handler(req, res) {
         res.setHeader("Content-Type", "video/mp4");
         break;
       default:
-        return res.status(400).json({ error: "media tidak valid, pilih: png, webp, mp4" });
+        return res.status(400).json({ error: "media tidak valid" });
     }
 
     res.status(200).send(buffer);
