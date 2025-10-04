@@ -1,111 +1,177 @@
-// src/pages/api/m/brat.js
-import { createCanvas } from '@napi-rs/canvas';
-import { GifUtil, GifFrame } from 'gifwrap';
-import sharp from 'sharp';
-import ffmpeg from 'fluent-ffmpeg';
-import stream from 'stream';
-import { promisify } from 'util';
+import { NextApiRequest, NextApiResponse } from "next";
+import fs from "fs";
+import path from "path";
+import Jimp from "jimp";
+import { createCanvas, loadImage } from "@napi-rs/canvas";
+import GIFEncoder from "gifencoder";
+import sharp from "sharp";
+import { spawn } from "child_process";
 
+// ===========================
+// UTILITY
+// ===========================
 const FRAME_SIZE = { width: 256, height: 256 };
 
-// Utility
+// Split string jadi beberapa frame animasi (support emoji)
 function splitStringToFrames(str) {
-  const chars = Array.from(str); // dukung emoji
+  const chars = Array.from(str);
   const frames = [];
   for (let i = 1; i <= chars.length; i++) {
-    frames.push(chars.slice(0, i).join(''));
+    frames.push(chars.slice(0, i).join(""));
   }
   return frames;
 }
 
-async function generateFrame(text) {
+// Generate single frame buffer
+async function generateFrameBuffer(text) {
   const canvas = createCanvas(FRAME_SIZE.width, FRAME_SIZE.height);
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext("2d");
 
-  ctx.fillStyle = 'black';
-  ctx.fillRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
+  // Background transparan
+  ctx.clearRect(0, 0, FRAME_SIZE.width, FRAME_SIZE.height);
 
-  ctx.fillStyle = 'white';
-  ctx.font = '32px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
+  // Teks putih tengah
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "32px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
   ctx.fillText(text, FRAME_SIZE.width / 2, FRAME_SIZE.height / 2);
 
-  return canvas.toBuffer('png');
+  return canvas.toBuffer("image/png");
 }
 
-// API Handler
+// ===========================
+// MAIN GENERATORS
+// ===========================
+
+// PNG / FOTO
+async function generatePNG(text) {
+  return await generateFrameBuffer(text);
+}
+
+// GIF
+async function generateGIF(text, delay = 150) {
+  const frames = splitStringToFrames(text);
+  const encoder = new GIFEncoder(FRAME_SIZE.width, FRAME_SIZE.height);
+  const chunks = [];
+  encoder.start();
+  encoder.setRepeat(0);
+  encoder.setDelay(delay);
+  encoder.setQuality(10);
+
+  encoder.on("data", (chunk) => chunks.push(chunk));
+
+  for (const t of frames) {
+    const buf = await generateFrameBuffer(t);
+    const img = await loadImage(buf);
+    const canvas = createCanvas(FRAME_SIZE.width, FRAME_SIZE.height);
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+    encoder.addFrame(ctx);
+  }
+
+  encoder.finish();
+  return Buffer.concat(chunks);
+}
+
+// WEBP
+async function generateWEBP(text, delay = 150) {
+  const frames = splitStringToFrames(text);
+  if (frames.length === 1) return generateFrameBuffer(text); // statis
+
+  const buffers = [];
+  for (const t of frames) {
+    buffers.push(await generateFrameBuffer(t));
+  }
+
+  const webpBuffer = await sharp({
+    create: {
+      width: FRAME_SIZE.width,
+      height: FRAME_SIZE.height,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 0 }
+    }
+  }).composite(buffers.map((b, i) => ({ input: b, top: 0, left: 0 })))
+    .webp({ quality: 100, animated: true, delay: delay })
+    .toBuffer();
+
+  return webpBuffer;
+}
+
+// MP4 via ffmpeg
+async function generateMP4(text, delay = 150) {
+  const frames = splitStringToFrames(text);
+  const tempDir = fs.mkdtempSync("/tmp/brat-");
+  const frameFiles = [];
+
+  for (let i = 0; i < frames.length; i++) {
+    const buf = await generateFrameBuffer(frames[i]);
+    const filePath = path.join(tempDir, `frame_${i}.png`);
+    fs.writeFileSync(filePath, buf);
+    frameFiles.push(filePath);
+  }
+
+  const outputPath = path.join(tempDir, "output.mp4");
+  // ffmpeg -framerate X -i frame_%d.png -c:v libx264 -pix_fmt yuv420p output.mp4
+  await new Promise((resolve, reject) => {
+    const framerate = 1000 / delay;
+    const ffmpeg = spawn("ffmpeg", [
+      "-y",
+      "-framerate", framerate.toString(),
+      "-i", path.join(tempDir, "frame_%d.png"),
+      "-c:v", "libx264",
+      "-pix_fmt", "yuv420p",
+      outputPath
+    ]);
+
+    ffmpeg.stderr.on("data", (data) => console.log(data.toString()));
+    ffmpeg.on("close", (code) => {
+      if (code === 0) resolve();
+      else reject(new Error("FFmpeg failed"));
+    });
+  });
+
+  const buffer = fs.readFileSync(outputPath);
+  fs.rmSync(tempDir, { recursive: true, force: true });
+  return buffer;
+}
+
+// ===========================
+// API HANDLER
+// ===========================
 export default async function handler(req, res) {
   try {
-    const { text = 'Brat', isAnimated = 'false', delay = '150', media = 'png' } = req.query;
-    const isAnim = isAnimated === 'true';
-    const delayMs = parseInt(delay);
+    const { text, delay = 150, media = "png" } = req.query;
 
-    if (!isAnim) {
-      const buffer = await generateFrame(text);
-      res.setHeader('Content-Type', 'image/png');
-      return res.send(buffer);
-    }
+    if (!text) return res.status(400).json({ error: "text wajib diisi" });
 
-    const framesStr = splitStringToFrames(text);
-    const buffers = await Promise.all(framesStr.map(t => generateFrame(t)));
+    let buffer;
+    const mediaLower = media.toLowerCase();
 
-    switch (media.toLowerCase()) {
-      case 'gif': {
-        const gifFrames = [];
-        for (const buf of buffers) {
-          const frame = await GifFrame.fromBuffer(buf);
-          frame.delayCentisecs = Math.floor(delayMs / 10);
-          gifFrames.push(frame);
-        }
-        const gifBuffer = await GifUtil.writeBuffer(gifFrames);
-        res.setHeader('Content-Type', 'image/gif');
-        return res.send(gifBuffer);
-      }
-      case 'webp': {
-        const image = sharp(buffers[0]);
-        const webpBuffer = await sharp({
-          create: {
-            width: FRAME_SIZE.width,
-            height: FRAME_SIZE.height,
-            channels: 4,
-            background: 'black',
-          },
-        })
-          .composite(buffers.map(buf => ({ input: buf })))
-          .webp({ animated: true, delay: delayMs })
-          .toBuffer();
-        res.setHeader('Content-Type', 'image/webp');
-        return res.send(webpBuffer);
-      }
-      case 'mp4': {
-        // ffmpeg memerlukan writable stream
-        const passThrough = new stream.PassThrough();
-        const getStreamBuffer = promisify(stream.finished);
-
-        ffmpeg()
-          .inputOptions('-framerate', `${1000 / delayMs}`)
-          .input('pipe:0')
-          .inputFormat('image2pipe')
-          .videoCodec('libx264')
-          .outputOptions('-pix_fmt', 'yuv420p')
-          .format('mp4')
-          .pipe(passThrough);
-
-        buffers.forEach(buf => passThrough.write(buf));
-        passThrough.end();
-
-        res.setHeader('Content-Type', 'video/mp4');
-        await getStreamBuffer(passThrough);
-        return res.send(passThrough);
-      }
+    switch (mediaLower) {
+      case "png":
+        buffer = await generatePNG(text);
+        res.setHeader("Content-Type", "image/png");
+        break;
+      case "gif":
+        buffer = await generateGIF(text, Number(delay));
+        res.setHeader("Content-Type", "image/gif");
+        break;
+      case "webp":
+        buffer = await generateWEBP(text, Number(delay));
+        res.setHeader("Content-Type", "image/webp");
+        break;
+      case "mp4":
+        buffer = await generateMP4(text, Number(delay));
+        res.setHeader("Content-Type", "video/mp4");
+        break;
       default:
-        // fallback PNG
-        res.setHeader('Content-Type', 'image/png');
-        return res.send(buffers[buffers.length - 1]);
+        return res.status(400).json({ error: "media tidak valid" });
     }
+
+    res.status(200).send(buffer);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Gagal generate image/video', details: err.message });
+    res.status(500).json({ error: `Gagal generate image/video: ${err.message}` });
   }
 }
