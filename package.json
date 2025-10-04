@@ -20,7 +20,7 @@
     "@napi-rs/canvas": "^0.1.80",
     "framer-motion": "^11.0.3",
     "sharp": "latest",
-    "gifencoder": "latest"
+    "gifencoder": "^2.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.14",
