@@ -25,15 +25,27 @@ export default function DocsPage() {
     else document.documentElement.classList.remove("no-anim");
     applyTheme(t);
 
-    let mounted = true;
-    fetch("/swagger.json")
-      .then((r)=> r.ok ? r.json() : Promise.reject())
-      .then(()=> { if (mounted) setSpecReady(true); })
-      .catch(()=> { if (mounted) setSpecReady(true); })
-      .finally(()=> { /* nothing */ });
-    return ()=> mounted = false;
-  }, []);
-
+  let mounted = true;
+  fetch("/swagger.json")
+    .then((r) => r.json())
+    .then((data) => {
+      if (!mounted) return;
+      // Filter hanya endpoint dengan tag DOCS
+      const filtered = {
+        ...data,
+        paths: Object.fromEntries(
+          Object.entries(data.paths).filter(([_, methods]) =>
+            Object.values(methods).some((m) => m.tags?.includes("DOCS"))
+          )
+        )
+      };
+      setSpec(filtered);
+      setSpecReady(true);
+    })
+    .catch(() => setSpecReady(true));
+  return () => (mounted = false);
+}, []);
+  
   const applyTheme = (val) => {
     localStorage.setItem("theme", val);
     setTheme(val);
@@ -103,7 +115,7 @@ export default function DocsPage() {
                 docExpansion="none"
                 defaultModelsExpandDepth={-1}
                 deepLinking={!safeMode}
-                filter="DOCS"
+                spec={spec}
               />
             </div>
           )}
